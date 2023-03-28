@@ -13,14 +13,17 @@
 
 
 """
-Buildarr plugin specification.
+Sonarr plugin for Buildarr root module.
 """
 
 
 from __future__ import annotations
 
-from .load import load
-from .models import Plugin
-from .types import Config, Secrets
+from importlib_metadata import PackageNotFoundError, version as package_version
 
-__all__ = ["Plugin", "Config", "Secrets", "load"]
+__all__ = ["__version__"]
+
+try:
+    __version__: str = package_version("buildarr-sonarr")
+except PackageNotFoundError:
+    __version__ = "0.4.0"

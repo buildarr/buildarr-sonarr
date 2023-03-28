@@ -21,8 +21,6 @@ Checklist:
 1. [ ] Check that the CI pipeline passed on `main`: <paste CI workflow here>
 1. [ ] Tag the new release
 1. [ ] Check that the release was automatically published to PyPI: <paste release workflow here>
-1. [ ] Push an update to http://github.com/buildarr/buildarr-docker to release to Docker Hub
-1. [ ] Push an update to https://buildarr.github.io
 1. [ ] Close release milestone
 1. [ ] Create new release milestone
 1. [ ] Close this issue

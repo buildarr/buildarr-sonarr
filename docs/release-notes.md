@@ -1,12 +1,27 @@
 # Release Notes
 
+## [v0.4.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.4.0) - 2023-03-27
+
+This is the first release of the Sonarr plugin for Buildarr as an independent package.
+
+### Added
+
+* Implement testing of cached and fetched instance secrets ([#32](https://github.com/buildarr/buildarr/pull/32))
+* Refactor the internals of Buildarr to improve maintainability ([#30](https://github.com/buildarr/buildarr/pull/30))
+
+### Changed
+
+* Convert `Password` and `SonarrApiKey` to subclasses of `SecretStr` ([#34](https://github.com/buildarr/buildarr/pull/34))
+* Fix CLI exception class inheritance ([#35](https://github.com/buildarr/buildarr/pull/35))
+* Use discriminated unions to accurately determine resource type ([#36](https://github.com/buildarr/buildarr/pull/36))
+* Change log types of some TRaSH logs to `INFO` ([#37](https://github.com/buildarr/buildarr/pull/37))
+* Add support for generating Docker Compose services ([buildarr/buildarr#73](https://github.com/buildarr/buildarr/pull/73))
+* Fork the Sonarr plugin into a separate package ([#1](https://github.com/buildarr/buildarr-sonarr/pull/1))
+
+
 ## [v0.3.0](https://github.com/buildarr/buildarr/releases/tag/v0.3.0) - 2023-03-15
 
 This is a feature and bugfix release that extends the groundwork laid in the previous version for making Buildarr more usable, and future-proof for the planned new plugins.
-
-A major bug where running Buildarr when `secrets.json` does not exist would result in an error, even if valid instance credentials were found, has been fixed. This would have prevented many people from trying out Buildarr, and for this I would like to apologise.
-
-In the future automated unit tests are planned, and major refactors of the Buildarr codebase are now less likely to happen as a result of development, so bugs like this should not happen as often in the future.
 
 The major new feature this release introduces is instance linking: the ability to define relationships between two instances.
 
@@ -52,18 +67,14 @@ A number of other improvements and bugfixes were made, such as:
     * `source_quality_profile_ids` renamed to [`source_quality_profiles`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.source_quality_profiles)
     * `source_language_profile_ids` renamed to [`source_language_profiles`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.source_language_profiles)
     * `source_tag_ids` renamed to [`source_tags`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.source_tags)
-* Fix reading the `$BUILDARR_LOG_LEVEL` environment variable to be case-insensitive
-* Clean up runtime state after individual update runs in daemon mode, to ensure no state leakage into subsequent runs
-* Add a new [`buildarr.request_timeout`](configuration.md#buildarr.config.buildarr.BuildarrConfig.request_timeout) configuration attribute for adjusting API request timeouts (the default is 30 seconds)
 * Improve Sonarr quality definition [`min` and `max`](plugins/sonarr/configuration/quality.md#buildarr.plugins.sonarr.config.quality.QualityDefinition.min) validation so that `400` is also a valid value for `max`, and enforce `min`-`max` value difference constraints
 * Major internal code refactor through the introduction of [Ruff](https://beta.ruff.rs/docs) to the development pipeline, fixing a large number of minor code quality issues
 
 ### Changed
 
-* Fix fetching new instance secrets ([#44](https://github.com/buildarr/buildarr/pull/44))
-* Accept local and non-qualified domain names in URLs ([#46](https://github.com/buildarr/buildarr/pull/46))
-* Add instance referencing and dependency resolution ([#47](https://github.com/buildarr/buildarr/pull/47))
-* Replace isort and Flake8 with Ruff and reformat source files ([#49](https://github.com/buildarr/buildarr/pull/49))
+* Accept local and non-qualified domain names in URLs ([buildarr/buildarr#46](https://github.com/buildarr/buildarr/pull/46))
+* Add instance referencing and dependency resolution ([buildarr/buildarr#47](https://github.com/buildarr/buildarr/pull/47))
+* Replace isort and Flake8 with Ruff and reformat source files ([buildarr/buildarr#49](https://github.com/buildarr/buildarr/pull/49))
 
 
 ## [v0.2.0](https://github.com/buildarr/buildarr/releases/tag/v0.2.0) - 2023-02-23
@@ -84,16 +95,16 @@ A handful of bugs were fixed, including but not limited to:
 
 ### Added
 
-* Implement testing of cached and fetched instance secrets ([#32](https://github.com/buildarr/buildarr/pull/32))
-* Refactor the internals of Buildarr to improve maintainability ([#30](https://github.com/buildarr/buildarr/pull/30))
+* Implement testing of cached and fetched instance secrets ([buildarr/buildarr#32](https://github.com/buildarr/buildarr/pull/32))
+* Refactor the internals of Buildarr to improve maintainability ([buildarr/buildarr#30](https://github.com/buildarr/buildarr/pull/30))
 
 ### Changed
 
-* Convert `Password` and `SonarrApiKey` to subclasses of `SecretStr` ([#34](https://github.com/buildarr/buildarr/pull/34))
-* Fix CLI exception class inheritance ([#35](https://github.com/buildarr/buildarr/pull/35))
-* Use discriminated unions to accurately determine resource type ([#36](https://github.com/buildarr/buildarr/pull/36))
-* Change log types of some TRaSH logs to `INFO` ([#37](https://github.com/buildarr/buildarr/pull/37))
-* Set better constraints on Sonarr configuration attributes ([#38](https://github.com/buildarr/buildarr/pull/38))
+* Convert `Password` and `SonarrApiKey` to subclasses of `SecretStr` ([buildarr/buildarr#34](https://github.com/buildarr/buildarr/pull/34))
+* Fix CLI exception class inheritance ([buildarr/buildarr#35](https://github.com/buildarr/buildarr/pull/35))
+* Use discriminated unions to accurately determine resource type ([buildarr/buildarr#36](https://github.com/buildarr/buildarr/pull/36))
+* Change log types of some TRaSH logs to `INFO` ([buildarr/buildarr#37](https://github.com/buildarr/buildarr/pull/37))
+* Set better constraints on Sonarr configuration attributes ([buildarr/buildarr#38](https://github.com/buildarr/buildarr/pull/38))
 
 
 ## [v0.1.2](https://github.com/buildarr/buildarr/releases/tag/v0.1.2) - 2023-02-20
@@ -131,16 +142,16 @@ Incorrect syntax in some examples in the documentation were also found and fixed
 
 ### Added
 
-* Added the `sonarr.settings.media_management.delete_unmanaged_root_folders` configuration attribute ([#24](https://github.com/buildarr/buildarr/pull/24))
+* Added the `sonarr.settings.media_management.delete_unmanaged_root_folders` configuration attribute ([buildarr/buildarr#24](https://github.com/buildarr/buildarr/pull/24))
 
 ### Changed
 
-* Improve and fix Sonarr general settings configuration updates ([#19](https://github.com/buildarr/buildarr/pull/19))
-* Fix Sonarr UI settings updates ([#20](https://github.com/buildarr/buildarr/pull/20))
-* Fix small bug Sonarr metadata definition update logging ([#21](https://github.com/buildarr/buildarr/pull/21))
-* Improve Sonarr quality profile definition parsing ([#22](https://github.com/buildarr/buildarr/pull/22))
-* Make improvements and bug fixes to quality/language/release profile and quality definition parsing ([#23](https://github.com/buildarr/buildarr/pull/23))
-* Fix Sonarr media management settings and improve root folder handling ([#24](https://github.com/buildarr/buildarr/pull/24))
+* Improve and fix Sonarr general settings configuration updates ([buildarr/buildarr#19](https://github.com/buildarr/buildarr/pull/19))
+* Fix Sonarr UI settings updates ([buildarr/buildarr#20](https://github.com/buildarr/buildarr/pull/20))
+* Fix small bug Sonarr metadata definition update logging ([buildarr/buildarr#21](https://github.com/buildarr/buildarr/pull/21))
+* Improve Sonarr quality profile definition parsing ([buildarr/buildarr#22](https://github.com/buildarr/buildarr/pull/22))
+* Make improvements and bug fixes to quality/language/release profile and quality definition parsing ([buildarr/buildarr#23](https://github.com/buildarr/buildarr/pull/23))
+* Fix Sonarr media management settings and improve root folder handling ([buildarr/buildarr#24](https://github.com/buildarr/buildarr/pull/24))
 
 
 ## [v0.1.1](https://github.com/buildarr/buildarr/releases/tag/v0.1.1) - 2023-02-19
@@ -148,39 +159,14 @@ Incorrect syntax in some examples in the documentation were also found and fixed
 This is a support release that fixes quality definition and backup configuration updates
 on remote Sonarr instances.
 
-A new Dummy plugin is now included with Buildarr, used for testing Buildarr and its
-plugin API, and also serves as a reference implementation for plugin developers.
-
-Other behind-the-scenes improvements include a refactor of the plugin API to allow
-for accurate type hints for configuration objects in secrets metadata classes
-(and vice versa), and numerous updates to the documentation to correct errors
-and add more detail.
-
-### Added
-
-* Add a GitHub Action to push releases to PyPI ([#11](https://github.com/buildarr/buildarr/pull/11))
-* Create a `buildarr-dummy` plugin for testing the Buildarr plugin API ([#12](https://github.com/buildarr/buildarr/pull/12))
-
 ### Changed
 
-* Fix $PUID and $GUID declarations ([b5110f3](https://github.com/buildarr/buildarr/commit/b5110f3))
-* Fix Docker Hub link ([be0ba12](https://github.com/buildarr/buildarr/commit/be0ba12))
-* Fix Docker volume mount docs ([fe328aa](https://github.com/buildarr/buildarr/commit/fe328aa))
-* Fix troubleshooting Buildarr run docs ([e3b8833](https://github.com/buildarr/buildarr/commit/e3b8833))
-* Update dependency versions ([3c19ede](https://github.com/buildarr/buildarr/commit/3c19ede))
-* Fix debug Docker command in the GitHub Pages site ([1e17741](https://github.com/buildarr/buildarr/commit/1e17741))
-* Disable automatic dependency version updates ([c5c61cd](https://github.com/buildarr/buildarr/commit/c5c61cd))
-* Add missing download client documentation ([d07936f](https://github.com/buildarr/buildarr/commit/d07936f))
-* Fix incorrect config value definition in docs ([d1807a0](https://github.com/buildarr/buildarr/commit/d1807a0))
-* Fix to-do list indenting ([bca56e5](https://github.com/buildarr/buildarr/commit/bca56e5))
-* Add a link to the configuration documentation in README.md ([a5c0e6d](https://github.com/buildarr/buildarr/commit/a5c0e6d))
-* Clean up and update Sonarr plugin internals ([#14](https://github.com/buildarr/buildarr/pull/14))
-* Fix updates to Sonarr quality definitions ([#15](https://github.com/buildarr/buildarr/pull/15))
-* Fix updates to Sonarr backup general settings ([#16](https://github.com/buildarr/buildarr/pull/16))
-
-### Removed
-
-* Removed `buildarr.__version__` (please use [importlib.metadata](https://docs.python.org/3/library/importlib.metadata.html#distribution-versions) instead)
+* Update dependency versions ([buildarr/buildarr@3c19ede](https://github.com/buildarr/buildarr/commit/3c19ede))
+* Add missing download client documentation ([buildarr/buildarr@d07936f](https://github.com/buildarr/buildarr/commit/d07936f))
+* Fix incorrect config value definition in docs ([buildarr/buildarr@d1807a0](https://github.com/buildarr/buildarr/commit/d1807a0))
+* Clean up and update Sonarr plugin internals ([buildarr/buildarr#14](https://github.com/buildarr/buildarr/pull/14))
+* Fix updates to Sonarr quality definitions ([buildarr/buildarr#15](https://github.com/buildarr/buildarr/pull/15))
+* Fix updates to Sonarr backup general settings ([buildarr/buildarr#16](https://github.com/buildarr/buildarr/pull/16))
 
 
 ## [v0.1.0](https://github.com/buildarr/buildarr/releases/tag/v0.1.0) - 2023-02-11

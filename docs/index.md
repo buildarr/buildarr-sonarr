@@ -1,248 +1,481 @@
-# Welcome to Buildarr!
+# `buildarr-sonarr`
 
-[![Docker Version](https://img.shields.io/docker/v/callum027/buildarr?sort=semver)](https://hub.docker.com/r/callum027/buildarr) [![PyPI](https://img.shields.io/pypi/v/buildarr)](https://pypi.org/project/buildarr) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/buildarr)  [![GitHub](https://img.shields.io/github/license/buildarr/buildarr)](https://github.com/buildarr/buildarr/blob/main/LICENSE) ![Pre-commit hooks](https://github.com/buildarr/buildarr/actions/workflows/pre-commit.yml/badge.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+`buildarr-sonarr` is a Buildarr plugin for configuring and managing [Sonarr](http://sonarr.tv) instances.
 
-This is Buildarr, a solution to automating deployment and configuration of your *Arr stack.
+Sonarr is a PVR application which downloads, renames and manages the lifecycle of TV shows in your media library. It is capable of scanning for higher quality versions of your media and automatically upgrading them when a suitable version is available.
 
-Have you spent many hours getting your setup for one or more linked Sonarr/Radarr/Prowlarr instances just right, only to have no way to reproduce this setup apart from UI screenshots and database backups?
-
-Buildarr aims to alleviate those concerns by using a static configuration file to store settings for all your *Arr applications, and automatically configure them as defined. It can just once using an ad-hoc user command, or as a service to keep your application configurations up to date. Buildarr runs idempotently, only making changes to your instance if they are required.
-
-It can also automatically retrieve optimal configuration values from TRaSH-Guides for many things such as quality definitions and release profiles, so not only is there no need to manually input them into your configuration, Buildarr will also continually keep them up to date for you.
-
-## Similar projects
-
-Buildarr attempts to fulfill some of the needs of users of the following projects.
-
-* [Bobarr](https://github.com/iam4x/bobarr) - An all-in-one package containing Sonarr, Radarr, Jackett etc
-    * Still requires manual configuration of many components, and there is no way to store the configuration as code.
-* [Flemmarr](https://github.com/Flemmarr/Flemmarr) - Uses API parameters stored in YAML configuration files to push configuration changes to Sonarr, Radarr, Lidarr etc
-    * Requires users to comprehensively learn how the APIs of each application work, going through often poor documentation.
-    * Since the values are machine-oriented, configuration files are difficult to write and understand.
-    * Does not support idempotent updates ([at this time](https://github.com/Flemmarr/Flemmarr/pull/14)).
-* [Recyclarr](https://github.com/recyclarr/recyclarr) - Automatically syncs recommended TRaSH-Guides settings to Sonarr/Radarr instances
-    * Buildarr has support for this built-in, and in the case of Sonarr release profiles, supports the same filtering syntax.
+Currently, Sonarr V3 is the only supported version. Sonarr V4 support is planned for the future.
 
 ## Installation
 
-Buildarr is available on Docker Hub as a Docker image.
+As of the current release of Buildarr, `buildarr-sonarr` is distributed with Buildarr itself, to ease the burden of developing the Buildarr plugin API and `buildarr-sonarr` itself.
 
-```bash
-$ docker pull callum027/buildarr:latest
-```
+However, it is the intention that as the Buildarr plugin API stabilises, `buildarr-sonarr` will be eventually be separated from Buildarr itself, and developed independently.
 
-Buildarr can also be installed using `pip`. Python 3.8 or later is required. Windows is natively supported.
+## Quick Start
 
-```bash
-$ python3 -m venv buildarr-venv
-$ . buildarr-venv/bin/activate
-$ python3 -m pip install buildarr
-```
+To use the `buildarr-sonarr` plugin, create a `sonarr` block within `buildarr.yml`, and enter the connection information required for the Buildarr instance to connect to the Sonarr instance you'd like to manage.
 
-You can deploy Buildarr as a service within a [Docker Compose](https://docs.docker.com/compose) environment, or use configuration management tools such as [Ansible](https://www.ansible.com) to automatically deploy it.
-
-For more information, check the [installation instructions](installation.md).
-
-## Plugins
-
-Buildarr supports external plugins to allow additional applications to be supported. To allow for rapid development of both the plugin and the API, however, the one currently existing plugin, `buildarr-sonarr`, is vendored in as `buildarr.plugins.sonarr`.
-
-At the time of this release the following plugins are available:
-
-* `buildarr-sonarr` - [Sonarr](https://sonarr.tv) PVR for TV shows (V3 only for now)
-
-For more information on installing plugins and configuring the vendored plugins, check the [plugin documentation](plugins/index.md).
-
-## Configuration
-
-Buildarr uses YAML as its configuration file format. By default, Buildarr looks for `buildarr.yml` in the current directory.
-
-It contains not only the settings for Buildarr itself, but also the application instances to be managed. Multiple instances of the same application type can be defined (for example, a common use case would be separate Sonarr instances for HD TV shows, 4K TV shows, and anime).
-
-Any configuration on the remote instance not explicitly defined in the Buildarr configuration is not modified.
-
-For more information on how Buildarr uses configuration and how to configure Buildarr itself, check the [configuration documentation](configuration.md).
-
-Here is an example of a simple Buildarr configuration that changes some settings on a Sonarr instance:
+Buildarr won't modify anything yet since no configuration has been defined, but you are able to test if Buildarr is able to connect to and authenticate with the Sonarr instance.
 
 ```yaml
 ---
-# buildarr.yml
-# Buildarr example configuration file.
 
-# Buildarr configuration (all settings have sane default values)
 buildarr:
   watch_config: true
-  update_days:
-    - "monday"
-    - "tuesday"
-    - "wednesday"
-    - "thursday"
-    - "friday"
-    - "saturday"
-    - "sunday"
-  update_times:
-    - "03:00"
 
-# Sonarr instance configuration
 sonarr:
-  hostname: "localhost"
-  port: 8989
-  protocol: "http"
-  settings:
-    # General settings (all options supported except for changing the API key)
-    general:
-      host:
-        instance_name: "Sonarr (Buildarr Example)"
+  hostname: "localhost" # Defaults to `sonarr`, or the instance name for instance-specific configs.
+  port: 8989 # Defaults to 8989.
+  protocol: "http" # Defaults to `http`.
+  api_key: "..." # Optional. If undefined, auto-fetch (authentication must be disabled).
 ```
 
-If you have an already configured application instance, its configuration can be dumped. For example, to get the configuration of a Sonarr instance, this can be done using the following command (Buildarr will prompt for your API key):
+Now try a `buildarr run`. If the output is similar to the below output, Buildarr was able to connect to your Sonarr instance's API.
 
 ```bash
-$ docker run -it --rm callum027/buildarr:latest sonarr dump-config http://sonarr.example.com:8989
+$ buildarr run
+2023-02-22 20:34:43,271 buildarr:1 buildarr.main [INFO] Buildarr version 0.2.0 (log level: INFO)
+2023-02-22 20:34:43,271 buildarr:1 buildarr.main [INFO] Loading configuration file '/config/buildarr.yml'
+2023-02-22 20:34:43,308 buildarr:1 buildarr.main [INFO] Finished loading configuration file
+2023-02-22 20:34:43,337 buildarr:1 buildarr.main [INFO] Plugins loaded: sonarr
+2023-02-22 20:34:43,342 buildarr:1 buildarr.main [INFO] Running with plugins: sonarr
+2023-02-22 20:34:43,344 buildarr:1 buildarr.main [INFO] Loading secrets file from '/config/secrets.json'
+2023-02-22 20:34:43,345 buildarr:1 buildarr.main [INFO] Finished loading secrets file
+2023-02-22 20:34:43,345 buildarr:1 buildarr.plugins.sonarr default [INFO] Checking secrets
+2023-02-22 20:34:43,355 buildarr:1 buildarr.plugins.sonarr default [INFO] Connection test failed using cached secrets (or not cached), fetching secrets
+2023-02-22 20:34:43,379 buildarr:1 buildarr.plugins.sonarr default [INFO] Connection test successful using fetched secrets
+2023-02-22 20:34:43,380 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished checking secrets
+2023-02-22 20:34:43,380 buildarr:1 buildarr.main [INFO] Saving updated secrets file to 'secrets.json'
+2023-02-22 20:34:43,381 buildarr:1 buildarr.main [INFO] Finished saving updated secrets file
+2023-02-22 20:34:50,508 buildarr:1 buildarr.plugins.sonarr default [INFO] Getting remote configuration
+2023-02-22 20:34:50,774 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished getting remote configuration
+2023-02-22 20:34:50,832 buildarr:1 buildarr.plugins.sonarr default [INFO] Updating remote configuration
+2023-02-22 20:34:51,177 buildarr:1 buildarr.plugins.sonarr default [INFO] Remote configuration is up to date
+2023-02-22 20:34:51,178 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished updating remote configuration
 ```
 
-Once you have this configuration, you can insert it into `buildarr.yml` and ensure this configuration is maintained.
+## Configuring your Sonarr instance
 
-## Running Buildarr
+The following sections cover comprehensive configuration of a Sonarr instance.
 
-Once you have a valid configuration file, you can try Buildarr on your local machine using the Docker image.
+Note that these documents do not show how you *should* configure a Sonarr instance. Rather, they show how you *can* configure a Sonarr instance the way you want with Buildarr. For more information on how to optimally configure Sonarr, you can refer to the excellent guides from [WikiArr](https://wiki.servarr.com/sonarr) and [TRaSH-Guides](https://trash-guides.info/Sonarr/).
 
-The following command will mount the current folder into the Docker container so `buildarr.yml` can be read, and start Buildarr in daemon mode.
+* [Host Configuration](configuration/host.md)
+* [Media Management](configuration/media-management.md)
+* Profiles
+    * [Quality Profiles](configuration/profiles/quality.md)
+    - [Language Profiles](configuration/profiles/language.md)
+    - [Delay Profiles](configuration/profiles/delay.md)
+    - [Release Profiles](configuration/profiles/release.md)
+- [Quality](configuration/quality.md)
+- [Indexers](configuration/indexers.md)
+- [Download Clients](configuration/download-clients.md)
+- [Import Lists](configuration/import-lists.md)
+- [Connect](configuration/connect.md)
+- [Metadata](configuration/metadata.md)
+- [Tags](configuration/tags.md)
+- [General](configuration/general.md)
+- [UI](configuration/ui.md)
+
+## Dumping an existing Sonarr instance configuration
+
+Buildarr is capable of dumping a running Sonarr instance's configuration.
 
 ```bash
-$ docker run -d --name buildarr -v $(pwd):/config -e PUID=$(id -u) -e PGID=$(id -g) callum027/buildarr:latest
+$ buildarr sonarr dump-config http://localhost:8989 > sonarr.yml
+Sonarr instance API key: <Paste API key here>
 ```
 
-If installed using `pip`, simply run the `buildarr` CLI command.
+The dumped YAML object can be placed directly under the `sonarr` configuration block, or used as an [instance-specific configuration](../../configuration.md#multiple-instances-of-the-same-type).
 
-```bash
-$ buildarr daemon
-```
+Most values are explicitly defined in this dumped configuration, ensuring that when used with Buildarr, the configuration will always remain static.
 
-On startup, Buildarr daemon will do an initial sync with the defined instances, updating their configuration immediately.
-After this initial run, Buildarr will wake up at the scheduled times to periodically run updates as required.
-
-```txt
-2023-02-22 21:21:25,047 buildarr:1 buildarr.main [INFO] Buildarr version 0.2.0 (log level: INFO)
-2023-02-22 21:21:25,048 buildarr:1 buildarr.main [INFO] Loading configuration file '/config/buildarr.yml'
-2023-02-22 21:21:25,080 buildarr:1 buildarr.main [INFO] Finished loading configuration file
-2023-02-22 21:21:25,084 buildarr:1 buildarr.main [INFO] Daemon configuration:
-2023-02-22 21:21:25,084 buildarr:1 buildarr.main [INFO]  - Watch configuration files: Yes
-2023-02-22 21:21:25,084 buildarr:1 buildarr.main [INFO]  - Configuration files to watch:
-2023-02-22 21:21:25,085 buildarr:1 buildarr.main [INFO]    - /config/buildarr.yml
-2023-02-22 21:21:25,085 buildarr:1 buildarr.main [INFO]  - Update at:
-2023-02-22 21:21:25,085 buildarr:1 buildarr.main [INFO]    - Monday 03:00
-2023-02-22 21:21:25,085 buildarr:1 buildarr.main [INFO]    - Tuesday 03:00
-2023-02-22 21:21:25,085 buildarr:1 buildarr.main [INFO]    - Wednesday 03:00
-2023-02-22 21:21:25,086 buildarr:1 buildarr.main [INFO]    - Thursday 03:00
-2023-02-22 21:21:25,086 buildarr:1 buildarr.main [INFO]    - Friday 03:00
-2023-02-22 21:21:25,086 buildarr:1 buildarr.main [INFO]    - Saturday 03:00
-2023-02-22 21:21:25,086 buildarr:1 buildarr.main [INFO]    - Sunday 03:00
-2023-02-22 21:21:25,086 buildarr:1 buildarr.main [INFO] Applying initial configuration
-2023-02-22 21:21:25,104 buildarr:1 buildarr.main [INFO] Plugins loaded: sonarr
-2023-02-22 21:21:25,108 buildarr:1 buildarr.main [INFO] Running with plugins: sonarr
-2023-02-22 21:21:25,110 buildarr:1 buildarr.main [INFO] Loading secrets file from '/config/secrets.json'
-2023-02-22 21:21:25,111 buildarr:1 buildarr.main [INFO] Finished loading secrets file
-2023-02-22 21:21:25,112 buildarr:1 buildarr.plugins.sonarr default [INFO] Checking secrets
-2023-02-22 21:21:25,138 buildarr:1 buildarr.plugins.sonarr default [INFO] Connection test successful using cached secrets
-2023-02-22 21:21:25,138 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished checking secrets
-2023-02-22 21:21:25,138 buildarr:1 buildarr.main [INFO] Saving updated secrets file to 'secrets.json'
-2023-02-22 21:21:25,140 buildarr:1 buildarr.main [INFO] Finished saving updated secrets file
-2023-02-22 21:21:26,010 buildarr:1 buildarr.plugins.sonarr default [INFO] Getting remote configuration
-2023-02-22 21:21:26,334 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished getting remote configuration
-2023-02-22 21:21:26,406 buildarr:1 buildarr.plugins.sonarr default [INFO] Updating remote configuration
-2023-02-22 21:21:26,783 buildarr:1 buildarr.plugins.sonarr default [INFO] sonarr.settings.general.host.instance_name: 'Sonarr' -> 'Sonarr (Buildarr Example)'
-2023-02-22 21:21:26,874 buildarr:1 buildarr.plugins.sonarr default [INFO] Remote configuration successfully updated
-2023-02-22 21:21:26,875 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished updating remote configuration
-2023-02-22 21:21:27,220 buildarr:1 buildarr.main [INFO] Finished applying initial configuration
-2023-02-22 21:21:27,221 buildarr:1 buildarr.main [INFO] Scheduling update jobs
-2023-02-22 21:21:27,221 buildarr:1 buildarr.main [INFO] Finished scheduling update jobs
-2023-02-22 21:21:27,222 buildarr:1 buildarr.main [INFO] The next run will be at 2023-02-23 03:00
-2023-02-22 21:21:27,222 buildarr:1 buildarr.main [INFO] Setting up config file monitoring
-2023-02-22 21:21:27,223 buildarr:1 buildarr.main [INFO] Finished setting up config file monitoring
-2023-02-22 21:21:27,223 buildarr:1 buildarr.main [INFO] Setting up signal handlers
-2023-02-22 21:21:27,223 buildarr:1 buildarr.main [INFO] Finished setting up signal handlers
-2023-02-22 21:21:27,223 buildarr:1 buildarr.main [INFO] Buildarr ready.
-```
-
-For more information on how to interfact with Buildarr, check the [usage documentation](usage.md).
-
-## To-do list
-
-* Add a dry-run mode for testing configurations
-* Test updates for all available attributes in the existing Sonarr plugin
-* Unit tests and code coverage
-* Split Sonarr plugin to its own repository
-* Create plugins for the following applications:
-    * Sonarr V4
-    * Radarr
-    * Prowlarr
-    * Bazarr
-    * FlareSolverr
-    * Unmanic
-    * Tdarr (maybe)
-    * Unpackerr
-    * Lidarr
-* Instance linking (e.g. Prowlarr-to-Sonarr/Radarr) and dependency resolution (added in [version 0.3.0](release-notes.md#v030-2023-03-15))
-* Stable plugin API between major versions
-* Auto-generation of Docker Compose environment files reflecting the Buildarr configuration
-
-## Contributions
-
-Buildarr is still early in development, and even currently implemented features still require testing and fixing. There are so many possible configurations to cover that I simply cannot feasibly test every feature at this time.
-
-If you encounter an issue or error while using Buildarr, please do a Buildarr ad-hoc run with verbose log output by executing `buildarr --log-level DEBUG run` and making an issue on [our GitHub repository](https://github.com/buildarr/buildarr/issues/new) explaining the issue and attaching the output. (Please ensure that any API keys or other sensitive information are obfuscated before submitting.)
-
-```bash
-$ docker run -d --name buildarr -v $(pwd):/config -e PUID=$(id -u) -e PGID=$(id -g) callum027/buildarr:latest --log-level DEBUG run
-```
-
-For developers looking to make a contribution to this project, thank you! Documentation of the internal APIs is still in the works, so for now, the best way to learn how Buildarr works is to clone the project and have a look at the comments and docstrings.
-
-Pre-commit hooks are configured for this project. In this pre-commit hook, `black`, `flake8`, `isort` and `mypy` are run to automatically format source files, ensure grammatical correctness and variable type consistency.
-
-To enable them, ensure the `pre-commit` Python package is installed in your local environment and run the following command:
-
-```bash
-$ pre-commit install
-```
-
-Poetry is used to manage the Python package definition and dependencies in this project.
-
-Pull requests for Buildarr itself and the currently vendored plugins are welcome.
-
-If you're looking to develop a new plugin for adding support for a new application, please develop it as a new package and configure entry points in your Python package definitions to allow Buildarr to load your plugin.
-
-Setuptools `setup.py` entry point definition example:
-```python
-from setuptools import setup
-
-setup(
-    # ...,
-    entry_points={
-        "buildarr.plugins": [
-            "example = buildarr_example.plugin:ExamplePlugin",
-        ],
-    },
-)
-```
-
-Setuptools `setup.cfg` entry point definition example:
-```ini
-[options.entry_points]
-buildarr.plugins =
-    example = buildarr_example.plugin:ExamplePlugin
-```
-
-Setuptools `pyproject.toml` entry point definition example:
-```toml
-[project.entry-points."buildarr.plugins"]
-"example" = "buildarr_example.plugin:ExamplePlugin"
-```
-
-Poetry plugin definition example:
-```toml
-[tool.poetry.plugins."buildarr.plugins"]
-"example" = "buildarr_example.plugin:ExamplePlugin"
+```yaml
+api_key: 1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d
+hostname: localhost
+port: 8989
+protocol: http
+settings:
+  connect:
+    definitions:
+      Trakt:
+        access_token: 1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b
+        auth_user: example
+        expires: '2023-05-10T15:34:08.117451+00:00'
+        notification_triggers:
+          include_health_warnings: false
+          on_application_update: false
+          on_episode_file_delete: true
+          on_episode_file_delete_for_upgrade: true
+          on_grab: false
+          on_health_issue: false
+          on_import: true
+          on_rename: false
+          on_series_delete: true
+          on_upgrade: true
+        refresh_token: 1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b3c4d5e6f1a2b
+        tags: []
+  download_clients:
+    definitions:
+      Transmission:
+        add_paused: false
+        category: sonarr
+        directory: null
+        enable: true
+        host: transmission
+        older_priority: last
+        password: null
+        port: 9091
+        priority: 1
+        recent_priority: last
+        remove_completed_downloads: true
+        remove_failed_downloads: true
+        tags: []
+        url_base: /transmission/
+        use_ssl: false
+        username: null
+    enable_completed_download_handling: true
+    redownload_failed: true
+    remote_path_mappings:
+      definitions: []
+  general:
+    analytics:
+      send_anonymous_usage_data: true
+    backup:
+      folder: Backups
+      interval: 7
+      retention: 28
+    host:
+      bind_address: '*'
+      instance_name: Sonarr (Example)
+      port: 8989
+      ssl_port: 9898
+      url_base: null
+      use_ssl: false
+    logging:
+      log_level: INFO
+    proxy:
+      bypass_proxy_for_local_addresses: true
+      enable: false
+      hostname: null
+      ignored_addresses: []
+      password: null
+      port: 8080
+      proxy_type: http
+      username: null
+    security:
+      authentication: none
+      certificate_validation: enabled
+      password: null
+      username: null
+    updates:
+      automatic: false
+      branch: main
+      mechanism: docker
+      script_path: null
+  import_lists:
+    definitions: {}
+  indexers:
+    definitions: {}
+    maximum_size: 0
+    minimum_age: 0
+    retention: 0
+    rss_sync_interval: 15
+  media_management:
+    analyze_video_files: true
+    anime_episode_format: '{Series TitleYear} - S{season:00}E{episode:00} - {absolute:000}
+      - {Episode CleanTitle} {[Preferred Words]} {[Quality Full]} {[MediaInfo VideoDynamicRangeType]}
+      [{MediaInfo VideoBitDepth}bit] {[MediaInfo VideoCodec]} [{Mediainfo AudioCodec}
+      { Mediainfo AudioChannels}]{MediaInfo AudioLanguages} {[Release Group]} - Default'
+    change_file_date: none
+    chmod_folder: drwxr-xr-x
+    chown_group: null
+    create_empty_series_folders: false
+    daily_episode_format: '{Series TitleYear} - {Air-Date} - {Episode CleanTitle}
+      - {[Preferred Words]} {[Quality Full]} {[MediaInfo VideoDynamicRangeType]} [{MediaInfo
+      VideoBitDepth}bit] {[MediaInfo VideoCodec]} [{Mediainfo AudioCodec} {Mediainfo
+      AudioChannels}] {[MediaInfo AudioLanguages]} {[Release Group]} - Default'
+    delete_empty_folders: false
+    episode_title_required: always
+    import_extra_files: false
+    minimum_free_space: 100
+    multiepisode_style: range
+    propers_and_repacks: do-not-prefer
+    recycling_bin: null
+    recycling_bin_cleanup: 7
+    rename_episodes: true
+    replace_illegal_characters: true
+    rescan_series_folder_after_refresh: always
+    root_folders: []
+    season_folder_format: Season {season:00}
+    series_folder_format: '{Series TitleYear} [imdbid-{ImdbId}]'
+    set_permissions: false
+    skip_free_space_check: false
+    specials_folder_format: Specials
+    standard_episode_format: '{Series TitleYear} - S{season:00}E{episode:00} - {Episode
+      CleanTitle} - {[Preferred Words]} {[Quality Full]} {[MediaInfo VideoDynamicRangeType]}
+      [{MediaInfo VideoBitDepth}bit] {[MediaInfo VideoCodec]} [{Mediainfo AudioCodec}
+      {Mediainfo AudioChannels}] {[MediaInfo AudioLanguages]} {[Release Group]} -
+      Default'
+    use_hardlinks: true
+  metadata:
+    kodi_emby:
+      enable: false
+      episode_images: true
+      episode_metadata: true
+      season_images: true
+      series_images: true
+      series_metadata: true
+      series_metadata_url: true
+    roksbox:
+      enable: false
+      episode_images: true
+      episode_metadata: true
+      season_images: true
+      series_images: true
+    wdtv:
+      enable: false
+      episode_images: true
+      episode_metadata: true
+      season_images: true
+      series_images: true
+  profiles:
+    delay_profiles:
+      definitions:
+      - bypass_if_highest_quality: true
+        preferred_protocol: usenet-prefer
+        tags: []
+        torrent_delay: 0
+        usenet_delay: 0
+    language_profiles:
+      definitions:
+        Shows:
+          languages:
+          - english
+          upgrade_until: english
+          upgrades_allowed: true
+    quality_profiles:
+      definitions:
+        SD/HD:
+          qualities:
+          - Bluray-1080p
+          - members:
+            - WEBDL-1080p
+            - WEBRip-1080p
+            name: WEB 1080p
+          - HDTV-1080p
+          - Bluray-720p
+          - members:
+            - WEBDL-720p
+            - WEBRip-720p
+            name: WEB 720p
+          - HDTV-720p
+          - Raw-HD
+          - Bluray-480p
+          - DVD
+          - members:
+            - WEBDL-480p
+            - WEBRip-480p
+            name: WEB 480p
+          - SDTV
+          upgrade_until: Bluray-1080p
+          upgrades_allowed: true
+    release_profiles:
+      definitions:
+        '[Trash] Low Quality Groups':
+          enable: true
+          include_preferred_when_renaming: false
+          indexer: null
+          must_contain: []
+          must_not_contain: []
+          preferred:
+          - score: -10000
+            term: /(-BRiNK|-CHX|-GHOSTS|-EVO|-FGT|JFF|PSA|MeGusta|-NERO|nhanc3|Pahe\.ph|Pahe\.in|TBS|-VIDEOHOLE|-worldmkv|-XLF)\b/i
+          tags: []
+        '[Trash] Optionals':
+          enable: true
+          include_preferred_when_renaming: false
+          indexer: null
+          must_contain: []
+          must_not_contain:
+          - /^(?=.*(1080|720))(?=.*((x|h)[ ._-]?265|hevc)).*/i
+          - /\b(-alfaHD|-BAT|-BNd|-C\.A\.A|-Cory|-EXTREME|-FF|-FOXX|-G4RiS|-GUEIRA|-N3G4N|-PD|-PTHome|-RiPER|-RK|-SiGLA|-Tars|-WTV|-Yatogam1|-YusukeFLA|-ZigZag)\b/i
+          - /\b(-scene)\b/i
+          - /^(?!.*(HDR|HULU|REMUX))(?=.*\b(DV|Dovi|Dolby[- .]?Vision)\b).*/i
+          - /\bAV1\b/i
+          - /^(?!.*(web[ ]dl|-deflate|-inflate))(?=.*([_. ]WEB[_. ]|-CAKES\b|-GGEZ\b|-GGWP\b|-GLHF\b|-GOSSIP\b|-KOGI\b|-PECULATE\b|-SLOT\b)).*/i
+          preferred:
+          - score: 15
+            term: /\bS\d+\b(?!E\d+\b)/i
+          - score: -10000
+            term: /(-4P|-4Planet|-AsRequested|-BUYMORE|-CAPTCHA|-Chamele0n|-GEROV|-iNC0GNiTO|-NZBGeek|-Obfuscated|-postbot|-Rakuv|-Scrambled|-WhiteRev|-WRTEAM|-xpost)\b/i
+          - score: -10000
+            term: /(?<!\d\.)(1-.+)$/i
+          - score: -10000
+            term: /(\[rartv\]|\[rarbg\]|\[eztv\]|\[TGx\])/i
+          - score: -10000
+            term: /\s?\ben\b$/i
+          tags: []
+        '[Trash] P2P Groups + Repack/Proper':
+          enable: true
+          include_preferred_when_renaming: false
+          indexer: null
+          must_contain: []
+          must_not_contain: []
+          preferred:
+          - score: 1800
+            term: /(-deflate|-inflate)\b/i
+          - score: 1700
+            term: /(-ABBIE|-AJP69|-APEX|-CasStudio|CRFW|-CtrlHD|-FLUX|\bHONE|-KiNGS|-monkee|NOSiViD|-NTb|-NTG|-PAXA|-PEXA|-QOQ|-RTN|-SiC|T6D|-TOMMY|-ViSUM|-XEPA)\b/i
+          - score: 1650
+            term: /(3CTWeB|BLUTONiUM|-BTW|-Chotab|-Cinefeel|-CiT|Coo7|-dB|-DEEP|-END|-ETHiCS|-FC|-Flights|-GNOME|-iJP|-iKA|-iT00NZ|-JETIX|-KHN|-KiMCHI|-LAZY|-MZABI|-NPMS|-NYH|-orbitron|playWEB|PSiG|-ROCCaT|RTFM|-SA89|-SDCC|-SIGMA|-SMURF|-SPiRiT|-TEPES|-TVSmash|-WELP)\b/i
+          - score: 1600
+            term: /(-DRACULA|SLiGNOME|T4H|-ViSiON|SwAgLaNdEr)\b/i
+          - score: 13
+            term: /(repack3)/i
+          - score: 12
+            term: /(repack2)/i
+          - score: 11
+            term: /\b(repack|proper)\b/i
+          tags: []
+        '[Trash] Release Sources (Streaming Service)':
+          enable: true
+          include_preferred_when_renaming: true
+          indexer: null
+          must_contain: []
+          must_not_contain: []
+          preferred:
+          - score: 100
+            term: /\b(amzn|amazon)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 100
+            term: /\b(atvp|aptv|Apple TV\+)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 95
+            term: /\b(sho|showtime)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 90
+            term: /\b(dsnp|dsny|disney|Disney\+)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 90
+            term: /\b(hmax|hbom|hbo[ ._-]max)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 90
+            term: /\b(nf|netflix)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 90
+            term: /\b(qibi|quibi)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 85
+            term: /\b(hulu)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 85
+            term: /\b(pcok|Peacock TV)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(dcu)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(hbo)(?![ ._-]max)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(it)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(nlz)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(pmtp)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(red)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(stan)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          - score: 75
+            term: /\b(vdl)\b(?=[ ._-]web[ ._-]?(dl|rip)\b)/i
+          tags: []
+  quality:
+    definitions:
+      Bluray-1080p:
+        max: 227.0
+        min: 50.4
+        title: null
+      Bluray-1080p Remux:
+        max: null
+        min: 69.1
+        title: null
+      Bluray-2160p:
+        max: null
+        min: 94.6
+        title: null
+      Bluray-2160p Remux:
+        max: null
+        min: 204.4
+        title: null
+      Bluray-480p:
+        max: 100.0
+        min: 2.0
+        title: null
+      Bluray-720p:
+        max: 137.3
+        min: 17.1
+        title: null
+      DVD:
+        max: 100.0
+        min: 2.0
+        title: null
+      HDTV-1080p:
+        max: 137.3
+        min: 15.0
+        title: null
+      HDTV-2160p:
+        max: 350.0
+        min: 50.4
+        title: null
+      HDTV-720p:
+        max: 67.5
+        min: 10.0
+        title: null
+      Raw-HD:
+        max: null
+        min: 4.0
+        title: null
+      SDTV:
+        max: 100.0
+        min: 2.0
+        title: null
+      Unknown:
+        max: 199.9
+        min: 1.0
+        title: null
+      WEBDL-1080p:
+        max: 137.3
+        min: 15.0
+        title: null
+      WEBDL-2160p:
+        max: 350.0
+        min: 50.4
+        title: null
+      WEBDL-480p:
+        max: 100.0
+        min: 2.0
+        title: null
+      WEBDL-720p:
+        max: 137.3
+        min: 10.0
+        title: null
+      WEBRip-1080p:
+        max: 137.3
+        min: 15.0
+        title: null
+      WEBRip-2160p:
+        max: 350.0
+        min: 50.4
+        title: null
+      WEBRip-480p:
+        max: 100.0
+        min: 2.0
+        title: null
+      WEBRip-720p:
+        max: 137.3
+        min: 10.0
+        title: null
+  tags:
+    definitions: []
+  ui:
+    enable_color_impaired_mode: false
+    first_day_of_week: sunday
+    long_date_format: day-first
+    short_date_format: word-month-second
+    show_relative_dates: true
+    time_format: twentyfour-hour
+    week_column_header: day-first
+version: 3.0.9.1549
 ```
