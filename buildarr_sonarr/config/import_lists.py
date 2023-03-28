@@ -39,12 +39,11 @@ from typing import (
     cast,
 )
 
-from pydantic import AnyHttpUrl, ConstrainedStr, Field, PositiveInt, validator
-from typing_extensions import Annotated, Self
-
 from buildarr.config import RemoteMapEntry
 from buildarr.state import state
 from buildarr.types import BaseEnum, InstanceName, NonEmptyStr, Password
+from pydantic import AnyHttpUrl, ConstrainedStr, Field, PositiveInt, validator
+from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
 from ..secrets import SonarrSecrets

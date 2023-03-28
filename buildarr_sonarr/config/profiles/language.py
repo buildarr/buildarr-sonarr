@@ -22,11 +22,10 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Set
 
-from pydantic import Field, validator
-from typing_extensions import Annotated, Self
-
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum
+from pydantic import Field, validator
+from typing_extensions import Annotated, Self
 
 from ...api import api_delete, api_get, api_post, api_put
 from ...secrets import SonarrSecrets

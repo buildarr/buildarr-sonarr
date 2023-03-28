@@ -21,10 +21,9 @@ from __future__ import annotations
 
 from typing import List
 
-from typing_extensions import Self
-
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum
+from typing_extensions import Self
 
 from ..api import api_get, api_put
 from ..secrets import SonarrSecrets

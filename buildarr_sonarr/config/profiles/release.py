@@ -25,11 +25,10 @@ from logging import getLogger
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Set, cast
 
-from pydantic import validator
-from typing_extensions import Self
-
 from buildarr.config import ConfigTrashIDNotFoundError, RemoteMapEntry
 from buildarr.types import NonEmptyStr, TrashID
+from pydantic import validator
+from typing_extensions import Self
 
 from ...api import api_delete, api_get, api_post, api_put
 from ...secrets import SonarrSecrets

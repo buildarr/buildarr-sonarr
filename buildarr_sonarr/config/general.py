@@ -22,11 +22,10 @@ from __future__ import annotations
 from ipaddress import IPv4Address
 from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Union
 
-from pydantic import Field, validator
-from typing_extensions import Self
-
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
+from pydantic import Field, validator
+from typing_extensions import Self
 
 from ..api import api_get, api_put
 from ..secrets import SonarrSecrets

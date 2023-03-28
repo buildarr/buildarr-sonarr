@@ -23,11 +23,10 @@ from datetime import datetime
 from logging import getLogger
 from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type, Union
 
-from pydantic import AnyHttpUrl, ConstrainedInt, Field, NameEmail, SecretStr
-from typing_extensions import Annotated, Self
-
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, BaseIntEnum, NonEmptyStr, Password, Port
+from pydantic import AnyHttpUrl, ConstrainedInt, Field, NameEmail, SecretStr
+from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
 from ..secrets import SonarrSecrets

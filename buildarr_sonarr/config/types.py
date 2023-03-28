@@ -21,9 +21,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ConstrainedStr
-
 from buildarr.config import ConfigBase
+from pydantic import ConstrainedStr
 
 if TYPE_CHECKING:
     from ..secrets import SonarrSecrets

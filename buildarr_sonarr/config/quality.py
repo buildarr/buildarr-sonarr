@@ -24,12 +24,11 @@ import json
 from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, cast
 
-from pydantic import Field, validator
-from typing_extensions import Self
-
 from buildarr.config import ConfigBase
 from buildarr.config.exceptions import ConfigTrashIDNotFoundError
 from buildarr.types import TrashID
+from pydantic import Field, validator
+from typing_extensions import Self
 
 from ..api import api_get, api_put
 from ..secrets import SonarrSecrets

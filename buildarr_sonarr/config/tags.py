@@ -22,9 +22,8 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Dict, List
 
-from typing_extensions import Self
-
 from buildarr.types import NonEmptyStr
+from typing_extensions import Self
 
 from ..api import api_get, api_post
 from ..secrets import SonarrSecrets

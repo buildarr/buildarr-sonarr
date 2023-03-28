@@ -22,10 +22,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
-from typing_extensions import Self
-
 from buildarr.config import ConfigPlugin
 from buildarr.types import NonEmptyStr, Port
+from typing_extensions import Self
 
 from ..api import api_get
 from ..types import SonarrApiKey, SonarrProtocol

@@ -21,9 +21,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Type
 
-from typing_extensions import Self
-
 from buildarr.config import ConfigBase, RemoteMapEntry
+from typing_extensions import Self
 
 from ..api import api_get, api_put
 from ..secrets import SonarrSecrets

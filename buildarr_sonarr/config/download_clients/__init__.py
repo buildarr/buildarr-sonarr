@@ -22,10 +22,9 @@ from __future__ import annotations
 from logging import getLogger
 from typing import Dict, List, Mapping, Union
 
+from buildarr.config import RemoteMapEntry
 from pydantic import Field
 from typing_extensions import Annotated, Self
-
-from buildarr.config import RemoteMapEntry
 
 from ...api import api_get, api_put
 from ...secrets import SonarrSecrets
