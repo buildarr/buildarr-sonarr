@@ -1,4 +1,4 @@
-site_name: Sonarr Buildarr Plugin
+site_name: Buildarr Sonarr Plugin
 
 plugins:
   - search
@@ -17,7 +17,7 @@ markdown_extensions:
   - pymdownx.superfences
 
 nav:
-  - Home: "index.md"
+  - Release Notes: "release-notes.md"
   - Configuration:
     - Host Configuration: "configuration/host.md"
     - Media Management: "configuration/media-management.md"
@@ -35,6 +35,7 @@ nav:
     - Tags: "configuration/tags.md"
     - General: "configuration/general.md"
     - UI: "configuration/ui.md"
+  - Buildarr: "https://buildarr.github.io"
 
 watch:
   - buildarr_sonarr

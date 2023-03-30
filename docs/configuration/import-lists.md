@@ -1,6 +1,6 @@
 # Import Lists
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.SonarrImportListsSettingsConfig
+##### ::: buildarr_sonarr.config.import_lists.SonarrImportListsSettingsConfig
     options:
       members:
         - delete_unmanaged
@@ -14,7 +14,7 @@
 
 The following
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.ImportList
+##### ::: buildarr_sonarr.config.import_lists.ImportList
     options:
       members:
         - enable_automatic_add
@@ -30,7 +30,7 @@ The following
 
 ## Sonarr
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.SonarrImportList
+##### ::: buildarr_sonarr.config.import_lists.SonarrImportList
     options:
       members:
         - type
@@ -45,7 +45,7 @@ The following
 
 ## Plex
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.PlexWatchlistImportList
+##### ::: buildarr_sonarr.config.import_lists.PlexWatchlistImportList
     options:
       members:
         - type
@@ -55,7 +55,7 @@ The following
 
 ## Trakt
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.TraktImportList
+##### ::: buildarr_sonarr.config.import_lists.TraktImportList
     options:
       members:
         - access_token
@@ -73,7 +73,7 @@ The following
 
 ### List
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.TraktListImportList
+##### ::: buildarr_sonarr.config.import_lists.TraktListImportList
     options:
       members:
         - type
@@ -83,7 +83,7 @@ The following
 
 ### Popular List
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.TraktPopularlistImportList
+##### ::: buildarr_sonarr.config.import_lists.TraktPopularlistImportList
     options:
       members:
         - type
@@ -93,7 +93,7 @@ The following
 
 ### User
 
-##### ::: buildarr.plugins.sonarr.config.import_lists.TraktUserImportList
+##### ::: buildarr_sonarr.config.import_lists.TraktUserImportList
     options:
       members:
         - type

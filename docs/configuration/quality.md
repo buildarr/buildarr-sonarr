@@ -1,6 +1,6 @@
 # Quality
 
-##### ::: buildarr.plugins.sonarr.config.quality.SonarrQualitySettingsConfig
+##### ::: buildarr_sonarr.config.quality.SonarrQualitySettingsConfig
     options:
       members:
         - trash_id
@@ -10,7 +10,7 @@
 
 ## Setting quality definitions
 
-##### ::: buildarr.plugins.sonarr.config.quality.QualityDefinition
+##### ::: buildarr_sonarr.config.quality.QualityDefinition
     options:
       members:
         - title

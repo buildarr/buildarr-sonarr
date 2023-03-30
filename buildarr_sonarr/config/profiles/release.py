@@ -115,7 +115,7 @@ class ReleaseProfile(SonarrConfigBase):
     # If undefined, use the TRaSH-Guides provided release profile defaults.
     filter: TrashFilter = TrashFilter()
     """
-    ###### ::: buildarr.plugins.sonarr.config.profiles.release.TrashFilter
+    ###### ::: buildarr_sonarr.config.profiles.release.TrashFilter
         options:
           members:
             - include

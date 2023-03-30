@@ -8,7 +8,7 @@ To enable a metadata format, set `enable` to `true` in the configuration block i
 
 ## Kodi (XBMC) / Emby
 
-##### ::: buildarr.plugins.sonarr.config.metadata.KodiEmbyMetadata
+##### ::: buildarr_sonarr.config.metadata.KodiEmbyMetadata
     options:
       members:
         - series_metadata
@@ -22,7 +22,7 @@ To enable a metadata format, set `enable` to `true` in the configuration block i
 
 ## Roksbox
 
-##### ::: buildarr.plugins.sonarr.config.metadata.RoksboxMetadata
+##### ::: buildarr_sonarr.config.metadata.RoksboxMetadata
     options:
       members:
         - episode_metadata
@@ -34,7 +34,7 @@ To enable a metadata format, set `enable` to `true` in the configuration block i
 
 ## WDTV
 
-##### ::: buildarr.plugins.sonarr.config.metadata.WdtvMetadata
+##### ::: buildarr_sonarr.config.metadata.WdtvMetadata
     options:
       members:
         - episode_metadata

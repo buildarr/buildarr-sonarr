@@ -1,6 +1,6 @@
 # Indexers
 
-##### ::: buildarr.plugins.sonarr.config.indexers.SonarrIndexersSettingsConfig
+##### ::: buildarr_sonarr.config.indexers.SonarrIndexersSettingsConfig
     options:
       members:
         - minimum_age
@@ -14,7 +14,7 @@
 
 ## Configuring indexers
 
-##### ::: buildarr.plugins.sonarr.config.indexers.Indexer
+##### ::: buildarr_sonarr.config.indexers.Indexer
     options:
       members:
         - enable_rss
@@ -29,7 +29,7 @@
 
 ## Fanzub
 
-##### ::: buildarr.plugins.sonarr.config.indexers.FanzubIndexer
+##### ::: buildarr_sonarr.config.indexers.FanzubIndexer
     options:
       members:
         - type
@@ -39,7 +39,7 @@
 
 ## Newznab
 
-##### ::: buildarr.plugins.sonarr.config.indexers.NewznabIndexer
+##### ::: buildarr_sonarr.config.indexers.NewznabIndexer
     options:
       members:
         - type
@@ -54,7 +54,7 @@
 
 ## OmgWtfNZBs
 
-##### ::: buildarr.plugins.sonarr.config.indexers.OmgwtfnzbsIndexer
+##### ::: buildarr_sonarr.config.indexers.OmgwtfnzbsIndexer
     options:
       members:
         - type
@@ -66,7 +66,7 @@
 
 ## Torrent Indexers
 
-##### ::: buildarr.plugins.sonarr.config.indexers.TorrentIndexer
+##### ::: buildarr_sonarr.config.indexers.TorrentIndexer
     options:
       members:
         - minimum_seeders
@@ -78,7 +78,7 @@
 
 ## BroadcasTheNet
 
-##### ::: buildarr.plugins.sonarr.config.indexers.BroadcasthenetIndexer
+##### ::: buildarr_sonarr.config.indexers.BroadcasthenetIndexer
     options:
       members:
         - type
@@ -89,7 +89,7 @@
 
 ## Filelist
 
-##### ::: buildarr.plugins.sonarr.config.indexers.FilelistIndexer
+##### ::: buildarr_sonarr.config.indexers.FilelistIndexer
     options:
       members:
         - type
@@ -103,7 +103,7 @@
 
 ## HDBits
 
-##### ::: buildarr.plugins.sonarr.config.indexers.HdbitsIndexer
+##### ::: buildarr_sonarr.config.indexers.HdbitsIndexer
     options:
       members:
         - type
@@ -115,7 +115,7 @@
 
 ## IP Torrents
 
-##### ::: buildarr.plugins.sonarr.config.indexers.IptorrentsIndexer
+##### ::: buildarr_sonarr.config.indexers.IptorrentsIndexer
     options:
       members:
         - type
@@ -125,7 +125,7 @@
 
 ## Nyaa
 
-##### ::: buildarr.plugins.sonarr.config.indexers.NyaaIndexer
+##### ::: buildarr_sonarr.config.indexers.NyaaIndexer
     options:
       members:
         - type
@@ -136,7 +136,7 @@
 
 ## Rarbg
 
-##### ::: buildarr.plugins.sonarr.config.indexers.RarbgIndexer
+##### ::: buildarr_sonarr.config.indexers.RarbgIndexer
     options:
       members:
         - type
@@ -148,7 +148,7 @@
 
 ## Torrent RSS Feed
 
-##### ::: buildarr.plugins.sonarr.config.indexers.TorrentrssfeedIndexer
+##### ::: buildarr_sonarr.config.indexers.TorrentrssfeedIndexer
     options:
       members:
         - type
@@ -160,7 +160,7 @@
 
 ## TorrentLeech
 
-##### ::: buildarr.plugins.sonarr.config.indexers.TorrentleechIndexer
+##### ::: buildarr_sonarr.config.indexers.TorrentleechIndexer
     options:
       members:
         - type
@@ -171,7 +171,7 @@
 
 ## Torznab
 
-##### ::: buildarr.plugins.sonarr.config.indexers.TorznabIndexer
+##### ::: buildarr_sonarr.config.indexers.TorznabIndexer
     options:
       members:
         - type

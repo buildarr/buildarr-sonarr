@@ -35,7 +35,7 @@ For more information on release profiles, refer to this page on
 
 ## General configuration
 
-##### ::: buildarr.plugins.sonarr.config.profiles.release.SonarrReleaseProfilesSettingsConfig
+##### ::: buildarr_sonarr.config.profiles.release.SonarrReleaseProfilesSettingsConfig
     options:
       members:
         - delete_unmanaged
@@ -67,7 +67,7 @@ sonarr:
 
 The below attributes are common to all release profiles.
 
-##### ::: buildarr.plugins.sonarr.config.profiles.release.ReleaseProfile
+##### ::: buildarr_sonarr.config.profiles.release.ReleaseProfile
     options:
       members:
         - enable
@@ -83,7 +83,7 @@ When not importing release profiles from external sources like TRaSH-Guides,
 settings for how to prefer and ignore releases must be defined within
 the release profile using the following parameters.
 
-##### ::: buildarr.plugins.sonarr.config.profiles.release.ReleaseProfile
+##### ::: buildarr_sonarr.config.profiles.release.ReleaseProfile
     options:
       members:
         - must_contain
@@ -121,7 +121,7 @@ These are identical to the customisation options for release profiles
 provided by
 [Recyclarr](https://recyclarr.dev/wiki/yaml/config-reference#release-profile-settings).
 
-##### ::: buildarr.plugins.sonarr.config.profiles.release.ReleaseProfile
+##### ::: buildarr_sonarr.config.profiles.release.ReleaseProfile
     options:
       members:
         - trash_id

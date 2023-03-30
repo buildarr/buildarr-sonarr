@@ -8,7 +8,7 @@ occurs in Sonarr.
 
 ## Configuring connections
 
-##### ::: buildarr.plugins.sonarr.config.connect.NotificationTriggers
+##### ::: buildarr_sonarr.config.connect.NotificationTriggers
     options:
       members:
         - on_grab
@@ -26,7 +26,7 @@ occurs in Sonarr.
 
 ## Boxcar
 
-##### ::: buildarr.plugins.sonarr.config.connect.BoxcarConnection
+##### ::: buildarr_sonarr.config.connect.BoxcarConnection
     options:
       members:
         - type
@@ -36,7 +36,7 @@ occurs in Sonarr.
 
 ## Custom Script
 
-##### ::: buildarr.plugins.sonarr.config.connect.CustomscriptConnection
+##### ::: buildarr_sonarr.config.connect.CustomscriptConnection
     options:
       members:
         - type
@@ -46,7 +46,7 @@ occurs in Sonarr.
 
 ## Discord
 
-##### ::: buildarr.plugins.sonarr.config.connect.DiscordConnection
+##### ::: buildarr_sonarr.config.connect.DiscordConnection
     options:
       members:
         - type
@@ -61,7 +61,7 @@ occurs in Sonarr.
 
 ## Email
 
-##### ::: buildarr.plugins.sonarr.config.connect.EmailConnection
+##### ::: buildarr_sonarr.config.connect.EmailConnection
     options:
       members:
         - type
@@ -79,7 +79,7 @@ occurs in Sonarr.
 
 ## Emby
 
-##### ::: buildarr.plugins.sonarr.config.connect.EmbyConnection
+##### ::: buildarr_sonarr.config.connect.EmbyConnection
     options:
       members:
         - type
@@ -94,7 +94,7 @@ occurs in Sonarr.
 
 ## Gotify
 
-##### ::: buildarr.plugins.sonarr.config.connect.GotifyConnection
+##### ::: buildarr_sonarr.config.connect.GotifyConnection
     options:
       members:
         - type
@@ -106,7 +106,7 @@ occurs in Sonarr.
 
 ## Join
 
-##### ::: buildarr.plugins.sonarr.config.connect.JoinConnection
+##### ::: buildarr_sonarr.config.connect.JoinConnection
     options:
       members:
         - type
@@ -118,7 +118,7 @@ occurs in Sonarr.
 
 ## Kodi (XBMC)
 
-##### ::: buildarr.plugins.sonarr.config.connect.KodiConnection
+##### ::: buildarr_sonarr.config.connect.KodiConnection
     options:
       members:
         - type
@@ -137,7 +137,7 @@ occurs in Sonarr.
 
 ## Mailgun
 
-##### ::: buildarr.plugins.sonarr.config.connect.MailgunConnection
+##### ::: buildarr_sonarr.config.connect.MailgunConnection
     options:
       members:
         - type
@@ -151,7 +151,7 @@ occurs in Sonarr.
 
 ## Plex Home Theater
 
-##### ::: buildarr.plugins.sonarr.config.connect.PlexHomeTheaterConnection
+##### ::: buildarr_sonarr.config.connect.PlexHomeTheaterConnection
     options:
       members:
         - type
@@ -170,7 +170,7 @@ occurs in Sonarr.
 
 ## Plex Media Center
 
-##### ::: buildarr.plugins.sonarr.config.connect.PlexMediaCenterConnection
+##### ::: buildarr_sonarr.config.connect.PlexMediaCenterConnection
     options:
       members:
         - type
@@ -183,7 +183,7 @@ occurs in Sonarr.
 
 ## Plex Media Server
 
-##### ::: buildarr.plugins.sonarr.config.connect.PlexMediaServerConnection
+##### ::: buildarr_sonarr.config.connect.PlexMediaServerConnection
     options:
       members:
         - type
@@ -197,7 +197,7 @@ occurs in Sonarr.
 
 ## Prowl
 
-##### ::: buildarr.plugins.sonarr.config.connect.ProwlConnection
+##### ::: buildarr_sonarr.config.connect.ProwlConnection
     options:
       members:
         - type
@@ -208,7 +208,7 @@ occurs in Sonarr.
 
 ## Pushbullet
 
-##### ::: buildarr.plugins.sonarr.config.connect.PushbulletConnection
+##### ::: buildarr_sonarr.config.connect.PushbulletConnection
     options:
       members:
         - type
@@ -221,7 +221,7 @@ occurs in Sonarr.
 
 ## Pushover
 
-##### ::: buildarr.plugins.sonarr.config.connect.PushoverConnection
+##### ::: buildarr_sonarr.config.connect.PushoverConnection
     options:
       members:
         - type
@@ -237,7 +237,7 @@ occurs in Sonarr.
 
 ## SendGrid
 
-##### ::: buildarr.plugins.sonarr.config.connect.SendgridConnection
+##### ::: buildarr_sonarr.config.connect.SendgridConnection
     options:
       members:
         - type
@@ -249,7 +249,7 @@ occurs in Sonarr.
 
 ## Slack
 
-##### ::: buildarr.plugins.sonarr.config.connect.SlackConnection
+##### ::: buildarr_sonarr.config.connect.SlackConnection
     options:
       members:
         - type
@@ -262,7 +262,7 @@ occurs in Sonarr.
 
 ## Synology Indexer
 
-##### ::: buildarr.plugins.sonarr.config.connect.SynologyIndexerConnection
+##### ::: buildarr_sonarr.config.connect.SynologyIndexerConnection
     options:
       members:
         - type
@@ -272,7 +272,7 @@ occurs in Sonarr.
 
 ## Telegram
 
-##### ::: buildarr.plugins.sonarr.config.connect.TelegramConnection
+##### ::: buildarr_sonarr.config.connect.TelegramConnection
     options:
       members:
         - type
@@ -284,7 +284,7 @@ occurs in Sonarr.
 
 ## Trakt
 
-##### ::: buildarr.plugins.sonarr.config.connect.TraktConnection
+##### ::: buildarr_sonarr.config.connect.TraktConnection
     options:
       members:
         - type
@@ -297,7 +297,7 @@ occurs in Sonarr.
 
 ## Twitter
 
-##### ::: buildarr.plugins.sonarr.config.connect.TwitterConnection
+##### ::: buildarr_sonarr.config.connect.TwitterConnection
     options:
       members:
         - type
@@ -312,7 +312,7 @@ occurs in Sonarr.
 
 ## Webhook
 
-##### ::: buildarr.plugins.sonarr.config.connect.WebhookConnection
+##### ::: buildarr_sonarr.config.connect.WebhookConnection
     options:
       members:
         - type

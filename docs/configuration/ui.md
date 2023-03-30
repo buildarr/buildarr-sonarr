@@ -1,6 +1,6 @@
 # UI
 
-##### ::: buildarr.plugins.sonarr.config.ui.SonarrUISettingsConfig
+##### ::: buildarr_sonarr.config.ui.SonarrUISettingsConfig
     options:
       members:
         - first_day_of_week

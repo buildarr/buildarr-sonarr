@@ -26,7 +26,7 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
 
 ## General configuration
 
-##### ::: buildarr.plugins.sonarr.config.profiles.language.SonarrLanguageProfilesSettingsConfig
+##### ::: buildarr_sonarr.config.profiles.language.SonarrLanguageProfilesSettingsConfig
     options:
       members:
         - delete_unmanaged
@@ -36,7 +36,7 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
 
 ## Creating a language profile
 
-##### ::: buildarr.plugins.sonarr.config.profiles.language.LanguageProfile
+##### ::: buildarr_sonarr.config.profiles.language.LanguageProfile
     options:
       members:
         - upgrades_allowed
@@ -47,7 +47,7 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
 
 ## Available languages
 
-##### ::: buildarr.plugins.sonarr.config.profiles.language.Language
+##### ::: buildarr_sonarr.config.profiles.language.Language
     options:
       show_root_heading: false
       show_source: false

@@ -1,6 +1,6 @@
 # Media Management
 
-##### ::: buildarr.plugins.sonarr.config.media_management.SonarrMediaManagementSettingsConfig
+##### ::: buildarr_sonarr.config.media_management.SonarrMediaManagementSettingsConfig
     options:
       members:
         - rename_episodes

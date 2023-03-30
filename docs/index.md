@@ -1,6 +1,8 @@
-# `buildarr-sonarr`
+# Buildarr Sonarr Plugin
 
-`buildarr-sonarr` is a Buildarr plugin for configuring and managing [Sonarr](http://sonarr.tv) instances.
+[![PyPI](https://img.shields.io/pypi/v/buildarr-sonarr)](https://pypi.org/project/buildarr-sonarr) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/buildarr-sonarr)  [![GitHub](https://img.shields.io/github/license/buildarr/buildarr-sonarr)](https://github.com/buildarr/buildarr-sonarr/blob/main/LICENSE) ![Pre-commit hooks](https://github.com/buildarr/buildarr-sonarr/actions/workflows/pre-commit.yml/badge.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+The Buildarr Sonarr plugin (`buildarr-sonarr`) is a plugin for Buildarr that adds the capability to configure and manage [Sonarr](http://sonarr.tv) instances.
 
 Sonarr is a PVR application which downloads, renames and manages the lifecycle of TV shows in your media library. It is capable of scanning for higher quality versions of your media and automatically upgrading them when a suitable version is available.
 
@@ -8,13 +10,27 @@ Currently, Sonarr V3 is the only supported version. Sonarr V4 support is planned
 
 ## Installation
 
-As of the current release of Buildarr, `buildarr-sonarr` is distributed with Buildarr itself, to ease the burden of developing the Buildarr plugin API and `buildarr-sonarr` itself.
+From [version 0.4.0](https://buildarr.github.io/release-notes/#v040-2023-03-31) onwards, the Buildarr Sonarr plugin is now an independent package, developed separately from the core Buildarr package.
 
-However, it is the intention that as the Buildarr plugin API stabilises, `buildarr-sonarr` will be eventually be separated from Buildarr itself, and developed independently.
+When using Buildarr as a [standalone application](https://buildarr.github.io/installation/#standalone-application), it can simply be installed using `pip`:
+
+```bash
+$ pip install buildarr buildarr-sonarr
+```
+
+When using Buildarr as a [Docker container](https://buildarr.github.io/installation/#docker), the Sonarr plugin is still bundled in the official container (`callum027/buildarr`). There is no need to install it separately.
+
+You can upgrade, or pin the version of the plugin to a specific version, within the container by setting the `$BUILDARR_INSTALL_PACKAGES` environment variable in the `docker run` command using `--env`/`-e`:
+
+```bash
+-e BUILDARR_INSTALL_PACKAGES="buildarr-sonar==<version>"
+```
+
+In Buildarr version 0.3.0 and earlier, the Sonarr plugin was vendored within the core Buildarr package. On these versions, it is not necessary to install the Sonarr plugin separately.
 
 ## Quick Start
 
-To use the `buildarr-sonarr` plugin, create a `sonarr` block within `buildarr.yml`, and enter the connection information required for the Buildarr instance to connect to the Sonarr instance you'd like to manage.
+To use the Sonarr plugin, create a `sonarr` block within `buildarr.yml`, and enter the connection information required for the Buildarr instance to connect to the Sonarr instance you'd like to manage.
 
 Buildarr won't modify anything yet since no configuration has been defined, but you are able to test if Buildarr is able to connect to and authenticate with the Sonarr instance.
 
@@ -31,28 +47,32 @@ sonarr:
   api_key: "..." # Optional. If undefined, auto-fetch (authentication must be disabled).
 ```
 
-Now try a `buildarr run`. If the output is similar to the below output, Buildarr was able to connect to your Sonarr instance's API.
+Now try a `buildarr run`. If the output is similar to the below output, Buildarr was able to connect to your Sonarr instance.
 
-```bash
-$ buildarr run
-2023-02-22 20:34:43,271 buildarr:1 buildarr.main [INFO] Buildarr version 0.2.0 (log level: INFO)
-2023-02-22 20:34:43,271 buildarr:1 buildarr.main [INFO] Loading configuration file '/config/buildarr.yml'
-2023-02-22 20:34:43,308 buildarr:1 buildarr.main [INFO] Finished loading configuration file
-2023-02-22 20:34:43,337 buildarr:1 buildarr.main [INFO] Plugins loaded: sonarr
-2023-02-22 20:34:43,342 buildarr:1 buildarr.main [INFO] Running with plugins: sonarr
-2023-02-22 20:34:43,344 buildarr:1 buildarr.main [INFO] Loading secrets file from '/config/secrets.json'
-2023-02-22 20:34:43,345 buildarr:1 buildarr.main [INFO] Finished loading secrets file
-2023-02-22 20:34:43,345 buildarr:1 buildarr.plugins.sonarr default [INFO] Checking secrets
-2023-02-22 20:34:43,355 buildarr:1 buildarr.plugins.sonarr default [INFO] Connection test failed using cached secrets (or not cached), fetching secrets
-2023-02-22 20:34:43,379 buildarr:1 buildarr.plugins.sonarr default [INFO] Connection test successful using fetched secrets
-2023-02-22 20:34:43,380 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished checking secrets
-2023-02-22 20:34:43,380 buildarr:1 buildarr.main [INFO] Saving updated secrets file to 'secrets.json'
-2023-02-22 20:34:43,381 buildarr:1 buildarr.main [INFO] Finished saving updated secrets file
-2023-02-22 20:34:50,508 buildarr:1 buildarr.plugins.sonarr default [INFO] Getting remote configuration
-2023-02-22 20:34:50,774 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished getting remote configuration
-2023-02-22 20:34:50,832 buildarr:1 buildarr.plugins.sonarr default [INFO] Updating remote configuration
-2023-02-22 20:34:51,177 buildarr:1 buildarr.plugins.sonarr default [INFO] Remote configuration is up to date
-2023-02-22 20:34:51,178 buildarr:1 buildarr.plugins.sonarr default [INFO] Finished updating remote configuration
+```text
+2023-03-29 20:39:50,856 buildarr:1 buildarr.cli.run [INFO] Buildarr version 0.4.0 (log level: INFO)
+2023-03-29 20:39:50,856 buildarr:1 buildarr.cli.run [INFO] Loading configuration file '/config/buildarr.yml'
+2023-03-29 20:39:50,872 buildarr:1 buildarr.cli.run [INFO] Finished loading configuration file
+2023-03-29 20:39:50,874 buildarr:1 buildarr.cli.run [INFO] Loaded plugins: sonarr (0.4.0)
+2023-03-29 20:39:50,875 buildarr:1 buildarr.cli.run [INFO] Loading instance configurations
+2023-03-29 20:39:50,877 buildarr:1 buildarr.cli.run [INFO] Finished loading instance configurations
+2023-03-29 20:39:50,877 buildarr:1 buildarr.cli.run [INFO] Running with plugins: sonarr
+2023-03-29 20:39:50,877 buildarr:1 buildarr.cli.run [INFO] Resolving instance dependencies
+2023-03-29 20:39:50,877 buildarr:1 buildarr.cli.run [INFO] Finished resolving instance dependencies
+2023-03-29 20:39:50,877 buildarr:1 buildarr.cli.run [INFO] Loading secrets file from '/config/secrets.json'
+2023-03-29 20:39:50,886 buildarr:1 buildarr.cli.run [INFO] Finished loading secrets file
+2023-03-29 20:39:50,886 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Checking secrets
+2023-03-29 20:39:50,912 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Connection test successful using cached secrets
+2023-03-29 20:39:50,912 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Finished checking secrets
+2023-03-29 20:39:50,912 buildarr:1 buildarr.cli.run [INFO] Saving updated secrets file to '/config/secrets.json'
+2023-03-29 20:39:50,914 buildarr:1 buildarr.cli.run [INFO] Finished saving updated secrets file
+2023-03-29 20:39:50,914 buildarr:1 buildarr.cli.run [INFO] Updating configuration on remote instances
+2023-03-29 20:39:50,914 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Getting remote configuration
+2023-03-29 20:39:51,406 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Finished getting remote configuration
+2023-03-29 20:39:51,463 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Updating remote configuration
+2023-03-29 20:39:52,019 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Remote configuration is up to date
+2023-03-29 20:39:52,019 buildarr:1 buildarr.cli.run [INFO] <sonarr> (default) Finished updating remote configuration
+2023-03-29 20:39:52,019 buildarr:1 buildarr.cli.run [INFO] Finished updating configuration on remote instances
 ```
 
 ## Configuring your Sonarr instance
@@ -87,7 +107,7 @@ $ buildarr sonarr dump-config http://localhost:8989 > sonarr.yml
 Sonarr instance API key: <Paste API key here>
 ```
 
-The dumped YAML object can be placed directly under the `sonarr` configuration block, or used as an [instance-specific configuration](../../configuration.md#multiple-instances-of-the-same-type).
+The dumped YAML object can be placed directly under the `sonarr` configuration block, or used as an [instance-specific configuration](https://buildarr.github.io/configuration/#multiple-instances-of-the-same-type).
 
 Most values are explicitly defined in this dumped configuration, ensuring that when used with Buildarr, the configuration will always remain static.
 

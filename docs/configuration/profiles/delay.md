@@ -36,7 +36,7 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
 
 ## General configuration
 
-##### ::: buildarr.plugins.sonarr.config.profiles.delay.SonarrDelayProfilesSettingsConfig
+##### ::: buildarr_sonarr.config.profiles.delay.SonarrDelayProfilesSettingsConfig
     options:
       members:
         - delete_unmanaged
@@ -46,7 +46,7 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
 
 ## Creating a delay profile
 
-##### ::: buildarr.plugins.sonarr.config.profiles.delay.DelayProfile
+##### ::: buildarr_sonarr.config.profiles.delay.DelayProfile
     options:
       members:
         - preferred_protocol

@@ -1,6 +1,6 @@
 # Host Configuration
 
-##### ::: buildarr.plugins.sonarr.config.SonarrInstanceConfig
+##### ::: buildarr_sonarr.config.SonarrInstanceConfig
     options:
       members:
         - hostname

@@ -1,6 +1,6 @@
 # Download Clients
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.SonarrDownloadClientsSettingsConfig
+##### ::: buildarr_sonarr.config.download_clients.SonarrDownloadClientsSettingsConfig
     options:
       members:
         - enable_completed_download_handling
@@ -20,7 +20,7 @@
 
 ## Configuring download clients
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.DownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.DownloadClient
     options:
       members:
         - enable
@@ -37,7 +37,7 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
 
 ## Download Station
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.DownloadstationUsenetDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.DownloadstationUsenetDownloadClient
     options:
       members:
         - type
@@ -53,7 +53,7 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
 
 ## NZBGet
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.NzbgetDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.NzbgetDownloadClient
     options:
       members:
         - type
@@ -72,7 +72,7 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
 
 ## NZBVortex
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.NzbvortexDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.NzbvortexDownloadClient
     options:
       members:
         - type
@@ -89,7 +89,7 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
 
 ## Pneumatic
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.PneumaticDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.PneumaticDownloadClient
     options:
       members:
         - type
@@ -100,7 +100,7 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
 
 ## SABnzbd
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.SabnzbdDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.SabnzbdDownloadClient
     options:
       members:
         - type
@@ -117,7 +117,7 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
 
 ## Usenet Blackhole
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.UsenetBlackholeDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.UsenetBlackholeDownloadClient
     options:
       members:
         - type
@@ -133,7 +133,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## Aria2
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.Aria2DownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.Aria2DownloadClient
     options:
       members:
         - type
@@ -147,7 +147,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## Deluge
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.DelugeDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.DelugeDownloadClient
     options:
       members:
         - type
@@ -165,7 +165,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## Download Station
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.DownloadstationTorrentDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.DownloadstationTorrentDownloadClient
     options:
       members:
         - type
@@ -181,7 +181,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## Flood
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.FloodDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.FloodDownloadClient
     options:
       members:
         - type
@@ -201,7 +201,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## Hadouken
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.HadoukenDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.HadoukenDownloadClient
     options:
       members:
         - type
@@ -217,7 +217,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## qBittorrent
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.QbittorrentDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.QbittorrentDownloadClient
     options:
       members:
         - type
@@ -239,7 +239,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## RTorrent (ruTorrent)
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.RtorrentDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.RtorrentDownloadClient
     options:
       members:
         - type
@@ -259,7 +259,7 @@ peer-to-peer file sharing protocol to retrieve media files.
 
 ## Torrent Blackhole
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.TorrentBlackholeDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.TorrentBlackholeDownloadClient
     options:
       members:
         - type
@@ -279,7 +279,7 @@ To use Transmission, set the `type` attribute in the download client to `transmi
 
 To use Vuze, set the `type` attribute in the download client to `vuze`.
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.TransmissionDownloadClientBase
+##### ::: buildarr_sonarr.config.download_clients.download_clients.TransmissionDownloadClientBase
     options:
       members:
         - host
@@ -298,7 +298,7 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
 
 ## uTorrent
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.download_clients.UtorrentDownloadClient
+##### ::: buildarr_sonarr.config.download_clients.download_clients.UtorrentDownloadClient
     options:
       members:
         - type
@@ -318,7 +318,7 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
 
 ## Configuring remote path mappings
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.remote_path_mappings.SonarrRemotePathMappingsSettingsConfig
+##### ::: buildarr_sonarr.config.download_clients.remote_path_mappings.SonarrRemotePathMappingsSettingsConfig
     options:
       members:
         - delete_unmanaged
@@ -328,7 +328,7 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
 
 ### Remote path mapping parameters
 
-##### ::: buildarr.plugins.sonarr.config.download_clients.remote_path_mappings.RemotePathMapping
+##### ::: buildarr_sonarr.config.download_clients.remote_path_mappings.RemotePathMapping
     options:
       members:
         - host

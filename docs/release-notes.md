@@ -1,31 +1,61 @@
 # Release Notes
 
-## [v0.4.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.4.0) - 2023-03-27
+## [v0.4.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.4.0) - 2023-03-31
 
-This is the first release of the Sonarr plugin for Buildarr as an independent package.
+This is the first release of the Buildarr Sonarr plugin as an independent package.
+
+As major strides have been taken to stabilise the plugin API, the Sonarr plugin for Buildarr has been forked into a separate package, `buildarr-sonarr`. From Buildarr version 0.4.0 onwards, application plugins are no longer bundled.
+
+The [Docker container](https://buildarr.github.io/plugins/#installing-plugins-into-the-docker-container) still bundles the Sonarr plugin for ease of use, but when upgrading an existing [standalone installation](https://buildarr.github.io/plugins/#installing-plugins-for-a-standalone-application) of Buildarr, the Sonarr plugin package will need to be installed using `pip`.
+
+```bash
+$ pip install buildarr-sonarr
+```
+
+This will allow the Sonarr plugin to deliver releases independently of the base Buildarr package, allowing for more rapid releases of both packages, while ensuring compability between Buildarr and its plugins through plugin version pinning of the Buildarr base package.
+
+A number of other features and bugfixes have been added in this release of the Sonarr plugin:
+
+* Add support for [dry runs](https://buildarr.github.io/usage/#dry-runs) in Buildarr ad-hoc runs, for testing configuration changes against live instances *without* modifying them
+* Add support for [automatic generation of Docker Compose files](https://buildarr.github.io/usage/#generating-a-docker-compose-file) from Buildarr configuration files using the `buildarr compose` command
+* Improve validation to output easier-to-read error messages in some cases
+* Refactor logging to use the new logging API for Buildarr v0.4.0 onwards
 
 ### Added
 
-* Implement testing of cached and fetched instance secrets ([#32](https://github.com/buildarr/buildarr/pull/32))
-* Refactor the internals of Buildarr to improve maintainability ([#30](https://github.com/buildarr/buildarr/pull/30))
+* Add the `--dry-run` option to `buildarr run` ([buildarr/buildarr#56](https://github.com/buildarr/buildarr/pull/56))
+* Add instance-specific configs to global state and fix Sonarr dry-run bug ([buildarr/buildarr#59](https://github.com/buildarr/buildarr/pull/59))
+* Add the `buildarr test-config` command ([buildarr/buildarr#60](https://github.com/buildarr/buildarr/pull/60))
+* Add `--secrets-file` option to daemon and run modes ([buildarr/buildarr#67](https://github.com/buildarr/buildarr/pull/67))
+* Add the `buildarr compose` command ([buildarr/buildarr#73](https://github.com/buildarr/buildarr/pull/73))
+* Reintroduce `buildarr.__version__` and use it internally ([buildarr/buildarr#75](https://github.com/buildarr/buildarr/pull/75))
+* Add `version` attribute to plugin metadata object ([buildarr/buildarr#78](https://github.com/buildarr/buildarr/pull/78))
 
 ### Changed
 
-* Convert `Password` and `SonarrApiKey` to subclasses of `SecretStr` ([#34](https://github.com/buildarr/buildarr/pull/34))
-* Fix CLI exception class inheritance ([#35](https://github.com/buildarr/buildarr/pull/35))
-* Use discriminated unions to accurately determine resource type ([#36](https://github.com/buildarr/buildarr/pull/36))
-* Change log types of some TRaSH logs to `INFO` ([#37](https://github.com/buildarr/buildarr/pull/37))
-* Add support for generating Docker Compose services ([buildarr/buildarr#73](https://github.com/buildarr/buildarr/pull/73))
-* Fork the Sonarr plugin into a separate package ([#1](https://github.com/buildarr/buildarr-sonarr/pull/1))
+* Convert most root validators to attribute-specific validators ([buildarr/buildarr#54](https://github.com/buildarr/buildarr/pull/54))
+* Remove unused code and fix pre-commit job ([buildarr/buildarr#58](https://github.com/buildarr/buildarr/pull/58))
+* Enable validating default config/secrets attribute values ([buildarr/buildarr#63](https://github.com/buildarr/buildarr/pull/63))
+* Reduce usage of `initialize.js` endpoints ([buildarr/buildarr#66](https://github.com/buildarr/buildarr/pull/66))
+* Refactor logging infrastructure ([buildarr/buildarr#68](https://github.com/buildarr/buildarr/pull/68))
+* Relax dependency version requirements ([buildarr/buildarr#69](https://github.com/buildarr/buildarr/pull/69))
+* Improve and add missing docs for new features ([buildarr/buildarr#70](https://github.com/buildarr/buildarr/pull/70))
+* Evaluate local paths relative to the config file ([buildarr/buildarr#71](https://github.com/buildarr/buildarr/pull/71))
+* Add temporary ignore for `watchdog.Observer` type hint ([buildarr/buildarr#72](https://github.com/buildarr/buildarr/pull/72))
+* Fork the Sonarr plugin into its own package ([#1](https://github.com/buildarr/buildarr-sonarr/pull/1))
 
 
 ## [v0.3.0](https://github.com/buildarr/buildarr/releases/tag/v0.3.0) - 2023-03-15
 
 This is a feature and bugfix release that extends the groundwork laid in the previous version for making Buildarr more usable, and future-proof for the planned new plugins.
 
+A major bug where running Buildarr when `secrets.json` does not exist would result in an error, even if valid instance credentials were found, has been fixed. This would have prevented many people from trying out Buildarr, and for this I would like to apologise.
+
+In the future automated unit tests are planned, and major refactors of the Buildarr codebase are now less likely to happen as a result of development, so bugs like this should not happen as often in the future.
+
 The major new feature this release introduces is instance linking: the ability to define relationships between two instances.
 
-Most of the work went into the internal implementation to make it possible to use in plugins, but one use case within the Sonarr plugin itself is now supported: [Sonarr instances using another Sonarr instance](plugins/sonarr/configuration/import-lists.md#sonarr) as an import list, via the new [`instance_name`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.instance_name) attribute.
+Most of the work went into the internal implementation to make it possible to use in plugins, but one use case within the Sonarr plugin itself is now supported: [Sonarr instances using another Sonarr instance](configuration/import-lists.md#sonarr) as an import list, via the new [`instance_name`](configuration/import-lists.md#buildarr_sonarr.config.import_lists.SonarrImportList.instance_name) attribute.
 
 When using this attribute, Buildarr will automatically fill in the API key attribute so you don't have to, and instead of using IDs to reference quality profiles/language profiles/tags in the source instance, names can now be used:
 
@@ -64,14 +94,18 @@ A number of other improvements and bugfixes were made, such as:
 
 * Fix configuration validation to allow local and non-qualified domains on all URL-type attributes (fixes `localhost` API URL references)
 * Rename the following Sonarr import list attributes (and retain the old names as aliases to ensure backwards compatibility):
-    * `source_quality_profile_ids` renamed to [`source_quality_profiles`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.source_quality_profiles)
-    * `source_language_profile_ids` renamed to [`source_language_profiles`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.source_language_profiles)
-    * `source_tag_ids` renamed to [`source_tags`](plugins/sonarr/configuration/import-lists.md#buildarr.plugins.sonarr.config.import_lists.SonarrImportList.source_tags)
-* Improve Sonarr quality definition [`min` and `max`](plugins/sonarr/configuration/quality.md#buildarr.plugins.sonarr.config.quality.QualityDefinition.min) validation so that `400` is also a valid value for `max`, and enforce `min`-`max` value difference constraints
+    * `source_quality_profile_ids` renamed to [`source_quality_profiles`](configuration/import-lists.md#buildarr_sonarr.config.import_lists.SonarrImportList.source_quality_profiles)
+    * `source_language_profile_ids` renamed to [`source_language_profiles`](configuration/import-lists.md#buildarr_sonarr.config.import_lists.SonarrImportList.source_language_profiles)
+    * `source_tag_ids` renamed to [`source_tags`](configuration/import-lists.md#buildarr_sonarr.config.import_lists.SonarrImportList.source_tags)
+* Fix reading the `$BUILDARR_LOG_LEVEL` environment variable to be case-insensitive
+* Clean up runtime state after individual update runs in daemon mode, to ensure no state leakage into subsequent runs
+* Add a new [`buildarr.request_timeout`](https://buildarr.github.io/configuration/#buildarr.config.buildarr.BuildarrConfig.request_timeout) configuration attribute for adjusting API request timeouts (the default is 30 seconds)
+* Improve Sonarr quality definition [`min` and `max`](configuration/quality.md#buildarr_sonarr.config.quality.QualityDefinition.min) validation so that `400` is also a valid value for `max`, and enforce `min`-`max` value difference constraints
 * Major internal code refactor through the introduction of [Ruff](https://beta.ruff.rs/docs) to the development pipeline, fixing a large number of minor code quality issues
 
 ### Changed
 
+* Fix fetching new instance secrets ([buildarr/buildarr#44](https://github.com/buildarr/buildarr/pull/44))
 * Accept local and non-qualified domain names in URLs ([buildarr/buildarr#46](https://github.com/buildarr/buildarr/pull/46))
 * Add instance referencing and dependency resolution ([buildarr/buildarr#47](https://github.com/buildarr/buildarr/pull/47))
 * Replace isort and Flake8 with Ruff and reformat source files ([buildarr/buildarr#49](https://github.com/buildarr/buildarr/pull/49))
@@ -159,14 +193,39 @@ Incorrect syntax in some examples in the documentation were also found and fixed
 This is a support release that fixes quality definition and backup configuration updates
 on remote Sonarr instances.
 
+A new Dummy plugin is now included with Buildarr, used for testing Buildarr and its
+plugin API, and also serves as a reference implementation for plugin developers.
+
+Other behind-the-scenes improvements include a refactor of the plugin API to allow
+for accurate type hints for configuration objects in secrets metadata classes
+(and vice versa), and numerous updates to the documentation to correct errors
+and add more detail.
+
+### Added
+
+* Add a GitHub Action to push releases to PyPI ([buildarr/buildarr#11](https://github.com/buildarr/buildarr/pull/11))
+* Create a `buildarr-dummy` plugin for testing the Buildarr plugin API ([buildarr/buildarr#12](https://github.com/buildarr/buildarr/pull/12))
+
 ### Changed
 
-* Update dependency versions ([buildarr/buildarr@3c19ede](https://github.com/buildarr/buildarr/commit/3c19ede))
-* Add missing download client documentation ([buildarr/buildarr@d07936f](https://github.com/buildarr/buildarr/commit/d07936f))
-* Fix incorrect config value definition in docs ([buildarr/buildarr@d1807a0](https://github.com/buildarr/buildarr/commit/d1807a0))
+* Fix $PUID and $GUID declarations ([b5110f3](https://github.com/buildarr/buildarr/commit/b5110f3))
+* Fix Docker Hub link ([be0ba12](https://github.com/buildarr/buildarr/commit/be0ba12))
+* Fix Docker volume mount docs ([fe328aa](https://github.com/buildarr/buildarr/commit/fe328aa))
+* Fix troubleshooting Buildarr run docs ([e3b8833](https://github.com/buildarr/buildarr/commit/e3b8833))
+* Update dependency versions ([3c19ede](https://github.com/buildarr/buildarr/commit/3c19ede))
+* Fix debug Docker command in the GitHub Pages site ([1e17741](https://github.com/buildarr/buildarr/commit/1e17741))
+* Disable automatic dependency version updates ([c5c61cd](https://github.com/buildarr/buildarr/commit/c5c61cd))
+* Add missing download client documentation ([d07936f](https://github.com/buildarr/buildarr/commit/d07936f))
+* Fix incorrect config value definition in docs ([d1807a0](https://github.com/buildarr/buildarr/commit/d1807a0))
+* Fix to-do list indenting ([bca56e5](https://github.com/buildarr/buildarr/commit/bca56e5))
+* Add a link to the configuration documentation in README.md ([a5c0e6d](https://github.com/buildarr/buildarr/commit/a5c0e6d))
 * Clean up and update Sonarr plugin internals ([buildarr/buildarr#14](https://github.com/buildarr/buildarr/pull/14))
 * Fix updates to Sonarr quality definitions ([buildarr/buildarr#15](https://github.com/buildarr/buildarr/pull/15))
 * Fix updates to Sonarr backup general settings ([buildarr/buildarr#16](https://github.com/buildarr/buildarr/pull/16))
+
+### Removed
+
+* Removed `buildarr.__version__` (please use [importlib.metadata](https://docs.python.org/3/library/importlib.metadata.html#distribution-versions) instead)
 
 
 ## [v0.1.0](https://github.com/buildarr/buildarr/releases/tag/v0.1.0) - 2023-02-11

@@ -19,9 +19,9 @@ Sonarr plugin interface.
 
 from __future__ import annotations
 
-from buildarr import __version__
 from buildarr.plugins import Plugin
 
+from . import __version__
 from .cli import sonarr
 from .config import SonarrConfig
 from .manager import SonarrManager

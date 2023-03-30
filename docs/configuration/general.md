@@ -34,7 +34,7 @@ Take care when changing these settings.
 
 ## Host
 
-##### ::: buildarr.plugins.sonarr.config.general.HostGeneralSettings
+##### ::: buildarr_sonarr.config.general.HostGeneralSettings
     options:
       members:
         - bind_address
@@ -48,7 +48,7 @@ Take care when changing these settings.
 
 ## Security
 
-##### ::: buildarr.plugins.sonarr.config.general.SecurityGeneralSettings
+##### ::: buildarr_sonarr.config.general.SecurityGeneralSettings
     options:
       members:
         - authentication
@@ -60,7 +60,7 @@ Take care when changing these settings.
 
 ## Proxy
 
-##### ::: buildarr.plugins.sonarr.config.general.ProxyGeneralSettings
+##### ::: buildarr_sonarr.config.general.ProxyGeneralSettings
     options:
       members:
         - enable
@@ -76,7 +76,7 @@ Take care when changing these settings.
 
 ## Logging
 
-##### ::: buildarr.plugins.sonarr.config.general.LoggingGeneralSettings
+##### ::: buildarr_sonarr.config.general.LoggingGeneralSettings
     options:
       members:
         - log_level
@@ -85,7 +85,7 @@ Take care when changing these settings.
 
 ## Analytics
 
-##### ::: buildarr.plugins.sonarr.config.general.AnalyticsGeneralSettings
+##### ::: buildarr_sonarr.config.general.AnalyticsGeneralSettings
     options:
       members:
         - send_anonymous_usage_data
@@ -94,7 +94,7 @@ Take care when changing these settings.
 
 ## Updates
 
-##### ::: buildarr.plugins.sonarr.config.general.UpdatesGeneralSettings
+##### ::: buildarr_sonarr.config.general.UpdatesGeneralSettings
     options:
       members:
         - branch
@@ -106,7 +106,7 @@ Take care when changing these settings.
 
 ## Backup
 
-##### ::: buildarr.plugins.sonarr.config.general.BackupGeneralSettings
+##### ::: buildarr_sonarr.config.general.BackupGeneralSettings
     options:
       members:
         - folder

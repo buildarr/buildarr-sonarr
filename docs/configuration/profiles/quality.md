@@ -33,7 +33,7 @@ In Buildarr, quality profiles are defined using a dictonary structure. The quali
 
 ## General configuration
 
-##### ::: buildarr.plugins.sonarr.config.profiles.quality.SonarrQualityProfilesSettingsConfig
+##### ::: buildarr_sonarr.config.profiles.quality.SonarrQualityProfilesSettingsConfig
     options:
       members:
         - delete_unmanaged
@@ -43,7 +43,7 @@ In Buildarr, quality profiles are defined using a dictonary structure. The quali
 
 ## Creating a quality profile
 
-##### ::: buildarr.plugins.sonarr.config.profiles.quality.QualityProfile
+##### ::: buildarr_sonarr.config.profiles.quality.QualityProfile
     options:
       members:
         - upgrades_allowed
