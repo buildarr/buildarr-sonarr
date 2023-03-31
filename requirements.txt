@@ -1,3 +1,6 @@
+buildarr==0.4.0 ; python_version >= "3.8" and python_version < "4.0" \
+    --hash=sha256:8ac557898166e8701d29e2012d9317c293c123e2a705d0ba90b96c5c8439d1ea \
+    --hash=sha256:d7abdf31cbd20afcf019c6b661fd140a67c645fd465dd0d0953940c1df12e73b
 certifi==2022.12.7 ; python_version >= "3.8" and python_version < "4" \
     --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
     --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
