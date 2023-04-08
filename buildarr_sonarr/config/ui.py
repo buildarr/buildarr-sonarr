@@ -201,6 +201,7 @@ class SonarrUISettingsConfig(SonarrConfigBase):
             remote=remote,
             remote_map=self._remote_map,
             check_unmanaged=check_unmanaged,
+            set_unchanged=True,
         )
         if updated:
             config_id = api_get(secrets, "/api/v3/config/ui")["id"]

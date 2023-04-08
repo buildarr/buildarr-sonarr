@@ -121,16 +121,14 @@ class Indexer(SonarrConfigBase):
     If enabled, use this indexer for manual interactive searches.
     """
 
-    anime_standard_format_search: bool = False
-    """
-    Also search for anime using the standard numbering. Only applies for Anime series types.
-    """
-
-    indexer_priority: int = Field(25, ge=1, le=50)
+    priority: int = Field(25, ge=1, le=50, alias="indexer_priority")
     """
     Priority of this indexer to prefer one indexer over another in release tiebreaker scenarios.
 
     1 is highest priority and 50 is lowest priority.
+
+    *Changed in version 0.4.1*: Renamed from `indexer_priority` to `priority`.
+    The original name is still available as an alias.
     """
 
     download_client: Optional[NonEmptyStr] = None
@@ -159,16 +157,17 @@ class Indexer(SonarrConfigBase):
             ("enable_rss", "enableRss", {}),
             ("enable_automatic_search", "enableAutomaticSearch", {}),
             ("enable_interactive_search", "enableInteractiveSearch", {}),
-            ("anime_standard_format_searc", "animeStandardFormatSearch", {}),
-            ("indexer_priority", "indexerPriority", {}),
+            ("priority", "priority", {}),
             (
                 "download_client",
                 "downloadClientId",
                 {
                     "decoder": lambda v: (
                         [dc for dc, dc_id in download_client_ids.items() if dc_id == v][0]
+                        if v
+                        else None
                     ),
-                    "encoder": lambda v: download_client_ids[v],
+                    "encoder": lambda v: download_client_ids[v] if v else 0,
                 },
             ),
             (
@@ -302,10 +301,14 @@ class TorrentIndexer(Indexer):
     ) -> List[RemoteMapEntry]:
         return [
             *super()._get_base_remote_map(download_client_ids, tag_ids),
-            ("minimum_seeders", "minimumSeeders", {"is_field": True}),
-            ("seed_ratio", "seedRatio", {}),
-            ("seed_time", "seedTime", {}),
-            ("seasonpack_seed_time", "seasonPackSeedTime", {}),
+            ("minimum_seeders", "minimumSeeders", {"is_field": True, "field_default": None}),
+            ("seed_ratio", "seedCriteria.seedRatio", {"is_field": True, "field_default": None}),
+            ("seed_time", "seedCriteria.seedTime", {"is_field": True, "field_default": None}),
+            (
+                "seasonpack_seed_time",
+                "seedCriteria.seasonPackSeedTime",
+                {"is_field": True, "field_default": None},
+            ),
         ]
 
 
@@ -324,10 +327,18 @@ class FanzubIndexer(UsenetIndexer):
     A URL to a Fanzub compatible RSS feed.
     """
 
+    anime_standard_format_search: bool = False
+    """
+    Also search for anime using the standard numbering. Only applies for Anime series types.
+    """
+
     _implementation = "Fanzub"
     _implementation_name = "Fanzub"
     _config_contract = "FanzubSettings"
-    _remote_map: List[RemoteMapEntry] = [("rss_url", "rssUrl", {"is_field": True})]
+    _remote_map: List[RemoteMapEntry] = [
+        ("rss_url", "rssUrl", {"is_field": True}),
+        ("anime_standard_format_search", "animeStandardFormatSearch", {"is_field": True}),
+    ]
 
 
 class NewznabIndexer(UsenetIndexer):
@@ -393,6 +404,11 @@ class NewznabIndexer(UsenetIndexer):
     * `TV-Documentary`
     """
 
+    anime_standard_format_search: bool = False
+    """
+    Also search for anime using the standard numbering. Only applies for Anime series types.
+    """
+
     additional_parameters: Optional[str] = None
     """
     Additional Newznab API parameters.
@@ -415,10 +431,11 @@ class NewznabIndexer(UsenetIndexer):
             "animeCategories",
             {"is_field": True, "encoder": lambda v: sorted(c.value for c in v)},
         ),
+        ("anime_standard_format_search", "animeStandardFormatSearch", {"is_field": True}),
         (
             "additional_parameters",
             "additionalParameters",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {"is_field": True, "field_default": None, "decoder": lambda v: v or None},
         ),
     ]
 
@@ -657,6 +674,11 @@ class NyaaIndexer(TorrentIndexer):
     HTTPS URL for accessing Nyaa.
     """
 
+    anime_standard_format_search: bool = False
+    """
+    Also search for anime using the standard numbering. Only applies for Anime series types.
+    """
+
     additional_parameters: Optional[str] = "&cats=1_0&filter=1"
     """
     Parameters to send in the Nyaa search request.
@@ -670,10 +692,11 @@ class NyaaIndexer(TorrentIndexer):
     _config_contract = "NyaaSettings"
     _remote_map: List[RemoteMapEntry] = [
         ("website_url", "websiteUrl", {"is_field": True}),
+        ("anime_standard_format_search", "animeStandardFormatSearch", {"is_field": True}),
         (
             "additional_parameters",
             "additionalParameters",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {"is_field": True, "field_default": None, "decoder": lambda v: v or None},
         ),
     ]
 
@@ -865,6 +888,11 @@ class TorznabIndexer(TorrentIndexer):
     * `TV-Documentary`
     """
 
+    anime_standard_format_search: bool = False
+    """
+    Also search for anime using the standard numbering. Only applies for Anime series types.
+    """
+
     additional_parameters: Optional[str] = None
     """
     Additional Torznab API parameters.
@@ -887,10 +915,11 @@ class TorznabIndexer(TorrentIndexer):
             "animeCategories",
             {"is_field": True, "encoder": lambda v: sorted(c.value for c in v)},
         ),
+        ("anime_standard_format_search", "animeStandardFormatSearch", {"is_field": True}),
         (
             "additional_parameters",
             "additionalParameters",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {"is_field": True, "field_default": None, "decoder": lambda v: v or None},
         ),
     ]
 
