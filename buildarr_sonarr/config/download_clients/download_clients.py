@@ -24,6 +24,7 @@ from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
+from pydantic import validator
 from typing_extensions import Self
 
 from ...api import api_delete, api_post, api_put
@@ -1585,6 +1586,8 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
 
     Adding a category specific to Sonarr avoids conflicts with unrelated non-Sonarr downloads.
     Using a category is optional, but strongly recommended.
+
+    `category` and `directory` are mutually exclusive, only one of them can be set at a time.
     """
 
     directory: Optional[str] = None
@@ -1592,6 +1595,8 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
     Optional shared folder to put downloads into.
 
     Leave blank, set to `null` or undefined to use the default download client location.
+
+    `category` and `directory` are mutually exclusive, only one of them can be set at a time.
     """
 
     recent_priority: TransmissionPriority = TransmissionPriority.last
@@ -1645,6 +1650,21 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
         ("older_priority", "olderTvPriority", {"is_field": True}),
         ("add_paused", "addPaused", {"is_field": True}),
     ]
+
+    @validator("directory")
+    def category_directory_mutual_exclusion(
+        cls,
+        value: Optional[str],
+        values: Mapping[str, Any],
+    ) -> Optional[str]:
+        directory = value
+        category: Optional[str] = values.get("category", None)
+        if directory and category:
+            raise ValueError(
+                "'directory' and 'category' are mutually exclusive "
+                "on a Transmission download client",
+            )
+        return directory
 
 
 class TransmissionDownloadClient(TransmissionDownloadClientBase):

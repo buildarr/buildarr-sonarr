@@ -559,12 +559,14 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
             remote=remote,
             remote_map=self._naming_remote_map,
             check_unmanaged=check_unmanaged,
+            set_unchanged=True,
         )
         if updated:
+            config_id = api_get(secrets, "/api/v3/config/naming")["id"]
             api_put(
                 secrets,
-                f"/api/v3/config/naming/{api_get(secrets, '/api/v3/config/naming')['id']}",
-                remote_attrs,
+                f"/api/v3/config/naming/{config_id}",
+                {"id": config_id, **remote_attrs},
             )
             return True
         return False

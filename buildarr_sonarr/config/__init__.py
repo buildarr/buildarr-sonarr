@@ -118,6 +118,12 @@ class SonarrSettingsConfig(SonarrConfigBase):
                     remote.quality,
                     check_unmanaged=check_unmanaged,
                 ),
+                self.download_clients.update_remote(
+                    f"{tree}.download_clients",
+                    secrets,
+                    remote.download_clients,
+                    check_unmanaged=check_unmanaged,
+                ),
                 self.indexers.update_remote(
                     f"{tree}.indexers",
                     secrets,
@@ -134,12 +140,6 @@ class SonarrSettingsConfig(SonarrConfigBase):
                     f"{tree}.profiles",
                     secrets,
                     remote.profiles,
-                    check_unmanaged=check_unmanaged,
-                ),
-                self.download_clients.update_remote(
-                    f"{tree}.download_clients",
-                    secrets,
-                    remote.download_clients,
                     check_unmanaged=check_unmanaged,
                 ),
                 self.import_lists.update_remote(

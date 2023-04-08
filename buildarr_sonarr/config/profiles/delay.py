@@ -334,9 +334,9 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
         #
         changed = False
         #
-        profile_ids: Dict[int, int] = {
-            profile["order"]: profile["id"] for profile in api_get(secrets, "/api/v3/delayprofile")
-        }
+        profile_ids: List[int] = [
+            profile["id"] for profile in api_get(secrets, "/api/v3/delayprofile")
+        ]
         tag_ids: Dict[str, int] = (
             {tag["label"]: tag["id"] for tag in api_get(secrets, "/api/v3/tag")}
             if any(profile.tags for profile in self.definitions)
@@ -344,10 +344,9 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
             else {}
         )
         #
-        # Order: update already exist -> create/delete
-        for order in range(max(len(self.definitions), len(remote.definitions))):
-            local_index = len(self.definitions) - 1 - order
-            remote_index = len(remote.definitions) - 1 - order
+        for api_index in range(max(len(self.definitions), len(remote.definitions))):
+            local_index = len(self.definitions) - 1 - api_index
+            remote_index = len(remote.definitions) - 1 - api_index
             # If the index is negative, then there are more delay profiles
             # on the remote than there are defined in the local configuration.
             # Delete those extra delay profiles from the remote.
@@ -355,7 +354,7 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
                 remote.definitions[remote_index]._delete_remote(
                     tree=f"{tree}.definitions[{local_index}]",
                     secrets=secrets,
-                    profile_id=profile_ids[order],
+                    profile_id=profile_ids[api_index],
                 )
                 changed = True
             # If the current index (order) is one that does not exist on the remote, create it.
@@ -364,7 +363,7 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
                     tree=f"{tree}.definitions[{local_index}]",
                     secrets=secrets,
                     tag_ids=tag_ids,
-                    order=order,
+                    order=api_index,
                 )
                 changed = True
             # If none of the above conditions checked out, then the current index exists
@@ -375,8 +374,8 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
                 secrets=secrets,
                 remote=remote.definitions[remote_index],
                 tag_ids=tag_ids,
-                profile_id=profile_ids[order],
-                order=order,
+                profile_id=profile_ids[api_index],
+                order=api_index,
             ):
                 changed = True
         #
