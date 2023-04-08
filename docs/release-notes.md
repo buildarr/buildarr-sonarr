@@ -1,5 +1,24 @@
 # Release Notes
 
+## [v0.4.1](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.4.1) - 2023-04-08
+
+This is a bugfix release that addresses a number of issues that one might encounter when deploying a Sonarr instance
+for the first time, or linking a Sonarr instance with a Prowlarr instance using the new [Prowlarr plugin for Buildarr](https://buildarr.github.io/plugins/prowlarr).
+
+* Add mutual exclusion handling for the `category` and `directory` attributes for Transmission download clients
+* Rename the `indexer_priority` attribute on indexers to `priority` (with an alias available for backwards compatibility)
+* Remove the `anime_standard_format_search` attribute from the common indexer interface, and add it to the specific indexer types that implement it
+* Fix a large number of indexer parsing bugs
+    * Torznab indexers are now confirmed to load correctly from remote Sonarr instances (by testing the Torznab indexer Prowlarr creates)
+* Fix updating delay profiles on brand new Sonarr installations
+* Fix updating Media Management naming configuration
+* Fix an issue where UI settings updating was not idempotent
+
+### Changed
+
+* Fix bugs from integration tests ([#4](https://github.com/buildarr/buildarr-sonarr/pull/4))
+
+
 ## [v0.4.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.4.0) - 2023-03-31
 
 This is the first release of the Buildarr Sonarr plugin as an independent package.
