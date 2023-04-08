@@ -20,8 +20,7 @@
         - enable_rss
         - enable_automatic_search
         - enable_interactive_search
-        - anime_standard_format_search
-        - indexer_priority
+        - priority
         - download_client
         - tags
       show_root_heading: false
@@ -34,6 +33,7 @@
       members:
         - type
         - rss_url
+        - anime_standard_format_search
       show_root_heading: false
       show_source: false
 
@@ -48,6 +48,7 @@
         - password
         - categories
         - anime_categories
+        - anime_standard_format_search
         - additional_parameters
       show_root_heading: false
       show_source: false
@@ -130,6 +131,7 @@
       members:
         - type
         - website_url
+        - anime_standard_format_search
         - additional_parameters
       show_root_heading: false
       show_source: false
@@ -180,6 +182,7 @@
         - password
         - categories
         - anime_categories
+        - anime_standard_format_search
         - additional_parameters
       show_root_heading: false
       show_source: false

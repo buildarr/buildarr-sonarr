@@ -824,7 +824,7 @@ class JoinConnection(Connection):
     _config_contract: str = "JoinSettings"
     _remote_map: List[RemoteMapEntry] = [
         ("api_key", "apiKey", {"is_field": True}),
-        # ("device_ids", "device_ids", {"is_field": True}),
+        # ("device_ids", "deviceIds", {"is_field": True}),
         (
             "device_names",
             "deviceNames",
