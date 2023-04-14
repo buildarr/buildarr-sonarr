@@ -22,10 +22,10 @@ from __future__ import annotations
 import json
 
 from logging import getLogger
-from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Set, cast
 
 from buildarr.config import ConfigTrashIDNotFoundError, RemoteMapEntry
+from buildarr.state import state
 from buildarr.types import NonEmptyStr, TrashID
 from pydantic import validator
 from typing_extensions import Self
@@ -254,26 +254,15 @@ class ReleaseProfile(SonarrConfigBase):
     ) -> Self:
         return cls(**cls.get_local_attrs(cls._get_remote_map(indexer_ids, tag_ids), remote_attrs))
 
-    @property
     def uses_trash_metadata(self) -> bool:
-        """
-        A flag determining whether or not this configuration uses TRaSH-Guides metadata.
-
-        Returns:
-            `True` if TRaSH-Guides metadata is used, otherwise `False`
-        """
         return bool(self.trash_id)
 
-    def _render_trash_metadata(self, trash_metadata_dir: Path) -> None:
-        """
-        Render configuration attributes obtained from TRaSH-Guides, in-place.
-
-        Args:
-            trash_metadata_dir (Path): TRaSH-Guides metadata directory.
-        """
+    def _render(self) -> None:
         if not self.trash_id:
             return
-        for profile_file in (trash_metadata_dir / "docs" / "json" / "sonarr" / "rp").iterdir():
+        for profile_file in (
+            state.trash_metadata_dir / "docs" / "json" / "sonarr" / "rp"
+        ).iterdir():
             with profile_file.open() as f:
                 profile: Dict[str, Any] = json.load(f)
                 if cast(str, profile["trash_id"]).lower() == self.trash_id:

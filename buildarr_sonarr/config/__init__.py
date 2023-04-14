@@ -19,7 +19,6 @@ Sonarr plugin configuration.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from buildarr.config import ConfigPlugin
@@ -276,45 +275,24 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
 
     @property
     def uses_trash_metadata(self) -> bool:
-        """
-        A flag determining whether or not this configuration uses TRaSH-Guides metadata.
-
-        Returns:
-            `True` if TRaSH-Guides metadata is used, otherwise `False`
-        """
-        if self.settings.quality.uses_trash_metadata:
+        if self.settings.quality.uses_trash_metadata():
             return True
         for release_profile in self.settings.profiles.release_profiles.definitions.values():
-            if release_profile.uses_trash_metadata:
+            if release_profile.uses_trash_metadata():
                 return True
         return False
 
-    def render_trash_metadata(self, trash_metadata_dir: Path) -> Self:
-        """
-        Read TRaSH-Guides metadata, and return a configuration object with all templates rendered.
-
-        Args:
-            trash_metadata_dir (Path): TRaSH-Guides metadata directory.
-
-        Returns:
-            Rendered configuration object
-        """
+    def render(self) -> Self:
         copy = self.copy(deep=True)
-        copy._render_trash_metadata(trash_metadata_dir)
+        copy._render()
         return copy
 
-    def _render_trash_metadata(self, trash_metadata_dir: Path) -> None:
-        """
-        Render configuration attributes obtained from TRaSH-Guides, in-place.
-
-        Args:
-            trash_metadata_dir (Path): TRaSH-Guides metadata directory.
-        """
+    def _render(self) -> None:
         for rp in self.settings.profiles.release_profiles.definitions.values():
-            if rp.uses_trash_metadata:
-                rp._render_trash_metadata(trash_metadata_dir)
-        if self.settings.quality.uses_trash_metadata:
-            self.settings.quality._render_trash_metadata(trash_metadata_dir)
+            if rp.uses_trash_metadata():
+                rp._render()
+        if self.settings.quality.uses_trash_metadata():
+            self.settings.quality._render()
 
     @classmethod
     def from_remote(cls, secrets: SonarrSecrets) -> Self:
@@ -357,34 +335,3 @@ class SonarrConfig(SonarrInstanceConfig):
     Globally specified configuration values apply to all instances.
     Configuration values specified on an instance-level take precedence at runtime.
     """
-
-    @property
-    def uses_trash_metadata(self) -> bool:
-        """
-        A flag determining whether or not this configuration uses TRaSH-Guides metadata.
-
-        Returns:
-            `True` if TRaSH-Guides metadata is used, otherwise `False`
-        """
-        for instance in self.instances.values():
-            if instance.uses_trash_metadata:
-                return True
-        return super().uses_trash_metadata
-
-    def render_trash_metadata(self, trash_metadata_dir: Path) -> Self:
-        """
-        Read TRaSH-Guides metadata, and return a configuration object with all templates rendered.
-
-        Args:
-            trash_metadata_dir (Path): TRaSH-Guides metadata directory.
-
-        Returns:
-            Rendered configuration object
-        """
-        copy = self.copy(deep=True)
-        for instance in copy.instances.values():
-            if instance.uses_trash_metadata:
-                instance._render_trash_metadata(trash_metadata_dir)
-        if self.uses_trash_metadata:
-            copy._render_trash_metadata(trash_metadata_dir)
-        return copy
