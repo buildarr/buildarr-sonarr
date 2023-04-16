@@ -57,37 +57,16 @@ class SonarrSettingsConfig(SonarrConfigBase):
     Sonarr settings, used to configure a remote Sonarr instance.
     """
 
-    #: Media management settings.
     media_management = SonarrMediaManagementSettingsConfig()
-
-    #: Profile settings (quality, language, delay, release profiles).
     profiles = SonarrProfilesSettingsConfig()
-
-    #: Quality definition settings.
     quality = SonarrQualitySettingsConfig()
-
-    #: Usenet/BitTorrent indexer settings.
     indexers = SonarrIndexersSettingsConfig()
-
-    #: Usenet/BitTorrent download client settings.
     download_clients = SonarrDownloadClientsSettingsConfig()
-
-    #: Import list settings.
     import_lists = SonarrImportListsSettingsConfig()
-
-    #: Notification connection settings.
     connect = SonarrConnectSettingsConfig()
-
-    #: Metadata file settings.
     metadata = SonarrMetadataSettingsConfig()
-
-    #: Tag settings.
     tags = SonarrTagsSettingsConfig()
-
-    #: General instance settings.
     general = SonarrGeneralSettingsConfig()
-
-    #: User interface settings.
     ui = SonarrUISettingsConfig()
 
     def update_remote(
@@ -98,11 +77,10 @@ class SonarrSettingsConfig(SonarrConfigBase):
         check_unmanaged: bool = False,
     ) -> bool:
         # Overload base function to guarantee execution order of section updates.
-        # 1. Tags must be created before everything else, and destroyed after they
-        #    are no longer referenced elsewhere.
+        # 1. Tags must be created before everything else.
         # 2. Qualities must be updated before quality profiles.
-        # 3. Indexers must be created before release profiles, and destroyed after they
-        #    are no longer referenced by them.
+        # 3. Download clients must be created before indexers.
+        # 4. Indexers must be created before release profiles.
         return any(
             [
                 self.tags.update_remote(
@@ -171,8 +149,38 @@ class SonarrSettingsConfig(SonarrConfigBase):
                     remote.ui,
                     check_unmanaged=check_unmanaged,
                 ),
-                # TODO: destroy indexers
-                # TODO: destroy tags
+            ],
+        )
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        # Overload base function to guarantee execution order of section deletions.
+        # 1. Release profiles must be deleted before indexers.
+        # 2. Indexers must be deleted before download clients.
+        return any(
+            [
+                self.profiles.delete_remote(f"{tree}.profiles", secrets, remote.profiles),
+                self.indexers.delete_remote(f"{tree}.indexers", secrets, remote.indexers),
+                self.download_clients.delete_remote(
+                    f"{tree}.download_clients",
+                    secrets,
+                    remote.download_clients,
+                ),
+                self.media_management.delete_remote(
+                    f"{tree}.media_management",
+                    secrets,
+                    remote.media_management,
+                ),
+                self.import_lists.delete_remote(
+                    f"{tree}.import_lists",
+                    secrets,
+                    remote.import_lists,
+                ),
+                self.connect.delete_remote(f"{tree}.connect", secrets, remote.connect),
+                self.tags.delete_remote(f"{tree}.tags", secrets, remote.tags),
+                self.quality.delete_remote(f"{tree}.quality", secrets, remote.quality),
+                self.metadata.delete_remote(f"{tree}.metadata", secrets, remote.metadata),
+                self.general.delete_remote(f"{tree}.general", secrets, remote.general),
+                self.ui.delete_remote(f"{tree}.ui", secrets, remote.ui),
             ],
         )
 
