@@ -5,8 +5,6 @@
       members:
         - trash_id
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ## Setting quality definitions
 
@@ -16,8 +14,6 @@
         - title
         - min
         - max
-      show_root_heading: false
-      show_source: false
 
 ## TRaSH-Guides quality definition profiles
 

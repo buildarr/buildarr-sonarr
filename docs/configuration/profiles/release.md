@@ -40,8 +40,6 @@ For more information on release profiles, refer to this page on
       members:
         - delete_unmanaged
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ## Creating a release profile
 
@@ -74,8 +72,6 @@ The below attributes are common to all release profiles.
         - include_preferred_when_renaming
         - indexer
         - tags
-      show_root_heading: false
-      show_source: false
 
 ## Manually defining filters
 
@@ -89,8 +85,6 @@ the release profile using the following parameters.
         - must_contain
         - must_not_contain
         - preferred
-      show_root_heading: false
-      show_source: false
 
 ## Importing release profiles from TRaSH-Guides
 
@@ -127,8 +121,6 @@ provided by
         - trash_id
         - filter
         - strict_negative_scores
-      show_root_heading: false
-      show_source: false
 
 ## TRaSH-Guides release profile import examples
 

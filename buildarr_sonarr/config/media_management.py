@@ -539,7 +539,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
                 ),
                 # Root Folders
                 self._update_remote_rootfolder(
-                    tree,
+                    tree=f"{tree}.root_folders",
                     secrets=secrets,
                     remote=remote,
                     check_unmanaged=check_unmanaged,
@@ -602,20 +602,10 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        tree = f"{tree}.root_folders"
         changed = False
         current_root_folders: Dict[str, int] = {
             rf["path"]: rf["id"] for rf in api_get(secrets, "/api/v3/rootfolder")
         }
-        expected_root_folders = set(self.root_folders)
-        if self.delete_unmanaged_root_folders:
-            i = -1
-            for root_folder, root_folder_id in current_root_folders.items():
-                if root_folder not in expected_root_folders:
-                    logger.info("%s[%i]: %s -> (deleted)", tree, i, repr(str(root_folder)))
-                    api_delete(secrets, f"/api/v3/rootfolder/{root_folder_id}")
-                    changed = True
-                    i -= 1
         for i, root_folder in enumerate(self.root_folders):
             if root_folder in current_root_folders:
                 logger.debug("%s[%i]: %s (exists)", tree, i, repr(str(root_folder)))
@@ -623,4 +613,29 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
                 logger.info("%s[%i]: %s -> (created)", tree, i, repr(str(root_folder)))
                 api_post(secrets, "/api/v3/rootfolder", {"path": str(root_folder)})
                 changed = True
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        return self._update_remote_rootfolder(
+            tree=f"{tree}.root_folders",
+            secrets=secrets,
+            remote=remote,
+        )
+
+    def _delete_remote_rootfolder(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        current_root_folders: Dict[str, int] = {
+            rf["path"]: rf["id"] for rf in api_get(secrets, "/api/v3/rootfolder")
+        }
+        expected_root_folders = set(self.root_folders)
+        i = -1
+        for root_folder, root_folder_id in current_root_folders.items():
+            if root_folder not in expected_root_folders:
+                if self.delete_unmanaged_root_folders:
+                    logger.info("%s[%i]: %s -> (deleted)", tree, i, repr(str(root_folder)))
+                    api_delete(secrets, f"/api/v3/rootfolder/{root_folder_id}")
+                    changed = True
+                else:
+                    logger.info("%s[%i]: %s -> (unmanaged)", tree, i, repr(str(root_folder)))
+                i -= 1
         return changed

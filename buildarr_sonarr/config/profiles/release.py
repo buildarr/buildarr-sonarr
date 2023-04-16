@@ -22,10 +22,10 @@ from __future__ import annotations
 import json
 
 from logging import getLogger
-from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Set, cast
 
 from buildarr.config import ConfigTrashIDNotFoundError, RemoteMapEntry
+from buildarr.state import state
 from buildarr.types import NonEmptyStr, TrashID
 from pydantic import validator
 from typing_extensions import Self
@@ -120,8 +120,6 @@ class ReleaseProfile(SonarrConfigBase):
           members:
             - include
             - exclude
-          show_root_heading: false
-          show_source: false
     """
 
     strict_negative_scores: bool = False
@@ -254,26 +252,15 @@ class ReleaseProfile(SonarrConfigBase):
     ) -> Self:
         return cls(**cls.get_local_attrs(cls._get_remote_map(indexer_ids, tag_ids), remote_attrs))
 
-    @property
     def uses_trash_metadata(self) -> bool:
-        """
-        A flag determining whether or not this configuration uses TRaSH-Guides metadata.
-
-        Returns:
-            `True` if TRaSH-Guides metadata is used, otherwise `False`
-        """
         return bool(self.trash_id)
 
-    def _render_trash_metadata(self, trash_metadata_dir: Path) -> None:
-        """
-        Render configuration attributes obtained from TRaSH-Guides, in-place.
-
-        Args:
-            trash_metadata_dir (Path): TRaSH-Guides metadata directory.
-        """
+    def _render(self) -> None:
         if not self.trash_id:
             return
-        for profile_file in (trash_metadata_dir / "docs" / "json" / "sonarr" / "rp").iterdir():
+        for profile_file in (
+            state.trash_metadata_dir / "docs" / "json" / "sonarr" / "rp"
+        ).iterdir():
             with profile_file.open() as f:
                 profile: Dict[str, Any] = json.load(f)
                 if cast(str, profile["trash_id"]).lower() == self.trash_id:
@@ -376,14 +363,8 @@ class ReleaseProfile(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: SonarrSecrets, profile_id: int) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, profile_id: int) -> None:
         api_delete(secrets, f"/api/v3/releaseprofile/{profile_id}")
-
-    # Tell Pydantic to validate in-place assignments of attributes.
-    # This ensures that any validators that parse attributes to consistent values run.
-    class Config(SonarrConfigBase.Config):
-        validate_assignment = True
 
 
 class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
@@ -432,9 +413,7 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        #
         changed = False
-        #
         profile_ids: Dict[str, int] = {
             profile_json["name"]: profile_json["id"]
             for profile_json in api_get(secrets, "/api/v3/releaseprofile")
@@ -451,10 +430,8 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
             or any(profile.tags for profile in remote.definitions.values())
             else {}
         )
-        #
         for profile_name, profile in self.definitions.items():
             profile_tree = f"{tree}.definitions[{repr(profile_name)}]"
-            #
             if profile_name not in remote.definitions:
                 profile._create_remote(
                     tree=profile_tree,
@@ -464,7 +441,6 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
                     tag_ids=tag_ids,
                 )
                 changed = True
-            #
             elif profile._update_remote(
                 tree=profile_tree,
                 secrets=secrets,
@@ -475,18 +451,24 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
                 tag_ids=tag_ids,
             ):
                 changed = True
-        #
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        profile_ids: Dict[str, int] = {
+            profile_json["name"]: profile_json["id"]
+            for profile_json in api_get(secrets, "/api/v3/releaseprofile")
+        }
         for profile_name, profile in remote.definitions.items():
             if profile_name not in self.definitions:
                 profile_tree = f"{tree}.definitions[{repr(profile_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", profile_tree)
                     profile._delete_remote(
-                        tree=profile_tree,
                         secrets=secrets,
                         profile_id=profile_ids[profile_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", profile_tree)
-        #
         return changed

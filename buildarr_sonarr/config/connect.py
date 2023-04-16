@@ -24,7 +24,7 @@ from logging import getLogger
 from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type, Union
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, BaseIntEnum, NonEmptyStr, Password, Port
+from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
 from pydantic import AnyHttpUrl, ConstrainedInt, Field, NameEmail, SecretStr
 from typing_extensions import Annotated, Self
 
@@ -36,7 +36,7 @@ from .util import trakt_expires_encoder
 logger = getLogger(__name__)
 
 
-class OnGrabField(BaseIntEnum):
+class OnGrabField(BaseEnum):
     """
     Values for `on_grab_fields` for the Discord connection.
     """
@@ -53,7 +53,7 @@ class OnGrabField(BaseIntEnum):
     fanart = 9
 
 
-class OnImportField(BaseIntEnum):
+class OnImportField(BaseEnum):
     """
     Values for `on_import_fields` for the Discord connection.
     """
@@ -377,8 +377,7 @@ class Connection(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: SonarrSecrets, connection_id: int) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, connection_id: int) -> None:
         api_delete(secrets, f"/api/v3/notification/{connection_id}")
 
 
@@ -1754,9 +1753,7 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        #
         changed = False
-        #
         connection_ids: Dict[str, int] = {
             connection_json["name"]: connection_json["id"]
             for connection_json in api_get(secrets, "/api/v3/notification")
@@ -1767,10 +1764,8 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
             or any(connection.tags for connection in remote.definitions.values())
             else {}
         )
-        #
         for connection_name, connection in self.definitions.items():
             connection_tree = f"{tree}.definitions[{repr(connection_name)}]"
-            #
             if connection_name not in remote.definitions:
                 connection._create_remote(
                     tree=connection_tree,
@@ -1779,7 +1774,6 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
                     connection_name=connection_name,
                 )
                 changed = True
-            #
             elif connection._update_remote(
                 tree=connection_tree,
                 secrets=secrets,
@@ -1789,18 +1783,24 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
                 connection_name=connection_name,
             ):
                 changed = True
-        #
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        connection_ids: Dict[str, int] = {
+            connection_json["name"]: connection_json["id"]
+            for connection_json in api_get(secrets, "/api/v3/notification")
+        }
         for connection_name, connection in remote.definitions.items():
             if connection_name not in self.definitions:
                 connection_tree = f"{tree}.definitions[{repr(connection_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", connection_tree)
                     connection._delete_remote(
-                        tree=connection_tree,
                         secrets=secrets,
                         connection_id=connection_ids[connection_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", connection_tree)
-        #
         return changed

@@ -10,5 +10,3 @@
         - time_format
         - show_relative_dates
         - enable_color_impaired_mode
-      show_root_heading: false
-      show_source: false

@@ -21,11 +21,10 @@ from __future__ import annotations
 
 import json
 
-from pathlib import Path
 from typing import Any, Dict, Mapping, Optional, cast
 
-from buildarr.config import ConfigBase
-from buildarr.config.exceptions import ConfigTrashIDNotFoundError
+from buildarr.config import ConfigBase, ConfigTrashIDNotFoundError
+from buildarr.state import state
 from buildarr.types import TrashID
 from pydantic import Field, validator
 from typing_extensions import Self
@@ -152,27 +151,14 @@ class SonarrQualitySettingsConfig(ConfigBase):
     and quality definitions not set within Buildarr are left unmodified.
     """
 
-    @property
     def uses_trash_metadata(self) -> bool:
-        """
-        A flag determining whether or not this configuration uses TRaSH-Guides metadata.
-
-        Returns:
-            `True` if TRaSH-Guides metadata is used, otherwise `False`
-        """
         return bool(self.trash_id)
 
-    def _render_trash_metadata(self, trash_metadata_dir: Path) -> None:
-        """
-        Render configuration attributes obtained from TRaSH-Guides, in-place.
-
-        Args:
-            trash_metadata_dir (Path): TRaSH-Guides metadata directory.
-        """
+    def _render(self) -> None:
         if not self.trash_id:
             return
         for quality_file in (
-            trash_metadata_dir / "docs" / "json" / "sonarr" / "quality-size"
+            state.trash_metadata_dir / "docs" / "json" / "sonarr" / "quality-size"
         ).iterdir():
             with quality_file.open() as f:
                 quality_json = json.load(f)
@@ -242,8 +228,3 @@ class SonarrQualitySettingsConfig(ConfigBase):
                 )
                 changed = True
         return changed
-
-    # Tell Pydantic to validate in-place assignments of attributes.
-    # This ensures that any validators that parse attributes to consistent values run.
-    class Config(SonarrConfigBase.Config):
-        validate_assignment = True

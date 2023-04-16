@@ -8,8 +8,6 @@
         - delete_unmanaged
         - definitions
         - remote_path_mappings
-      show_root_heading: false
-      show_source: false
 
 !!! note
 
@@ -28,8 +26,6 @@
         - remove_completed_downloads
         - remove_failed_downloads
         - tags
-      show_root_heading: false
-      show_source: false
 
 ## Usenet download clients
 
@@ -48,8 +44,6 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
         - password
         - category
         - directory
-      show_root_heading: false
-      show_source: false
 
 ## NZBGet
 
@@ -67,8 +61,6 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
         - recent_priority
         - older_priority
         - add_paused
-      show_root_heading: false
-      show_source: false
 
 ## NZBVortex
 
@@ -84,8 +76,6 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
         - category
         - recent_priority
         - older_priority
-      show_root_heading: false
-      show_source: false
 
 ## Pneumatic
 
@@ -95,8 +85,6 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
         - type
         - nzb_folder
         - strm_folder
-      show_root_heading: false
-      show_source: false
 
 ## SABnzbd
 
@@ -112,8 +100,6 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
         - category
         - recent_priority
         - older_priority
-      show_root_heading: false
-      show_source: false
 
 ## Usenet Blackhole
 
@@ -123,8 +109,6 @@ These download clients retrieve media using the popular [Usenet](https://en.wiki
         - type
         - nzb_folder
         - watch_folder
-      show_root_heading: false
-      show_source: false
 
 ## Torrent download clients
 
@@ -142,8 +126,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - use_ssl
         - rpc_path
         - secret_token
-      show_root_heading: false
-      show_source: false
 
 ## Deluge
 
@@ -160,8 +142,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - postimport_category
         - recent_priority
         - older_priority
-      show_root_heading: false
-      show_source: false
 
 ## Download Station
 
@@ -176,8 +156,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - password
         - category
         - directory
-      show_root_heading: false
-      show_source: false
 
 ## Flood
 
@@ -196,8 +174,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - postimport_tags
         - additional_tags
         - start_on_add
-      show_root_heading: false
-      show_source: false
 
 ## Hadouken
 
@@ -212,8 +188,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - username
         - password
         - category
-      show_root_heading: false
-      show_source: false
 
 ## qBittorrent
 
@@ -234,8 +208,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - initial_state
         - sequential_order
         - first_and_last_first
-      show_root_heading: false
-      show_source: false
 
 ## RTorrent (ruTorrent)
 
@@ -254,8 +226,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - recent_priority
         - older_priority
         - add_stopped
-      show_root_heading: false
-      show_source: false
 
 ## Torrent Blackhole
 
@@ -268,8 +238,6 @@ peer-to-peer file sharing protocol to retrieve media files.
         - save_magnet_files
         - magnet_file_extension
         - read_only
-      show_root_heading: false
-      show_source: false
 
 ## Transmission/Vuze
 
@@ -293,8 +261,6 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
         - recent_priority
         - older_priority
         - add_paused
-      show_root_heading: false
-      show_source: false
 
 ## uTorrent
 
@@ -313,8 +279,6 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
         - recent_priority
         - older_priority
         - initial_state
-      show_root_heading: false
-      show_source: false
 
 ## Configuring remote path mappings
 
@@ -323,8 +287,6 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
       members:
         - delete_unmanaged
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ### Remote path mapping parameters
 
@@ -335,5 +297,3 @@ To use Vuze, set the `type` attribute in the download client to `vuze`.
         - remote_path
         - local_path
         - ensure
-      show_root_heading: false
-      show_source: false

@@ -224,8 +224,6 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
             or any(downloadclient.tags for downloadclient in remote.values())
             else {}
         )
-        # Create download clients that don't exist yet on the remote,
-        # and update in-place ones that do.
         for downloadclient_name, downloadclient in local.items():
             downloadclient_tree = f"{tree}[{repr(downloadclient_name)}]"
             if downloadclient_name not in remote:
@@ -245,20 +243,44 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
                 downloadclient_name=downloadclient_name,
             ):
                 changed = True
-        # If `delete_unmanaged` is `True`, remove any download clients on the remote
-        # that aren't managed by Buildarr.
-        # Otherwise, just log them.
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        definitions_changed = self._delete_remote_definitions(
+            tree=f"{tree}.definitions",
+            secrets=secrets,
+            local=self.definitions,
+            remote=remote.definitions,
+        )
+        rpms_changed = self.remote_path_mappings._delete_remote(
+            tree=f"{tree}.remote_path_mappings",
+            secrets=secrets,
+            remote=remote.remote_path_mappings,
+        )
+        return any([definitions_changed, rpms_changed])
+
+    def _delete_remote_definitions(
+        self,
+        tree: str,
+        secrets: SonarrSecrets,
+        local: Mapping[str, DownloadClientType],
+        remote: Mapping[str, DownloadClientType],
+    ) -> bool:
+        changed = False
+        downloadclient_ids: Dict[str, int] = {
+            downloadclient_json["name"]: downloadclient_json["id"]
+            for downloadclient_json in api_get(secrets, "/api/v3/downloadclient")
+        }
         for downloadclient_name, downloadclient in remote.items():
             if downloadclient_name not in local:
                 downloadclient_tree = f"{tree}[{repr(downloadclient_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", downloadclient_tree)
                     downloadclient._delete_remote(
-                        tree=downloadclient_tree,
                         secrets=secrets,
                         downloadclient_id=downloadclient_ids[downloadclient_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", downloadclient_tree)
-        # Return the resource changed status.
         return changed

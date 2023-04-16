@@ -32,16 +32,15 @@ packages = [{include = "buildarr_sonarr"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-buildarr = ">=0.4.0,<0.5.0"
+buildarr = ">=0.5.0,<0.6.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "23.1.0"
-mypy = "1.1.1"
-types-pyyaml = "6.0.12.8"
-types-requests = "2.28.11.15"
+black = "23.3.0"
+mypy = "1.2.0"
+types-requests = "2.28.11.17"
 mkdocs = "1.4.2"
-mkdocstrings = {extras = ["python"], version = "0.20.0"}
-ruff = "0.0.255"
+mkdocstrings = {extras = ["python"], version = "0.21.2"}
+ruff = "0.0.261"
 
 [tool.ruff]
 fix = true

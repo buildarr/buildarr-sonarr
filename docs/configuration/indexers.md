@@ -9,8 +9,6 @@
         - rss_sync_interval
         - delete_unmanaged
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ## Configuring indexers
 
@@ -23,8 +21,6 @@
         - priority
         - download_client
         - tags
-      show_root_heading: false
-      show_source: false
 
 ## Fanzub
 
@@ -34,8 +30,6 @@
         - type
         - rss_url
         - anime_standard_format_search
-      show_root_heading: false
-      show_source: false
 
 ## Newznab
 
@@ -50,8 +44,6 @@
         - anime_categories
         - anime_standard_format_search
         - additional_parameters
-      show_root_heading: false
-      show_source: false
 
 ## OmgWtfNZBs
 
@@ -62,8 +54,6 @@
         - username
         - api_key
         - delay
-      show_root_heading: false
-      show_source: false
 
 ## Torrent Indexers
 
@@ -74,8 +64,6 @@
         - seed_ratio
         - seed_time
         - seasonpack_seed_time
-      show_root_heading: false
-      show_source: false
 
 ## BroadcasTheNet
 
@@ -85,8 +73,6 @@
         - type
         - api_url
         - api_key
-      show_root_heading: false
-      show_source: false
 
 ## Filelist
 
@@ -99,8 +85,6 @@
         - api_url
         - categories
         - anime_categories
-      show_root_heading: false
-      show_source: false
 
 ## HDBits
 
@@ -111,8 +95,6 @@
         - username
         - api_key
         - api_url
-      show_root_heading: false
-      show_source: false
 
 ## IP Torrents
 
@@ -121,8 +103,6 @@
       members:
         - type
         - feed_url
-      show_root_heading: false
-      show_source: false
 
 ## Nyaa
 
@@ -133,8 +113,6 @@
         - website_url
         - anime_standard_format_search
         - additional_parameters
-      show_root_heading: false
-      show_source: false
 
 ## Rarbg
 
@@ -145,8 +123,6 @@
         - api_url
         - ranked_only
         - captcha_token
-      show_root_heading: false
-      show_source: false
 
 ## Torrent RSS Feed
 
@@ -157,8 +133,6 @@
         - full_rss_feed_url
         - cookie
         - allow_zero_size
-      show_root_heading: false
-      show_source: false
 
 ## TorrentLeech
 
@@ -168,8 +142,6 @@
         - type
         - website_url
         - api_key
-      show_root_heading: false
-      show_source: false
 
 ## Torznab
 
@@ -184,5 +156,3 @@
         - anime_categories
         - anime_standard_format_search
         - additional_parameters
-      show_root_heading: false
-      show_source: false
