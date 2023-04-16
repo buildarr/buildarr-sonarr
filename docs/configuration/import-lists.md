@@ -7,8 +7,6 @@
         - delete_unmanaged_exclusions
         - definitions
         - exclusions
-      show_root_heading: false
-      show_source: false
 
 ## Configuring import lists
 
@@ -25,8 +23,6 @@ The following
         - series_type
         - season_folder
         - tags
-      show_root_heading: false
-      show_source: false
 
 ## Sonarr
 
@@ -40,8 +36,6 @@ The following
         - source_quality_profiles
         - source_language_profiles
         - source_tags
-      show_root_heading: false
-      show_source: false
 
 ## Plex
 
@@ -50,8 +44,6 @@ The following
       members:
         - type
         - access_token
-      show_root_heading: false
-      show_source: false
 
 ## Trakt
 
@@ -68,8 +60,6 @@ The following
         - years
         - limit
         - trakt_additional_parameters
-      show_root_heading: false
-      show_source: false
 
 ### List
 
@@ -78,8 +68,6 @@ The following
       members:
         - type
         - list_name
-      show_root_heading: false
-      show_source: false
 
 ### Popular List
 
@@ -88,8 +76,6 @@ The following
       members:
         - type
         - list_type
-      show_root_heading: false
-      show_source: false
 
 ### User
 
@@ -98,5 +84,3 @@ The following
       members:
         - type
         - list_type
-      show_root_heading: false
-      show_source: false
