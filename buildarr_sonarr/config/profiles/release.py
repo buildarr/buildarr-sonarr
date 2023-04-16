@@ -120,8 +120,6 @@ class ReleaseProfile(SonarrConfigBase):
           members:
             - include
             - exclude
-          show_root_heading: false
-          show_source: false
     """
 
     strict_negative_scores: bool = False
@@ -365,14 +363,8 @@ class ReleaseProfile(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: SonarrSecrets, profile_id: int) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, profile_id: int) -> None:
         api_delete(secrets, f"/api/v3/releaseprofile/{profile_id}")
-
-    # Tell Pydantic to validate in-place assignments of attributes.
-    # This ensures that any validators that parse attributes to consistent values run.
-    class Config(SonarrConfigBase.Config):
-        validate_assignment = True
 
 
 class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
@@ -421,9 +413,7 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        #
         changed = False
-        #
         profile_ids: Dict[str, int] = {
             profile_json["name"]: profile_json["id"]
             for profile_json in api_get(secrets, "/api/v3/releaseprofile")
@@ -440,10 +430,8 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
             or any(profile.tags for profile in remote.definitions.values())
             else {}
         )
-        #
         for profile_name, profile in self.definitions.items():
             profile_tree = f"{tree}.definitions[{repr(profile_name)}]"
-            #
             if profile_name not in remote.definitions:
                 profile._create_remote(
                     tree=profile_tree,
@@ -453,7 +441,6 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
                     tag_ids=tag_ids,
                 )
                 changed = True
-            #
             elif profile._update_remote(
                 tree=profile_tree,
                 secrets=secrets,
@@ -464,18 +451,24 @@ class SonarrReleaseProfilesSettingsConfig(SonarrConfigBase):
                 tag_ids=tag_ids,
             ):
                 changed = True
-        #
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        profile_ids: Dict[str, int] = {
+            profile_json["name"]: profile_json["id"]
+            for profile_json in api_get(secrets, "/api/v3/releaseprofile")
+        }
         for profile_name, profile in remote.definitions.items():
             if profile_name not in self.definitions:
                 profile_tree = f"{tree}.definitions[{repr(profile_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", profile_tree)
                     profile._delete_remote(
-                        tree=profile_tree,
                         secrets=secrets,
                         profile_id=profile_ids[profile_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", profile_tree)
-        #
         return changed

@@ -380,13 +380,7 @@ class DownloadClient(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(
-        self,
-        tree: str,
-        secrets: SonarrSecrets,
-        downloadclient_id: int,
-    ) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, downloadclient_id: int) -> None:
         api_delete(secrets, f"/api/v3/downloadclient/{downloadclient_id}")
 
 

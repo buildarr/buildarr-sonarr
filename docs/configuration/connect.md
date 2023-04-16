@@ -21,8 +21,6 @@ occurs in Sonarr.
         - on_health_issue
         - include_health_warnings
         - on_application_update
-      show_root_heading: false
-      show_source: false
 
 ## Boxcar
 
@@ -31,8 +29,6 @@ occurs in Sonarr.
       members:
         - type
         - access_token
-      show_root_heading: false
-      show_source: false
 
 ## Custom Script
 
@@ -41,8 +37,6 @@ occurs in Sonarr.
       members:
         - type
         - path
-      show_root_heading: false
-      show_source: false
 
 ## Discord
 
@@ -50,14 +44,12 @@ occurs in Sonarr.
     options:
       members:
         - type
-        - webook_url
+        - webhook_url
         - username
         - avatar
         - host
         - on_grab_fields
         - on_import_fields
-      show_root_heading: false
-      show_source: false
 
 ## Email
 
@@ -74,8 +66,6 @@ occurs in Sonarr.
         - recipient_addresses
         - cc_addresses
         - bcc_addresses
-      show_root_heading: false
-      show_source: false
 
 ## Emby
 
@@ -89,8 +79,6 @@ occurs in Sonarr.
         - api_key
         - send_notifications
         - update_library
-      show_root_heading: false
-      show_source: false
 
 ## Gotify
 
@@ -101,8 +89,6 @@ occurs in Sonarr.
         - server
         - app_token
         - priority
-      show_root_heading: false
-      show_source: false
 
 ## Join
 
@@ -113,8 +99,6 @@ occurs in Sonarr.
         - api_key
         - device_names
         - priority
-      show_root_heading: false
-      show_source: false
 
 ## Kodi (XBMC)
 
@@ -132,8 +116,6 @@ occurs in Sonarr.
         - update_library
         - clean_library
         - always_update
-      show_root_heading: false
-      show_source: false
 
 ## Mailgun
 
@@ -146,8 +128,6 @@ occurs in Sonarr.
         - from_address
         - sender_domain
         - recipient_addresses
-      show_root_heading: false
-      show_source: false
 
 ## Plex Home Theater
 
@@ -165,8 +145,6 @@ occurs in Sonarr.
         - update_library
         - clean_library
         - always_update
-      show_root_heading: false
-      show_source: false
 
 ## Plex Media Center
 
@@ -178,8 +156,6 @@ occurs in Sonarr.
         - port
         - username
         - password
-      show_root_heading: false
-      show_source: false
 
 ## Plex Media Server
 
@@ -192,8 +168,6 @@ occurs in Sonarr.
         - use_ssl
         - auth_token
         - update_library
-      show_root_heading: false
-      show_source: false
 
 ## Prowl
 
@@ -203,8 +177,6 @@ occurs in Sonarr.
         - type
         - api_key
         - priority
-      show_root_heading: false
-      show_source: false
 
 ## Pushbullet
 
@@ -216,8 +188,6 @@ occurs in Sonarr.
         - device_ids
         - channel_tags
         - sender_id
-      show_root_heading: false
-      show_source: false
 
 ## Pushover
 
@@ -232,8 +202,6 @@ occurs in Sonarr.
         - retry
         - expire
         - sound
-      show_root_heading: false
-      show_source: false
 
 ## SendGrid
 
@@ -244,8 +212,6 @@ occurs in Sonarr.
         - api_key
         - from_address
         - recipient_addresses
-      show_root_heading: false
-      show_source: false
 
 ## Slack
 
@@ -257,8 +223,6 @@ occurs in Sonarr.
         - username
         - icon
         - channel
-      show_root_heading: false
-      show_source: false
 
 ## Synology Indexer
 
@@ -267,8 +231,6 @@ occurs in Sonarr.
       members:
         - type
         - update_library
-      show_root_heading: false
-      show_source: false
 
 ## Telegram
 
@@ -279,8 +241,6 @@ occurs in Sonarr.
         - bot_token
         - chat_id
         - send_silently
-      show_root_heading: false
-      show_source: false
 
 ## Trakt
 
@@ -292,8 +252,6 @@ occurs in Sonarr.
         - refresh_token
         - expires
         - auth_user
-      show_root_heading: false
-      show_source: false
 
 ## Twitter
 
@@ -307,8 +265,6 @@ occurs in Sonarr.
         - access_token_secret
         - mention
         - direct_message
-      show_root_heading: false
-      show_source: false
 
 ## Webhook
 
@@ -320,5 +276,3 @@ occurs in Sonarr.
         - method
         - username
         - password
-      show_root_heading: false
-      show_source: false

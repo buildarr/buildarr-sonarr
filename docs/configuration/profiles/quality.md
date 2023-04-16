@@ -38,8 +38,6 @@ In Buildarr, quality profiles are defined using a dictonary structure. The quali
       members:
         - delete_unmanaged
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ## Creating a quality profile
 
@@ -49,5 +47,3 @@ In Buildarr, quality profiles are defined using a dictonary structure. The quali
         - upgrades_allowed
         - upgrade_until
         - qualities
-      show_root_heading: false
-      show_source: false

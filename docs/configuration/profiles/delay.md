@@ -41,8 +41,6 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
       members:
         - delete_unmanaged
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ## Creating a delay profile
 
@@ -54,5 +52,3 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
         - torrent_delay
         - bypass_if_highest_quality
         - tags
-      show_root_heading: false
-      show_source: false

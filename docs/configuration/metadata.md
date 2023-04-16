@@ -17,8 +17,6 @@ To enable a metadata format, set `enable` to `true` in the configuration block i
         - series_images
         - season_images
         - episode_images
-      show_root_heading: false
-      show_source: false
 
 ## Roksbox
 
@@ -29,8 +27,6 @@ To enable a metadata format, set `enable` to `true` in the configuration block i
         - series_images
         - season_images
         - episode_images
-      show_root_heading: false
-      show_source: false
 
 ## WDTV
 
@@ -41,5 +37,3 @@ To enable a metadata format, set `enable` to `true` in the configuration block i
         - series_images
         - season_images
         - episode_images
-      show_root_heading: false
-      show_source: false

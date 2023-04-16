@@ -24,7 +24,6 @@ import re
 from datetime import datetime
 from logging import getLogger
 from typing import (
-    TYPE_CHECKING,
     Any,
     Dict,
     Iterable,
@@ -50,12 +49,6 @@ from ..secrets import SonarrSecrets
 from ..types import SonarrApiKey
 from .types import SonarrConfigBase, TraktAuthUser
 from .util import trakt_expires_encoder
-
-if TYPE_CHECKING:
-    from typing import Collection
-
-    from ..config import SonarrInstanceConfig
-
 
 logger = getLogger(__name__)
 
@@ -426,7 +419,7 @@ class ImportList(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: SonarrSecrets, importlist_id: int) -> None:
+    def _delete_remote(self, secrets: SonarrSecrets, importlist_id: int) -> None:
         """
         Delete this import list from the remote Sonarr instance.
 
@@ -435,7 +428,6 @@ class ImportList(SonarrConfigBase):
             secrets (SonarrSecrets): Secrets metadata for the remote instance.
             importlist_id (int): ID associated with this import list on the remote instance.
         """
-        logger.info("%s: (...) -> (deleted)", tree)
         api_delete(secrets, f"/api/v3/importlist/{importlist_id}")
 
 
@@ -883,7 +875,7 @@ class SonarrImportList(ProgramImportList):
                 resource_ids.add(resource)
             return sorted(resource_ids)
         source_resource_ids: Optional[Dict[str, int]] = None
-        for i, resource in enumerate(resources):
+        for resource in resources:
             if isinstance(resource, int):
                 resource_ids.add(resource)
             else:
@@ -898,22 +890,9 @@ class SonarrImportList(ProgramImportList):
                 try:
                     resource_ids.add(source_resource_ids[resource])
                 except KeyError as err:
-                    # If this is a dry-run, then a non-existent resource name was passed from
-                    # the instance reference resolver.
-                    # Generate a fake ID based on the maximum existing resource ID
-                    # and the index of the resource name being currently processed, and
-                    # add it to the result.
-                    # (Since this is a dry-run, it's fine that it's fake.)
-                    if state.dry_run:
-                        max_id = max(source_resource_ids.values()) if resource_ids else 1
-                        resource_ids.add(max_id + i)
-                    # If this is **not** a dry-run, then a non-existent resource name
-                    # somehow made it past all the validation being done.
-                    # Raise a runtime error and report back to the user.
-                    else:
-                        raise RuntimeError(
-                            f"Unable to find ID for {resource_type} '{err.args[0]}'",
-                        ) from None
+                    raise RuntimeError(
+                        f"Unable to find ID for {resource_type} '{err.args[0]}'",
+                    ) from None
         return sorted(resource_ids)
 
     def _resolve_from_local(
@@ -1029,35 +1008,7 @@ class SonarrImportList(ProgramImportList):
             elif resource in resource_ids:
                 resolved_source_resources.add(resource)
             else:
-                # If dry-run mode is enabled, then there is a very good chance
-                # the resource does not yet exist on the target Sonarr instance.
-                # Since the instance is also managed by Buildarr, go into its configuration
-                # and check if the resource name is defined.
-                #
-                # If the resource is defined, continue as normal, and a fake ID will be assigned
-                # when encoding the request, so the dry run will complete as expected.
-                #
-                # If the resource is **not** defined, raise an error as it would
-                # in the non-dry-run case, but set `available_resources` so that
-                # the error message will be accurate.
-                if state.dry_run:
-                    target_instance_config: SonarrInstanceConfig = state.instance_configs["sonarr"][
-                        instance_name
-                    ]  # type: ignore[assignment]
-                    settings = target_instance_config.settings
-                    definitions: Collection[str] = getattr(
-                        settings.profiles if resource_type_int.endswith("_profile") else settings,
-                        f"{resource_type_int}s",
-                    ).definitions
-                    if resource in definitions:
-                        resolved_source_resources.add(resource)
-                        continue
-                    available_resources = list(definitions)
-                # If this is not a dry-run, then either the user has not defined the
-                # resource on the target instance, or for some reason it wasn't created.
-                # Either way, raise an error.
-                else:
-                    available_resources = list(resource_ids.keys())
+                available_resources = list(resource_ids.keys())
                 _resources_str = (
                     ", ".join(repr(p) for p in available_resources)
                     if available_resources
@@ -1071,11 +1022,6 @@ class SonarrImportList(ProgramImportList):
                 )
                 raise ValueError(error_message)
         return resolved_source_resources
-
-    class Config(SonarrConfigBase.Config):
-        # Ensure in-place assignments of attributes are always validated,
-        # since this class performs such modifications in certain cases.
-        validate_assignment = True
 
 
 class PlexWatchlistImportList(PlexImportList):
@@ -1352,19 +1298,25 @@ class SonarrImportListsSettingsConfig(SonarrConfigBase):
                 importlist_name=importlist_name,
             ):
                 changed = True
-        # Find import list definitions on the remote that aren't configured locally.
-        # If `delete_unmanaged` is `True`, delete them. If not, just log them as unmanaged.
+        # We're done!
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        importlist_ids: Dict[str, int] = {
+            importlist_json["name"]: importlist_json["id"]
+            for importlist_json in api_get(secrets, "/api/v3/importlist")
+        }
         for importlist_name, importlist in remote.definitions.items():
             if importlist_name not in self.definitions:
                 importlist_tree = f"{tree}.definitions[{repr(importlist_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", importlist_tree)
                     importlist._delete_remote(
-                        tree=importlist_tree,
                         secrets=secrets,
                         importlist_id=importlist_ids[importlist_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", importlist_tree)
-        # We're done!
         return changed

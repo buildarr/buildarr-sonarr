@@ -273,7 +273,6 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     Configuration options for Sonarr itself are set within this structure.
     """
 
-    @property
     def uses_trash_metadata(self) -> bool:
         if self.settings.quality.uses_trash_metadata():
             return True
@@ -283,6 +282,8 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
         return False
 
     def render(self) -> Self:
+        if not self.uses_trash_metadata():
+            return self
         copy = self.copy(deep=True)
         copy._render()
         return copy

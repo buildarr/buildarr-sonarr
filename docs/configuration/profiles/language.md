@@ -31,8 +31,6 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
       members:
         - delete_unmanaged
         - definitions
-      show_root_heading: false
-      show_source: false
 
 ## Creating a language profile
 
@@ -42,12 +40,7 @@ For more information, see this guide from [WikiArr](https://wiki.servarr.com/son
         - upgrades_allowed
         - upgrade_until
         - languages
-      show_root_heading: false
-      show_source: false
 
 ## Available languages
 
 ##### ::: buildarr_sonarr.config.profiles.language.Language
-    options:
-      show_root_heading: false
-      show_source: false

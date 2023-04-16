@@ -19,10 +19,8 @@ Sonarr plugin API functions.
 
 from __future__ import annotations
 
-import json
 import re
 
-from datetime import datetime, timezone
 from http import HTTPStatus
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -35,7 +33,7 @@ from buildarr.state import state
 from .exceptions import SonarrAPIError
 
 if TYPE_CHECKING:
-    from typing import Any, Dict, Mapping, Optional
+    from typing import Any, Dict, Optional, Union
 
     from .secrets import SonarrSecrets
 
@@ -58,133 +56,220 @@ def get_initialize_js(host_url: str, api_key: Optional[str] = None) -> Dict[str,
     """
 
     url = f"{host_url}/initialize.js"
+
     logger.debug("GET %s", url)
+
     res = requests.get(
         url,
         headers={"X-Api-Key": api_key} if api_key else None,
-        timeout=state.config.buildarr.request_timeout,
+        timeout=state.request_timeout,
+        allow_redirects=False,
     )
+
+    if res.status_code != HTTPStatus.OK:
+        logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, res.text)
+        if res.status_code in (HTTPStatus.UNAUTHORIZED, HTTPStatus.FOUND):
+            status_code: int = HTTPStatus.UNAUTHORIZED
+            error_message = "Unauthorized"
+        else:
+            status_code = res.status_code
+            error_message = f"Unexpected response with error code {res.status_code}: {res.text}"
+        raise SonarrAPIError(
+            f"Unable to retrieve 'initialize.js': {error_message}",
+            status_code=status_code,
+        )
+
     res_match = re.match(INITIALIZE_JS_RES_PATTERN, res.text)
     if not res_match:
-        raise RuntimeError(f"No matches for initialize.js parsing: {res.text}")
+        raise RuntimeError(f"No matches for 'initialize.js' parsing: {res.text}")
     res_json = json5.loads(res_match.group(1))
+
     logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
+
     return res_json
 
 
-def api_get(secrets: SonarrSecrets, api_url: str) -> Any:
+def api_get(
+    secrets: Union[SonarrSecrets, str],
+    api_url: str,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
+    expected_status_code: HTTPStatus = HTTPStatus.OK,
+) -> Any:
     """
     Send a `GET` request to a Sonarr instance.
 
     Args:
-        secrets (SonarrSecrets): Sonarr secrets metadata
-        api_url (str): Sonarr API command
+        secrets (Union[SonarrSecrets, str]): Sonarr secrets metadata, or host URL.
+        api_url (str): Sonarr API command.
+        expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
 
     Returns:
         Response object
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
+    else:
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
+
     logger.debug("GET %s", url)
-    res = requests.get(
+
+    if not session:
+        session = requests.Session()
+    res = session.get(
         url,
-        headers={"X-Api-Key": secrets.api_key.get_secret_value()},
-        timeout=state.config.buildarr.request_timeout,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        timeout=state.request_timeout,
     )
     res_json = res.json()
+
     logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
-    if res.status_code != HTTPStatus.OK:
+
+    if res.status_code != expected_status_code:
         api_error(method="GET", url=url, response=res)
+
     return res_json
 
 
-def api_post(secrets: SonarrSecrets, api_url: str, req: Any) -> Any:
+def api_post(
+    secrets: Union[SonarrSecrets, str],
+    api_url: str,
+    req: Any = None,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
+    expected_status_code: HTTPStatus = HTTPStatus.CREATED,
+) -> Any:
     """
     Send a `POST` request to a Sonarr instance.
 
     Args:
-        secrets (SonarrSecrets): Sonarr secrets metadata
-        api_url (str): Sonarr API command
-        req (Any): Request (JSON-serialisable)
+        secrets (Union[SonarrSecrets, str]): Sonarr secrets metadata, or host URL.
+        api_url (str): Sonarr API command.
+        req (Any): Request (JSON-serialisable).
+        expected_status_code (HTTPStatus): Expected response status. Defaults to `201 Created`.
 
     Returns:
         Response object
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
-    logger.debug("POST %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()}
-    if not state.dry_run:
-        res = requests.post(
-            url,
-            headers=headers,
-            json=req,
-            timeout=state.config.buildarr.request_timeout,
-        )
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
     else:
-        res = _create_dryrun_response("POST", url, content=json.dumps(req))
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
+
+    logger.debug("POST %s <- req=%s", url, repr(req))
+
+    if not session:
+        session = requests.Session()
+    res = session.post(
+        url,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        timeout=state.request_timeout,
+        **({"json": req} if req is not None else {}),
+    )
     res_json = res.json()
+
     logger.debug("POST %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
-    if res.status_code != HTTPStatus.CREATED:
+
+    if res.status_code != expected_status_code:
         api_error(method="POST", url=url, response=res)
+
     return res_json
 
 
-def api_put(secrets: SonarrSecrets, api_url: str, req: Any) -> Any:
+def api_put(
+    secrets: Union[SonarrSecrets, str],
+    api_url: str,
+    req: Any,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
+    expected_status_code: HTTPStatus = HTTPStatus.ACCEPTED,
+) -> Any:
     """
     Send a `PUT` request to a Sonarr instance.
 
     Args:
-        secrets (SonarrSecrets): Sonarr secrets metadata
-        api_url (str): Sonarr API command
-        req (Any): Request (JSON-serialisable)
+        secrets (Union[SonarrSecrets, str]): Sonarr secrets metadata, or host URL.
+        api_url (str): Sonarr API command.
+        req (Any): Request (JSON-serialisable).
+        expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
 
     Returns:
         Response object
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
-    logger.debug("PUT %s <- req=%s", url, repr(req))
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()}
-    if not state.dry_run:
-        res = requests.put(
-            url,
-            headers=headers,
-            json=req,
-            timeout=state.config.buildarr.request_timeout,
-        )
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
     else:
-        res = _create_dryrun_response("PUT", url, content=json.dumps(req))
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
+
+    logger.debug("PUT %s <- req=%s", url, repr(req))
+
+    if not session:
+        session = requests.Session()
+    res = session.put(
+        url,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        json=req,
+        timeout=state.request_timeout,
+    )
     res_json = res.json()
+
     logger.debug("PUT %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
-    if res.status_code != HTTPStatus.ACCEPTED:
+
+    if res.status_code != expected_status_code:
         api_error(method="PUT", url=url, response=res)
+
     return res_json
 
 
-def api_delete(secrets: SonarrSecrets, api_url: str) -> None:
+def api_delete(
+    secrets: Union[SonarrSecrets, str],
+    api_url: str,
+    session: Optional[requests.Session] = None,
+    use_api_key: bool = True,
+    expected_status_code: HTTPStatus = HTTPStatus.OK,
+) -> None:
     """
     Send a `DELETE` request to a Sonarr instance.
 
     Args:
-        secrets (SonarrSecrets): Sonarr secrets metadata
-        api_url (str): Sonarr API command
+        secrets (Union[SonarrSecrets, str]): Sonarr secrets metadata, or host URL.
+        api_url (str): Sonarr API command.
+        expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
     """
 
-    url = f"{secrets.host_url}/{api_url.lstrip('/')}"
+    if isinstance(secrets, str):
+        host_url = secrets
+        api_key = None
+    else:
+        host_url = secrets.host_url
+        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+    url = f"{host_url}/{api_url.lstrip('/')}"
+
     logger.debug("DELETE %s", url)
-    headers = {"X-Api-Key": secrets.api_key.get_secret_value()}
-    res = (
-        requests.delete(
-            url,
-            headers=headers,
-            timeout=state.config.buildarr.request_timeout,
-        )
-        if not state.dry_run
-        else _create_dryrun_response("DELETE", url)
+
+    if not session:
+        session = requests.Session()
+    res = session.delete(
+        url,
+        headers={"X-Api-Key": api_key} if api_key else None,
+        timeout=state.request_timeout,
     )
+
     logger.debug("DELETE %s -> status_code=%i", url, res.status_code)
-    if res.status_code != HTTPStatus.OK:
+
+    if res.status_code != expected_status_code:
         api_error(method="DELETE", url=url, response=res, parse_response=False)
 
 
@@ -219,7 +304,7 @@ def api_error(
                 error_message += f"\n{_api_error(error)}"
         except KeyError:
             error_message += f" {res_json}"
-    raise SonarrAPIError(error_message, response=response)
+    raise SonarrAPIError(error_message, status_code=response.status_code)
 
 
 def _api_error(res_json: Any) -> str:
@@ -250,64 +335,3 @@ def _api_error(res_json: Any) -> str:
         return res_json["message"]
     except KeyError:
         return f"(Unsupported error JSON format) {res_json}"
-
-
-def _create_dryrun_response(
-    method: str,
-    url: str,
-    headers: Optional[Mapping[str, str]] = None,
-    status_code: Optional[int] = None,
-    content_type: str = "application/json",
-    charset: str = "utf-8",
-    content: str = "{}",
-) -> requests.Response:
-    """
-    A utility function for generating `requests.Response` objects in dry-run mode.
-
-    Args:
-        method (str): HTTP method of the response to simulate.
-        url (str): URL of the request.
-        status_code (Optional[int], optional): Status code for the response. Default: auto-detect
-        content_type (str, optional): MIME type of response content. Default: `application/json`
-        charset (str, optional): Encoding of response content. Default: `utf-8`
-        content (str, optional): Response content. Default: `{}`
-
-    Raises:
-        ValueError: When an unsupported HTTP method is used
-
-    Returns:
-        Generated `requests.Response` object
-    """
-
-    method = method.upper()
-
-    response = requests.Response()
-    response.url = url
-    response.headers["Vary"] = "Accept"
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Content-Type"] = f"{content_type}; charset={charset}"
-    response.headers["Server"] = "Mono-HTTPAPI/1.0"
-    response.headers["Date"] = datetime.now(tz=timezone.utc).strftime("%a, %d %b %Y %H:%M:%S %Z")
-    response.headers["Transfer-Encoding"] = "chunked"
-    if headers:
-        response.headers.update(headers)
-    if status_code is not None:
-        response.status_code = status_code
-    elif method == "POST":
-        response.status_code = int(HTTPStatus.CREATED)
-    elif method == "PUT":
-        response.status_code = int(HTTPStatus.ACCEPTED)
-    elif method == "DELETE":
-        response.status_code = int(HTTPStatus.OK)
-    else:
-        raise ValueError(
-            f"Unsupported HTTP method for creating dry-run response: {str(method)}",
-        )
-    response.encoding = charset
-    if content is not None:
-        response._content = content.encode("UTF-8")
-
-    return response

@@ -19,12 +19,7 @@ Sonarr plugin exception classes.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from buildarr.exceptions import BuildarrError
-
-if TYPE_CHECKING:
-    from requests import Response
 
 
 class SonarrError(BuildarrError):
@@ -40,6 +35,22 @@ class SonarrAPIError(SonarrError):
     Sonarr API exception class.
     """
 
-    def __init__(self, msg: str, response: Response) -> None:
-        self.response = response
+    def __init__(self, msg: str, status_code: int) -> None:
+        self.status_code = status_code
         super().__init__(msg)
+
+
+class SonarrSecretsError(SonarrError):
+    """
+    Sonarr plugin secrets exception base class.
+    """
+
+    pass
+
+
+class SonarrSecretsUnauthorizedError(SonarrSecretsError):
+    """
+    Error raised when the Sonarr API key wasn't able to be retrieved.
+    """
+
+    pass

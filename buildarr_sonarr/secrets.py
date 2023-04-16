@@ -27,7 +27,7 @@ from buildarr.secrets import SecretsPlugin
 from buildarr.types import NonEmptyStr, Port
 
 from .api import api_get, get_initialize_js
-from .exceptions import SonarrAPIError
+from .exceptions import SonarrAPIError, SonarrSecretsUnauthorizedError
 from .types import SonarrApiKey, SonarrProtocol
 
 if TYPE_CHECKING:
@@ -73,21 +73,35 @@ class SonarrSecrets(_SonarrSecrets):
 
     @classmethod
     def get(cls, config: SonarrConfig) -> Self:
-        return cls(
-            hostname=config.hostname,
-            port=config.port,
-            protocol=config.protocol,
-            api_key=(
-                config.api_key if config.api_key else get_initialize_js(config.host_url)["apiKey"]
-            ),
-        )
+        try:
+            return cls(
+                hostname=config.hostname,
+                port=config.port,
+                protocol=config.protocol,
+                api_key=(
+                    config.api_key
+                    if config.api_key
+                    else get_initialize_js(config.host_url)["apiKey"]
+                ),
+            )
+        except SonarrAPIError as err:
+            if err.status_code == HTTPStatus.UNAUTHORIZED:
+                raise SonarrSecretsUnauthorizedError(
+                    "Unable to retrieve the API key for the Sonarr instance "
+                    f"at '{config.host_url}': Authentication is enabled. "
+                    "Please set the 'Settings -> General -> Authentication' attribute to 'None', "
+                    "or if you do not wish to disable authentication, "
+                    "explicitly define the API key in the Buildarr configuration.",
+                ) from None
+            else:
+                raise
 
     def test(self) -> bool:
         try:
             api_get(self, "/api/v3/system/status")
             return True
         except SonarrAPIError as err:
-            if err.response.status_code == HTTPStatus.UNAUTHORIZED:
+            if err.status_code == HTTPStatus.UNAUTHORIZED:
                 return False
             else:
                 raise

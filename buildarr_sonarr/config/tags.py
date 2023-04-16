@@ -49,17 +49,6 @@ class SonarrTagsSettingsConfig(SonarrConfigBase):
     in this configuration section.
     """
 
-    delete_unused: bool = False
-    """
-    Delete tags that are not used by any resource in Buildarr.
-
-    Note that tags not being used in Buildarr are not necessarily
-    unused by Sonarr, so be careful about when to use this option.
-
-    Sonarr appears to periodically clean up unused tags,
-    so in most cases there is no need to enable this option.
-    """
-
     definitions: List[NonEmptyStr] = []
     """
     Define tags that are used within Buildarr here.
@@ -81,9 +70,7 @@ class SonarrTagsSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        # This only does creations and updates.
-        # Deletes (and empty tag list prints) are done AFTER all other modifications are made.
-        # TODO: Implement tag deletions.
+        # This only does creations and updates, as Sonarr automatically cleans up unused tags.
         changed = False
         current_tags: Dict[str, int] = {
             tag["label"]: tag["id"] for tag in api_get(secrets, "/api/v3/tag")

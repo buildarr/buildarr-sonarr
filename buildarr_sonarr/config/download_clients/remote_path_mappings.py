@@ -122,13 +122,7 @@ class RemotePathMapping(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(
-        self,
-        tree: str,
-        secrets: SonarrSecrets,
-        remotepathmapping_id: int,
-    ) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, remotepathmapping_id: int) -> None:
         api_delete(secrets, f"/api/v3/remotepathmapping/{remotepathmapping_id}")
 
 
@@ -205,9 +199,6 @@ class SonarrRemotePathMappingsSettingsConfig(SonarrConfigBase):
             (rpm["host"], rpm["remotePath"], rpm["localPath"]): rpm["id"]
             for rpm in api_get(secrets, "/api/v3/remotepathmapping")
         }
-        local_rpms: Dict[Tuple[str, str, str], RemotePathMapping] = {
-            (rpm.host, rpm.remote_path, rpm.local_path): rpm for rpm in self.definitions
-        }
         remote_rpms: Dict[Tuple[str, str, str], RemotePathMapping] = {
             (rpm.host, rpm.remote_path, rpm.local_path): rpm for rpm in remote.definitions
         }
@@ -229,30 +220,37 @@ class SonarrRemotePathMappingsSettingsConfig(SonarrConfigBase):
             elif rpm_tuple in remote_rpms:
                 logger.info("%s: %s -> (deleted)", rpm_tree, repr(rpm))
                 rpm._delete_remote(
-                    tree=rpm_tree,
                     secrets=secrets,
                     remotepathmapping_id=remote_rpm_ids[rpm_tuple],
                 )
                 changed = True
             else:
                 logger.debug("%s: %s (does not exist)", rpm_tree, repr(rpm))
-        # Handle unmanaged remote path mappings.
-        # If `delete_unmanaged` is `True`, automatically delete them.
-        j = -1
+        # Return changed status.
+        return changed
+
+    def _delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        remote_rpm_ids: Dict[Tuple[str, str, str], int] = {
+            (rpm["host"], rpm["remotePath"], rpm["localPath"]): rpm["id"]
+            for rpm in api_get(secrets, "/api/v3/remotepathmapping")
+        }
+        local_rpms: Dict[Tuple[str, str, str], RemotePathMapping] = {
+            (rpm.host, rpm.remote_path, rpm.local_path): rpm for rpm in self.definitions
+        }
+        i = -1
         for rpm in remote.definitions:
             rpm_tuple = (rpm.host, rpm.remote_path, rpm.local_path)
             if rpm_tuple not in local_rpms:
-                rpm_tree = f"{tree}.definitions[{j}]"
+                rpm_tree = f"{tree}.definitions[{i}]"
                 if self.delete_unmanaged:
                     logger.info("%s: %s -> (deleted)", rpm_tree, repr(rpm))
                     rpm._delete_remote(
-                        tree=rpm_tree,
                         secrets=secrets,
                         remotepathmapping_id=remote_rpm_ids[rpm_tuple],
                     )
                     changed = True
                 else:
                     logger.debug("%s: %s (unmanaged)", rpm_tree, repr(rpm))
-                j -= 1
-        # Return changed status.
+                i -= 1
         return changed

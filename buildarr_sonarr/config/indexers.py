@@ -23,7 +23,7 @@ from logging import getLogger
 from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type, Union
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, BaseIntEnum, NonEmptyStr, Password, RssUrl
+from buildarr.types import BaseEnum, NonEmptyStr, Password, RssUrl
 from pydantic import AnyHttpUrl, Field, PositiveInt
 from typing_extensions import Annotated, Self
 
@@ -34,7 +34,7 @@ from .types import SonarrConfigBase
 logger = getLogger(__name__)
 
 
-class NabCategory(BaseIntEnum):
+class NabCategory(BaseEnum):
     """
     Newznab/Torznab category enumeration.
     """
@@ -249,8 +249,7 @@ class Indexer(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: SonarrSecrets, indexer_id: int) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, indexer_id: int) -> None:
         api_delete(secrets, f"/api/v3/indexer/{indexer_id}")
 
 
@@ -1083,9 +1082,7 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        #
         changed = False
-        #
         indexer_ids: Dict[str, int] = {
             indexer["name"]: indexer["id"] for indexer in api_get(secrets, "/api/v3/indexer")
         }
@@ -1101,7 +1098,6 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
             or any(indexer.tags for indexer in remote.definitions.values())
             else {}
         )
-        #
         config_changed, config_remote_attrs = self.get_update_remote_attrs(
             tree,
             remote,
@@ -1115,10 +1111,8 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
                 config_remote_attrs,
             )
             changed = True
-        #
         for indexer_name, indexer in self.definitions.items():
             indexer_tree = f"{tree}.definitions[{repr(indexer_name)}]"
-            #
             if indexer_name not in remote.definitions:
                 indexer._create_remote(
                     tree=indexer_tree,
@@ -1128,7 +1122,6 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
                     indexer_name=indexer_name,
                 )
                 changed = True
-            #
             elif indexer._update_remote(
                 tree=indexer_tree,
                 secrets=secrets,
@@ -1139,18 +1132,23 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
                 indexer_name=indexer_name,
             ):
                 changed = True
-        #
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        indexer_ids: Dict[str, int] = {
+            indexer["name"]: indexer["id"] for indexer in api_get(secrets, "/api/v3/indexer")
+        }
         for indexer_name, indexer in remote.definitions.items():
             if indexer_name not in self.definitions:
                 indexer_tree = f"{tree}.definitions[{repr(indexer_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", indexer_tree)
                     indexer._delete_remote(
-                        tree=indexer_tree,
                         secrets=secrets,
                         indexer_id=indexer_ids[indexer_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", indexer_tree)
-        #
         return changed

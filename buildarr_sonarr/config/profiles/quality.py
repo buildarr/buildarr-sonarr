@@ -324,8 +324,7 @@ class QualityProfile(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, tree: str, secrets: SonarrSecrets, profile_id: int) -> None:
-        logger.info("%s: (...) -> (deleted)", tree)
+    def _delete_remote(self, secrets: SonarrSecrets, profile_id: int) -> None:
         api_delete(secrets, f"/api/v3/qualityprofile/{profile_id}")
 
 
@@ -367,9 +366,7 @@ class SonarrQualityProfilesSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        #
         changed = False
-        #
         profile_ids: Dict[str, int] = {
             profile_json["name"]: profile_json["id"]
             for profile_json in api_get(secrets, "/api/v3/qualityprofile")
@@ -382,10 +379,8 @@ class SonarrQualityProfilesSettingsConfig(SonarrConfigBase):
                 reverse=True,
             )
         }
-        #
         for profile_name, profile in self.definitions.items():
             profile_tree = f"{tree}.definitions[{repr(profile_name)}]"
-            #
             if profile_name not in remote.definitions:
                 profile._create_remote(
                     tree=profile_tree,
@@ -394,7 +389,6 @@ class SonarrQualityProfilesSettingsConfig(SonarrConfigBase):
                     quality_definitions=quality_definitions,
                 )
                 changed = True
-            #
             elif profile._update_remote(
                 tree=profile_tree,
                 secrets=secrets,
@@ -404,20 +398,26 @@ class SonarrQualityProfilesSettingsConfig(SonarrConfigBase):
                 quality_definitions=quality_definitions,
             ):
                 changed = True
-        #
+        return changed
+
+    def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
+        changed = False
+        profile_ids: Dict[str, int] = {
+            profile_json["name"]: profile_json["id"]
+            for profile_json in api_get(secrets, "/api/v3/qualityprofile")
+        }
         for profile_name, profile in remote.definitions.items():
             if profile_name not in self.definitions:
                 profile_tree = f"{tree}.definitions[{repr(profile_name)}]"
                 if self.delete_unmanaged:
+                    logger.info("%s: (...) -> (deleted)", profile_tree)
                     profile._delete_remote(
-                        tree=profile_tree,
                         secrets=secrets,
                         profile_id=profile_ids[profile_name],
                     )
                     changed = True
                 else:
                     logger.debug("%s: (...) (unmanaged)", profile_tree)
-        #
         return changed
 
 
