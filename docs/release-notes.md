@@ -1,4 +1,19 @@
-# Release Notes
+# Release Notes (Buildarr Sonarr Plugin)
+
+## [v0.5.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.0) - 2023-04-16
+
+This updates the Sonarr plugin so that it is compatible with [Buildarr v0.5.0](https://buildarr.github.io/release-notes/#v050-2023-04-16).
+
+Other changes to the Sonarr plugin for this release include:
+
+* Fix a bug where Sonarr instance configuration dumping was broken due to trying to use a Buildarr configuration value that was not loaded
+* Improve support for deleting resources with `delete_unmanaged`, by using the new `delete_remote` API function
+* Remove the `sonarr.tags.delete_unused` attribute (for deleting Sonarr tags not used in Buildarr), as it was unimplemented and Sonarr automatically cleans up unused tags anyway
+
+### Changed
+
+* Update plugin to newer Buildarr API standards ([#11](https://github.com/buildarr/buildarr-sonarr/pull/11))
+
 
 ## [v0.4.1](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.4.1) - 2023-04-08
 
