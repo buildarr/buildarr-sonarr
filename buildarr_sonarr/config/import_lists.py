@@ -1269,7 +1269,7 @@ class SonarrImportListsSettingsConfig(SonarrConfigBase):
         # on the remote instance.
         for importlist_name, importlist in self.definitions.items():
             importlist = importlist._resolve(importlist_name)  # noqa: PLW2901
-            importlist_tree = f"{tree}.definitions[{repr(importlist_name)}]"
+            importlist_tree = f"{tree}.definitions[{importlist_name!r}]"
             # If a locally defined import list does not exist on the remote, create it.
             if importlist_name not in remote.definitions:
                 importlist._create_remote(
@@ -1309,7 +1309,7 @@ class SonarrImportListsSettingsConfig(SonarrConfigBase):
         }
         for importlist_name, importlist in remote.definitions.items():
             if importlist_name not in self.definitions:
-                importlist_tree = f"{tree}.definitions[{repr(importlist_name)}]"
+                importlist_tree = f"{tree}.definitions[{importlist_name!r}]"
                 if self.delete_unmanaged:
                     logger.info("%s: (...) -> (deleted)", importlist_tree)
                     importlist._delete_remote(

@@ -1765,7 +1765,7 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
             else {}
         )
         for connection_name, connection in self.definitions.items():
-            connection_tree = f"{tree}.definitions[{repr(connection_name)}]"
+            connection_tree = f"{tree}.definitions[{connection_name!r}]"
             if connection_name not in remote.definitions:
                 connection._create_remote(
                     tree=connection_tree,
@@ -1793,7 +1793,7 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
         }
         for connection_name, connection in remote.definitions.items():
             if connection_name not in self.definitions:
-                connection_tree = f"{tree}.definitions[{repr(connection_name)}]"
+                connection_tree = f"{tree}.definitions[{connection_name!r}]"
                 if self.delete_unmanaged:
                     logger.info("%s: (...) -> (deleted)", connection_tree)
                     connection._delete_remote(

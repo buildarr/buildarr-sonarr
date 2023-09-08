@@ -225,7 +225,7 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
             else {}
         )
         for downloadclient_name, downloadclient in local.items():
-            downloadclient_tree = f"{tree}[{repr(downloadclient_name)}]"
+            downloadclient_tree = f"{tree}[{downloadclient_name!r}]"
             if downloadclient_name not in remote:
                 downloadclient._create_remote(
                     tree=downloadclient_tree,
@@ -273,7 +273,7 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
         }
         for downloadclient_name, downloadclient in remote.items():
             if downloadclient_name not in local:
-                downloadclient_tree = f"{tree}[{repr(downloadclient_name)}]"
+                downloadclient_tree = f"{tree}[{downloadclient_name!r}]"
                 if self.delete_unmanaged:
                     logger.info("%s: (...) -> (deleted)", downloadclient_tree)
                     downloadclient._delete_remote(

@@ -32,15 +32,15 @@ packages = [{include = "buildarr_sonarr"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-buildarr = ">=0.5.0,<0.6.0"
+buildarr = ">=0.5.0,<0.7.0"
 
 [tool.poetry.group.dev.dependencies]
-black = "23.3.0"
-mypy = "1.2.0"
-types-requests = "2.28.11.17"
-mkdocs = "1.4.2"
-mkdocstrings = {extras = ["python"], version = "0.21.2"}
-ruff = "0.0.261"
+black = "23.7.0"
+mypy = "1.5.1"
+types-requests = "2.31.0.2"
+mkdocs = "1.5.2"
+mkdocstrings = {extras = ["python"], version = "0.22.0"}
+ruff = "0.0.287"
 
 [tool.ruff]
 fix = true
@@ -70,7 +70,17 @@ select = [
     "YTT",
 ]
 extend-select = ["COM812", "COM818", "UP009"]
-extend-ignore = ["A003", "B023", "N805", "N806", "PLR0911", "PLR0912", "PLR0913", "PLR0915"]
+extend-ignore = [
+    "A003",
+    "B023",
+    "N805",
+    "N806",
+    "PLR0911",
+    "PLR0912",
+    "PLR0913",
+    "PLR0915",
+    "RUF012",
+]
 
 [tool.ruff.isort]
 lines-between-types = 1

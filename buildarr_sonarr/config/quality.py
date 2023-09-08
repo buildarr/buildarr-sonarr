@@ -211,7 +211,7 @@ class SonarrQualitySettingsConfig(ConfigBase):
         }
         for definition_name, local_definition in self.definitions.items():
             updated, remote_attrs = local_definition.get_update_remote_attrs(
-                tree=f"{tree}[{repr(definition_name)}]",
+                tree=f"{tree}[{definition_name!r}]",
                 remote=remote.definitions[definition_name],
                 remote_map=[
                     ("title", "title", {"encoder": lambda v: v or definition_name}),
