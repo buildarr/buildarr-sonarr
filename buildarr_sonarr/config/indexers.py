@@ -163,7 +163,7 @@ class Indexer(SonarrConfigBase):
                 "downloadClientId",
                 {
                     "decoder": lambda v: (
-                        [dc for dc, dc_id in download_client_ids.items() if dc_id == v][0]
+                        next(dc for dc, dc_id in download_client_ids.items() if dc_id == v)
                         if v
                         else None
                     ),
@@ -1112,7 +1112,7 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
             )
             changed = True
         for indexer_name, indexer in self.definitions.items():
-            indexer_tree = f"{tree}.definitions[{repr(indexer_name)}]"
+            indexer_tree = f"{tree}.definitions[{indexer_name!r}]"
             if indexer_name not in remote.definitions:
                 indexer._create_remote(
                     tree=indexer_tree,
@@ -1141,7 +1141,7 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
         }
         for indexer_name, indexer in remote.definitions.items():
             if indexer_name not in self.definitions:
-                indexer_tree = f"{tree}.definitions[{repr(indexer_name)}]"
+                indexer_tree = f"{tree}.definitions[{indexer_name!r}]"
                 if self.delete_unmanaged:
                     logger.info("%s: (...) -> (deleted)", indexer_tree)
                     indexer._delete_remote(
