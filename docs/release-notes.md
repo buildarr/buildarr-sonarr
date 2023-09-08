@@ -1,5 +1,16 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.5.1](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.1) - 2023-09-09
+
+This is a minor release that enables support for Buildarr v0.6.0.
+
+Buildarr v0.5.0 is still supported in this release.
+
+### Changed
+
+* Update package metadata and dependencies ([#15](https://github.com/buildarr/buildarr-sonarr/pull/15))
+
+
 ## [v0.5.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.0) - 2023-04-16
 
 This updates the Sonarr plugin so that it is compatible with [Buildarr v0.5.0](https://buildarr.github.io/release-notes/#v050-2023-04-16).
