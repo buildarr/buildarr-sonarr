@@ -23,13 +23,16 @@ import functools
 
 from getpass import getpass
 from urllib.parse import urlparse
+from typing import TYPE_CHECKING
 
 import click
-import click_params  # type: ignore[import]
 
 from .config import SonarrInstanceConfig
 from .manager import SonarrManager
 from .secrets import SonarrSecrets
+
+if TYPE_CHECKING:
+    from urllib.parse import ParseResult as Url
 
 HOSTNAME_PORT_TUPLE_LENGTH = 2
 
@@ -49,7 +52,7 @@ def sonarr():
         "The configuration is dumped to standard output in Buildarr-compatible YAML format."
     ),
 )
-@click.argument("url", type=click_params.URL)
+@click.argument("url", type=urlparse)
 @click.option(
     "-k",
     "--api-key",
@@ -58,15 +61,14 @@ def sonarr():
     default=functools.partial(getpass, "Sonarr instance API key: "),
     help="API key of the Sonarr instance. The user will be prompted if undefined.",
 )
-def dump_config(url: str, api_key: str) -> int:
+def dump_config(url: Url, api_key: str) -> int:
     """
     Dump configuration from a remote Sonarr instance.
     The configuration is dumped to standard output in Buildarr-compatible YAML format.
     """
 
-    url_obj = urlparse(url)
-    protocol = url_obj.scheme
-    hostname_port = url_obj.netloc.split(":", 1)
+    protocol = url.scheme
+    hostname_port = url.netloc.split(":", 1)
     hostname = hostname_port[0]
     port = (
         int(hostname_port[1])
