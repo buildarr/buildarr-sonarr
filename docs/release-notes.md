@@ -1,5 +1,16 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.5.2](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.2) - 2023-09-09
+
+This is a minor release that fixes the following issues:
+
+* Fix Sonarr instance configuration dumping via the CLI for some instances, by changing URL parsing for the Sonarr instance URL to accept any valid URL (not just instances with actual FQDNs).
+
+### Changed
+
+* Fix URL parsing for configuration dumping ([#19](https://github.com/buildarr/buildarr-sonarr/pull/19))
+
+
 ## [v0.5.1](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.1) - 2023-09-09
 
 This is a minor release that enables support for Buildarr v0.6.0.
