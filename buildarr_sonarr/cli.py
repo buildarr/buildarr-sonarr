@@ -22,8 +22,8 @@ from __future__ import annotations
 import functools
 
 from getpass import getpass
-from urllib.parse import urlparse
 from typing import TYPE_CHECKING
+from urllib.parse import urlparse
 
 import click
 
