@@ -1,5 +1,16 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.5.3](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.3) - 2023-09-11
+
+This is a minor release that fixes the following issues:
+
+* Fix managing e-mail, Mailgun and SendGrid notification connections by enforcing that email address attributes consist only of an email address, and do not contain a name (e.g. `Sonarr Notifications <sonarr@example.com>`). Sonarr V3 does not support this style of email address definition.
+
+### Changed
+
+* Fix parsing email addresses for notification connections ([#23](https://github.com/buildarr/buildarr-sonarr/pull/23))
+
+
 ## [v0.5.2](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.2) - 2023-09-09
 
 This is a minor release that fixes the following issues:
