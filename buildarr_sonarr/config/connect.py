@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
-from pydantic import AnyHttpUrl, ConstrainedInt, Field, NameEmail, SecretStr
+from pydantic import AnyHttpUrl, ConstrainedInt, EmailStr, Field, SecretStr
 from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
@@ -638,29 +638,42 @@ class EmailConnection(Connection):
     SMTP password of the account to send the mail from.
     """
 
-    from_address: NameEmail
+    from_address: EmailStr
     """
     Email address to send the mail as.
 
-    RFC-5322 formatted mailbox addresses are also supported,
-    e.g. `Sonarr Notifications <sonarr@example.com>`.
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
-    recipient_addresses: Annotated[List[NameEmail], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[List[EmailStr], Field(min_items=1, unique_items=True)]
     """
     List of email addresses to directly address the mail to.
 
     At least one address must be provided.
+
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
-    cc_addresses: Annotated[List[NameEmail], Field(unique_items=True)] = []
+    cc_addresses: Annotated[List[EmailStr], Field(unique_items=True)] = []
     """
     Optional list of email addresses to copy (CC) the mail to.
+
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
-    bcc_addresses: Annotated[List[NameEmail], Field(unique_items=True)] = []
+    bcc_addresses: Annotated[List[EmailStr], Field(unique_items=True)] = []
     """
     Optional list of email addresses to blind copy (BCC) the mail to.
+
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
     _implementation_name: str = "Email"
@@ -940,12 +953,13 @@ class MailgunConnection(Connection):
     Send mail via the EU endpoint instead of the US one.
     """
 
-    from_address: NameEmail
+    from_address: EmailStr
     """
     Email address to send the mail as.
 
-    RFC-5322 formatted mailbox addresses are also supported,
-    e.g. `Sonarr Notifications <sonarr@example.com>`.
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
     sender_domain: NonEmptyStr
@@ -953,11 +967,15 @@ class MailgunConnection(Connection):
     The domain from which the mail will be sent.
     """
 
-    recipient_addresses: Annotated[List[NameEmail], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[List[EmailStr], Field(min_items=1, unique_items=True)]
     """
     The recipient email addresses of the notification mail.
 
     At least one recipient address is required.
+
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
     _implementation: str = "Mailgun"
@@ -1343,19 +1361,24 @@ class SendgridConnection(Connection):
     API key to use to authenticate with SendGrid.
     """
 
-    from_address: NameEmail
+    from_address: EmailStr
     """
     Email address to send the mail as.
 
-    RFC-5322 formatted mailbox addresses are also supported,
-    e.g. `Sonarr Notifications <sonarr@example.com>`.
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
-    recipient_addresses: Annotated[List[NameEmail], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[List[EmailStr], Field(min_items=1, unique_items=True)]
     """
     The recipient email addresses of the notification mail.
 
     At least one recipient address is required.
+
+    *Changed in version 0.5.3*: Disallow RFC-5322 formatted mailbox addresses
+    (e.g. `Sonarr Notifications <sonarr@example.com>`), as they are **not**
+    supported by Sonarr V3 (the currently supported version).
     """
 
     _implementation: str = "SendGrid"
