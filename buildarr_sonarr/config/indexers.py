@@ -39,6 +39,7 @@ class NabCategory(BaseEnum):
     Newznab/Torznab category enumeration.
     """
 
+    TV = 5000
     TV_WEBDL = 5010
     TV_FOREIGN = 5020
     TV_SD = 5030
