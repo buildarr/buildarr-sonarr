@@ -1,5 +1,16 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.5.4](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.4) - 2023-11-05
+
+This is a minor release that fixes the following issues:
+
+* Fix managing Newznab/Torznab indexers that have the `TV` global category enabled (including Prowlarr-managed indexers).
+
+### Changed
+
+* Add the `TV` group as a selectable Newznab/Torznab category ([#27](https://github.com/buildarr/buildarr-sonarr/pull/27))
+
+
 ## [v0.5.3](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.5.3) - 2023-09-11
 
 This is a minor release that fixes the following issues:
