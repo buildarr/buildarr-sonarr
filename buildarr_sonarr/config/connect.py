@@ -377,8 +377,23 @@ class Connection(SonarrConfigBase):
             return True
         return False
 
-    def _delete_remote(self, secrets: SonarrSecrets, connection_id: int) -> None:
-        api_delete(secrets, f"/api/v3/notification/{connection_id}")
+    def _delete_remote(
+        self,
+        tree: str,
+        secrets: SonarrSecrets,
+        tag_ids: Mapping[str, int],
+        connection_id: int,
+        delete: bool,
+    ) -> bool:
+        self.log_delete_remote_attrs(
+            tree=tree,
+            remote_map=self._get_base_remote_map(tag_ids) + self._remote_map,
+            delete=delete,
+        )
+        if delete:
+            api_delete(secrets, f"/api/v3/notification/{connection_id}")
+            return True
+        return False
 
 
 class BoxcarConnection(Connection):
@@ -1814,16 +1829,20 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
             connection_json["name"]: connection_json["id"]
             for connection_json in api_get(secrets, "/api/v3/notification")
         }
+        tag_ids: Dict[str, int] = (
+            {tag["label"]: tag["id"] for tag in api_get(secrets, "/api/v3/tag")}
+            if any(connection.tags for connection in self.definitions.values())
+            or any(connection.tags for connection in remote.definitions.values())
+            else {}
+        )
         for connection_name, connection in remote.definitions.items():
             if connection_name not in self.definitions:
-                connection_tree = f"{tree}.definitions[{connection_name!r}]"
-                if self.delete_unmanaged:
-                    logger.info("%s: (...) -> (deleted)", connection_tree)
-                    connection._delete_remote(
-                        secrets=secrets,
-                        connection_id=connection_ids[connection_name],
-                    )
+                if connection._delete_remote(
+                    tree=f"{tree}.definitions[{connection_name!r}]",
+                    secrets=secrets,
+                    tag_ids=tag_ids,
+                    connection_id=connection_ids[connection_name],
+                    delete=self.delete_unmanaged,
+                ):
                     changed = True
-                else:
-                    logger.debug("%s: (...) (unmanaged)", connection_tree)
         return changed
