@@ -775,7 +775,7 @@ class SonarrImportList(ProgramImportList):
         Returns:
             Sonarr instance secrets metadata
         """
-        return cast(SonarrSecrets, state.secrets.sonarr[instance_name])
+        return cast(SonarrSecrets, state.instance_secrets["sonarr"][instance_name])
 
     @classmethod
     def _get_resources(cls, instance_name: str, resource_type: str) -> List[Dict[str, Any]]:
