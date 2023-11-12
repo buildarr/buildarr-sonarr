@@ -775,7 +775,7 @@ class SonarrImportList(ProgramImportList):
         Returns:
             Sonarr instance secrets metadata
         """
-        return cast(SonarrSecrets, state.secrets.sonarr[instance_name])
+        return cast(SonarrSecrets, state.instance_secrets["sonarr"][instance_name])
 
     @classmethod
     def _get_resources(cls, instance_name: str, resource_type: str) -> List[Dict[str, Any]]:
@@ -1232,7 +1232,9 @@ class SonarrImportListsSettingsConfig(SonarrConfigBase):
         )
         return cls(
             definitions={
-                importlist["name"]: IMPORTLIST_TYPE_MAP[importlist["implementation"]]._from_remote(
+                importlist["name"]: IMPORTLIST_TYPE_MAP[  # type: ignore[misc]
+                    importlist["implementation"]
+                ]._from_remote(
                     quality_profile_ids=quality_profile_ids,
                     language_profile_ids=language_profile_ids,
                     tag_ids=tag_ids,

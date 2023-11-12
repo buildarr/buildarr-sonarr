@@ -11,7 +11,7 @@ version = "0.5.4"
 description = "Sonarr PVR plugin for Buildarr"
 authors = ["Callum Dickinson <callum.dickinson.nz@gmail.com>"]
 license = "GPL-3.0-or-later"
-homepage = "https://buildarr.github.io/plugins/sonarr"
+homepage = "https://buildarr.github.io"
 repository = "https://github.com/buildarr/buildarr-sonarr"
 documentation = "https://buildarr.github.io/plugins/sonarr"
 keywords = ["buildarr", "sonarr"]
@@ -27,25 +27,29 @@ classifiers = [
 readme = "README.md"
 packages = [{include = "buildarr_sonarr"}]
 
+[tool.poetry.urls]
+"Changes" = "https://buildarr.github.io/plugins/sonarr/release-notes"
+"Issue Tracker" = "https://github.com/buildarr/buildarr-sonarr/issues"
+
 [tool.poetry.plugins."buildarr.plugins"]
 "sonarr" = "buildarr_sonarr.plugin:SonarrPlugin"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-buildarr = ">=0.5.0,<0.7.0"
+buildarr = ">=0.7.0,<0.8.0"
 json5 = ">=0.9.7"
 
 [tool.poetry.group.dev.dependencies]
-black = "23.7.0"
-mypy = "1.5.1"
-types-requests = "2.31.0.2"
-mkdocs = "1.5.2"
-mkdocstrings = {extras = ["python"], version = "0.22.0"}
-ruff = "0.0.287"
+black = "23.11.0"
+mypy = "1.7.0"
+types-requests = "2.31.0.10"
+mkdocs = "1.5.3"
+mkdocstrings = {extras = ["python"], version = "0.23.0"}
+ruff = "0.1.5"
 
 [tool.ruff]
 fix = true
-format = "grouped"
+output-format = "grouped"
 target-version = "py38"
 line-length = 100
 select = [

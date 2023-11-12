@@ -310,7 +310,9 @@ class ReleaseProfile(SonarrConfigBase):
                             ):
                                 must_not_contain.add(term)
                             else:
-                                preferred.append(PreferredWord(term=term, score=score))
+                                preferred.append(
+                                    PreferredWord(term=cast(NonEmptyStr, term), score=score),
+                                )
                     #
                     self.must_contain = must_contain  # type: ignore[assignment]
                     self.must_not_contain = must_not_contain  # type: ignore[assignment]

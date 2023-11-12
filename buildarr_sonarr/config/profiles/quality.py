@@ -20,7 +20,7 @@ Sonarr plugin quality profile configuration.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Union
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Union, cast
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
@@ -426,7 +426,9 @@ def _decode_qualities(value: Sequence[Mapping[str, Any]]) -> List[Union[str, Qua
         (
             QualityGroup(
                 name=quality["name"],
-                members=[member["quality"]["name"] for member in quality["items"]],
+                members=set(
+                    cast(NonEmptyStr, member["quality"]["name"]) for member in quality["items"]
+                ),
             )
             if quality["items"]
             else quality["quality"]["name"]

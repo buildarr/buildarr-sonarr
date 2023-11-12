@@ -57,10 +57,10 @@ class SonarrSettingsConfig(SonarrConfigBase):
     Sonarr settings, used to configure a remote Sonarr instance.
     """
 
-    media_management = SonarrMediaManagementSettingsConfig()
+    media_management = SonarrMediaManagementSettingsConfig()  # type: ignore[call-arg]
     profiles = SonarrProfilesSettingsConfig()
     quality = SonarrQualitySettingsConfig()
-    indexers = SonarrIndexersSettingsConfig()
+    indexers = SonarrIndexersSettingsConfig()  # type: ignore[call-arg]
     download_clients = SonarrDownloadClientsSettingsConfig()
     import_lists = SonarrImportListsSettingsConfig()
     connect = SonarrConnectSettingsConfig()

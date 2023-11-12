@@ -22,14 +22,17 @@ from __future__ import annotations
 import functools
 
 from getpass import getpass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from urllib.parse import urlparse
 
 import click
 
+from buildarr.types import NonEmptyStr, Port
+
 from .config import SonarrInstanceConfig
 from .manager import SonarrManager
 from .secrets import SonarrSecrets
+from .types import SonarrApiKey, SonarrProtocol
 
 if TYPE_CHECKING:
     from urllib.parse import ParseResult as Url
@@ -79,12 +82,16 @@ def dump_config(url: Url, api_key: str) -> int:
     click.echo(
         SonarrManager()
         .from_remote(
-            instance_config=SonarrInstanceConfig(hostname=hostname, port=port, protocol=protocol),
+            instance_config=SonarrInstanceConfig(
+                hostname=cast(NonEmptyStr, hostname),
+                port=cast(Port, port),
+                protocol=cast(SonarrProtocol, protocol),
+            ),
             secrets=SonarrSecrets(
-                hostname=hostname,
-                port=port,
-                protocol=protocol,
-                api_key=api_key,
+                hostname=cast(NonEmptyStr, hostname),
+                port=cast(Port, port),
+                protocol=cast(SonarrProtocol, protocol),
+                api_key=cast(SonarrApiKey, api_key),
             ),
         )
         .yaml(exclude_unset=True),
