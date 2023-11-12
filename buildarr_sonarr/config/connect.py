@@ -1776,7 +1776,9 @@ class SonarrConnectSettingsConfig(SonarrConfigBase):
         )
         return cls(
             definitions={
-                connection["name"]: CONNECTION_TYPE_MAP[connection["implementation"]]._from_remote(
+                connection["name"]: CONNECTION_TYPE_MAP[  # type: ignore[misc]
+                    connection["implementation"]
+                ]._from_remote(
                     tag_ids=tag_ids,
                     remote_attrs=connection,
                 )

@@ -20,7 +20,7 @@ Sonarr plugin secrets file model.
 from __future__ import annotations
 
 from http import HTTPStatus
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from urllib.parse import urlparse
 
 from buildarr.secrets import SecretsPlugin
@@ -69,7 +69,12 @@ class SonarrSecrets(_SonarrSecrets):
             if len(hostname_port) > 1
             else (443 if protocol == "https" else 80)
         )
-        return cls(hostname=hostname, port=port, protocol=protocol, api_key=api_key)
+        return cls(
+            hostname=cast(NonEmptyStr, hostname),
+            port=cast(Port, port),
+            protocol=cast(SonarrProtocol, protocol),
+            api_key=cast(SonarrApiKey, api_key),
+        )
 
     @classmethod
     def get(cls, config: SonarrConfig) -> Self:

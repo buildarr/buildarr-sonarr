@@ -526,7 +526,7 @@ class SonarrGeneralSettingsConfig(SonarrConfigBase):
     logging: LoggingGeneralSettings = LoggingGeneralSettings()
     analytics: AnalyticsGeneralSettings = AnalyticsGeneralSettings()
     updates: UpdatesGeneralSettings = UpdatesGeneralSettings()
-    backup: BackupGeneralSettings = BackupGeneralSettings()
+    backup: BackupGeneralSettings = BackupGeneralSettings()  # type: ignore[call-arg]
 
     @classmethod
     def from_remote(cls, secrets: SonarrSecrets) -> Self:

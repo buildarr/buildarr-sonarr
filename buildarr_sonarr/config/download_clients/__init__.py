@@ -150,17 +150,21 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
             else {}
         )
         return cls(
-            **cls.get_local_attrs(cls._remote_map, downloadclient_config),
-            definitions={
-                dc["name"]: DOWNLOADCLIENT_TYPE_MAP[dc["implementation"]]._from_remote(
-                    tag_ids=tag_ids,
-                    remote_attrs=dc,
-                )
-                for dc in downloadclients
+            **{
+                **cls.get_local_attrs(cls._remote_map, downloadclient_config),
+                "definitions": {
+                    dc["name"]: DOWNLOADCLIENT_TYPE_MAP[  # type: ignore[misc]
+                        dc["implementation"]
+                    ]._from_remote(
+                        tag_ids=tag_ids,
+                        remote_attrs=dc,
+                    )
+                    for dc in downloadclients
+                },
+                "remote_path_mappings": SonarrRemotePathMappingsSettingsConfig._from_remote(
+                    secrets=secrets,
+                ),
             },
-            remote_path_mappings=SonarrRemotePathMappingsSettingsConfig._from_remote(
-                secrets=secrets,
-            ),
         )
 
     def update_remote(

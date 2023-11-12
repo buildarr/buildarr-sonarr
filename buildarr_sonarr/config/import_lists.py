@@ -1232,7 +1232,9 @@ class SonarrImportListsSettingsConfig(SonarrConfigBase):
         )
         return cls(
             definitions={
-                importlist["name"]: IMPORTLIST_TYPE_MAP[importlist["implementation"]]._from_remote(
+                importlist["name"]: IMPORTLIST_TYPE_MAP[  # type: ignore[misc]
+                    importlist["implementation"]
+                ]._from_remote(
                     quality_profile_ids=quality_profile_ids,
                     language_profile_ids=language_profile_ids,
                     tag_ids=tag_ids,

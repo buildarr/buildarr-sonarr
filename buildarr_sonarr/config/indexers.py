@@ -1067,7 +1067,9 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
         return cls(
             **cls.get_local_attrs(cls._remote_map, indexer_config),
             definitions={
-                indexer["name"]: INDEXER_TYPE_MAP[indexer["implementationName"]]._from_remote(
+                indexer["name"]: INDEXER_TYPE_MAP[  # type: ignore[misc]
+                    indexer["implementationName"]
+                ]._from_remote(
                     download_client_ids=download_client_ids,
                     tag_ids=tag_ids,
                     remote_attrs=indexer,

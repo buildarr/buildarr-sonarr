@@ -20,7 +20,7 @@ Sonarr plugin media management settings configuration.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set, cast
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr
@@ -511,7 +511,9 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
                 api_get(secrets, "/api/v3/config/mediamanagement"),
             ),
             # Root Folders
-            root_folders=[rf["path"] for rf in api_get(secrets, "/api/v3/rootfolder")],
+            root_folders=set(
+                cast(NonEmptyStr, rf["path"]) for rf in api_get(secrets, "/api/v3/rootfolder")
+            ),
         )
 
     def update_remote(
