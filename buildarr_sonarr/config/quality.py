@@ -23,7 +23,7 @@ import json
 
 from typing import Any, Dict, Mapping, Optional, cast
 
-from buildarr.config import ConfigBase, ConfigTrashIDNotFoundError
+from buildarr.config import ConfigTrashIDNotFoundError
 from buildarr.state import state
 from buildarr.types import TrashID
 from pydantic import Field, validator
@@ -101,7 +101,7 @@ class QualityDefinition(SonarrConfigBase):
         return quality_max
 
 
-class SonarrQualitySettingsConfig(ConfigBase):
+class SonarrQualitySettingsConfig(SonarrConfigBase):
     """
     Quality definitions are used to set the permitted bit rates for each quality level.
 
