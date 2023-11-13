@@ -293,7 +293,7 @@ def api_error(
     """
 
     error_message = (
-        f"Unexpected response with status code {response.status_code} from from '{method} {url}':"
+        f"Unexpected response with status code {response.status_code} from '{method} {url}':"
     )
     if parse_response:
         res_json = response.json()
@@ -330,6 +330,10 @@ def _api_error(res_json: Any) -> str:
             pass
         try:
             return f"{res_json['message']}\n{res_json['description']}"
+        except KeyError:
+            pass
+        try:
+            return res_json["error"]
         except KeyError:
             pass
         return res_json["message"]
