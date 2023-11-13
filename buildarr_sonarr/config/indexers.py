@@ -393,7 +393,7 @@ class NewznabIndexer(UsenetIndexer):
     * `TV/HD`
     * `TV/UHD`
     * `TV/Other`
-    * `TV/Sports`
+    * `TV/Sport`
     * `TV/Anime`
     * `TV/Documentary`
     * `TV/x265`
@@ -417,7 +417,7 @@ class NewznabIndexer(UsenetIndexer):
     * `TV/HD`
     * `TV/UHD`
     * `TV/Other`
-    * `TV/Sports`
+    * `TV/Sport`
     * `TV/Anime`
     * `TV/Documentary`
     * `TV/x265`
@@ -900,7 +900,7 @@ class TorznabIndexer(TorrentIndexer):
     * `TV/HD`
     * `TV/UHD`
     * `TV/Other`
-    * `TV/Sports`
+    * `TV/Sport`
     * `TV/Anime`
     * `TV/Documentary`
     * `TV/x265`
@@ -923,7 +923,7 @@ class TorznabIndexer(TorrentIndexer):
     * `TV/HD`
     * `TV/UHD`
     * `TV/Other`
-    * `TV/Sports`
+    * `TV/Sport`
     * `TV/Anime`
     * `TV/Documentary`
     * `TV/x265`
