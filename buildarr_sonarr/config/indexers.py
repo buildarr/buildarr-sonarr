@@ -56,7 +56,7 @@ class NabCategory(BaseEnum):
     TV_HD = (5040, "TV/HD")
     TV_UHD = (5045, "TV/UHD")
     TV_OTHER = (5050, "TV/Other")
-    TV_SPORT = (5060, "TV/Sport")
+    TV_SPORT = (5060, "TV/Sport", "TV/Sports")
     TV_ANIME = (5070, "TV/Anime")
     TV_DOCUMENTARY = (5080, "TV/Documentary")
     TV_X265 = (5090, "TV/x265")
