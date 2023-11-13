@@ -1,5 +1,23 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.6.1](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.1) - 2023-11-13
+
+This release fixes the following issues:
+
+* Permanently fix Torznab/Newznab indexer category parsing by making it not error when an unknown category ID is found on the remote instance.
+* Allow the Sonarr-native category name (e.g. `TV/WEB-DL`) to be defined directly in Buildarr, instead of the Buildarr-native names (e.g. `TV-WEBDL`). The old names are still supported.
+* Fix dumping Sonarr instance configurations using the CLI, which was failing due to a validation regression introduced in the previous release.
+
+The CLI command for dumping Sonarr instance configurations has also been improved, and can now auto-fetch Sonarr instance API keys by simply leaving the API key blank, and pressing Enter when prompted. Note that this will only work on Sonarr instances that have authentication disabled.
+
+As this release of the Sonarr plugin uses the latest plugin API features, Buildarr v0.7.1 or later is required for this release.
+
+### Changed
+
+* Auto-fetch API key when dumping configuration if not specified ([#35](https://github.com/buildarr/buildarr-sonarr/pull/35))
+* Fix Newznab/Torznab indexer bugs ([#36](https://github.com/buildarr/buildarr-sonarr/pull/36))
+
+
 ## [v0.6.0](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.0) - 2023-11-12
 
 This updates the Sonarr plugin so that it is compatible with [Buildarr v0.7.0](https://buildarr.github.io/release-notes/#v070-2023-11-12).
