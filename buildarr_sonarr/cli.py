@@ -22,17 +22,14 @@ from __future__ import annotations
 import functools
 
 from getpass import getpass
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 import click
 
-from buildarr.types import NonEmptyStr, Port
-
 from .config import SonarrInstanceConfig
 from .manager import SonarrManager
 from .secrets import SonarrSecrets
-from .types import SonarrApiKey, SonarrProtocol
 
 if TYPE_CHECKING:
     from urllib.parse import ParseResult as Url
@@ -61,7 +58,10 @@ def sonarr():
     "--api-key",
     "api_key",
     metavar="API-KEY",
-    default=functools.partial(getpass, "Sonarr instance API key: "),
+    default=functools.partial(
+        getpass,
+        "Sonarr instance API key (or leave blank to auto-fetch): ",
+    ),
     help="API key of the Sonarr instance. The user will be prompted if undefined.",
 )
 def dump_config(url: Url, api_key: str) -> int:
@@ -79,19 +79,23 @@ def dump_config(url: Url, api_key: str) -> int:
         else (443 if protocol == "https" else 80)
     )
 
+    instance_config = SonarrInstanceConfig(
+        **{  # type: ignore[arg-type]
+            "hostname": hostname,
+            "port": port,
+            "protocol": protocol,
+        },
+    )
+
     click.echo(
         SonarrManager()
         .from_remote(
-            instance_config=SonarrInstanceConfig(
-                hostname=cast(NonEmptyStr, hostname),
-                port=cast(Port, port),
-                protocol=cast(SonarrProtocol, protocol),
-            ),
-            secrets=SonarrSecrets(
-                hostname=cast(NonEmptyStr, hostname),
-                port=cast(Port, port),
-                protocol=cast(SonarrProtocol, protocol),
-                api_key=cast(SonarrApiKey, api_key),
+            instance_config=instance_config,
+            secrets=SonarrSecrets.get_from_url(
+                hostname=hostname,
+                port=port,
+                protocol=protocol,
+                api_key=api_key if api_key else None,
             ),
         )
         .yaml(exclude_unset=True),

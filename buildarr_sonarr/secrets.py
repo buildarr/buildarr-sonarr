@@ -31,6 +31,8 @@ from .exceptions import SonarrAPIError, SonarrSecretsUnauthorizedError
 from .types import SonarrApiKey, SonarrProtocol
 
 if TYPE_CHECKING:
+    from typing import Optional
+
     from typing_extensions import Self
 
     from .config import SonarrConfig
@@ -78,28 +80,46 @@ class SonarrSecrets(_SonarrSecrets):
 
     @classmethod
     def get(cls, config: SonarrConfig) -> Self:
-        try:
-            return cls(
-                hostname=config.hostname,
-                port=config.port,
-                protocol=config.protocol,
-                api_key=(
-                    config.api_key
-                    if config.api_key
-                    else get_initialize_js(config.host_url)["apiKey"]
-                ),
-            )
-        except SonarrAPIError as err:
-            if err.status_code == HTTPStatus.UNAUTHORIZED:
-                raise SonarrSecretsUnauthorizedError(
-                    "Unable to retrieve the API key for the Sonarr instance "
-                    f"at '{config.host_url}': Authentication is enabled. "
-                    "Please set the 'Settings -> General -> Authentication' attribute to 'None', "
-                    "or if you do not wish to disable authentication, "
-                    "explicitly define the API key in the Buildarr configuration.",
-                ) from None
+        return cls.get_from_url(
+            hostname=config.hostname,
+            port=config.port,
+            protocol=config.protocol,
+            api_key=config.api_key.get_secret_value() if config.api_key else None,
+        )
+
+    @classmethod
+    def get_from_url(
+        cls,
+        hostname: str,
+        port: int,
+        protocol: str,
+        api_key: Optional[str] = None,
+    ) -> Self:
+        host_url = f"{protocol}://{hostname}:{port}"
+        if not api_key:
+            try:
+                initialize_js = get_initialize_js(host_url)
+            except SonarrAPIError as err:
+                if err.status_code == HTTPStatus.UNAUTHORIZED:
+                    raise SonarrSecretsUnauthorizedError(
+                        (
+                            "Unable to retrieve the API key for the Sonarr instance "
+                            f"at '{host_url}': Authentication is enabled. "
+                            "Please set the 'Settings -> General -> Authentication' attribute "
+                            "to 'None', or if you do not wish to disable authentication, "
+                            "explicitly define the API key in the Buildarr configuration."
+                        ),
+                    ) from None
+                else:
+                    raise
             else:
-                raise
+                api_key = initialize_js["apiKey"]
+        return cls(
+            hostname=cast(NonEmptyStr, hostname),
+            port=cast(Port, port),
+            protocol=cast(SonarrProtocol, protocol),
+            api_key=cast(SonarrApiKey, api_key),
+        )
 
     def test(self) -> bool:
         try:
