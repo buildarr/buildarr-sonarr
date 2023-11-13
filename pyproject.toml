@@ -36,7 +36,7 @@ packages = [{include = "buildarr_sonarr"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-buildarr = ">=0.7.0,<0.8.0"
+buildarr = ">=0.7.1,<0.8.0"
 json5 = ">=0.9.7"
 
 [tool.poetry.group.dev.dependencies]

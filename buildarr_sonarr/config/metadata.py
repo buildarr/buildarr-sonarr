@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Mapping, Optional, Tuple, Type
 
-from buildarr.config import ConfigBase, RemoteMapEntry
+from buildarr.config import RemoteMapEntry
 from typing_extensions import Self
 
 from ..api import api_get, api_put
@@ -247,7 +247,7 @@ METADATA_TYPE_MAP: Dict[str, Type[Metadata]] = {
 }
 
 
-class SonarrMetadataSettingsConfig(ConfigBase):
+class SonarrMetadataSettingsConfig(SonarrConfigBase):
     """
     Sonarr metadata settings.
     Implementation wise each metadata is a unique object, updated using separate requests.

@@ -20,11 +20,24 @@ Sonarr plugin indexers settings configuration.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type, Union
+from typing import (
+    Any,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    Set,
+    Tuple,
+    Type,
+    Union,
+    cast,
+)
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password, RssUrl
-from pydantic import AnyHttpUrl, Field, PositiveInt
+from pydantic import AnyHttpUrl, Field, PositiveInt, validator
 from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
@@ -35,31 +48,29 @@ logger = getLogger(__name__)
 
 
 class NabCategory(BaseEnum):
-    """
-    Newznab/Torznab category enumeration.
-    """
+    # https://github.com/Prowlarr/Prowlarr/blob/develop/src/NzbDrone.Core/Indexers/NewznabStandardCategory.cs
+    TV = (5000, "TV")
+    TV_WEBDL = (5010, "TV/WEB-DL")
+    TV_FOREIGN = (5020, "TV/Foreign")
+    TV_SD = (5030, "TV/SD")
+    TV_HD = (5040, "TV/HD")
+    TV_UHD = (5045, "TV/UHD")
+    TV_OTHER = (5050, "TV/Other")
+    TV_SPORT = (5060, "TV/Sport")
+    TV_ANIME = (5070, "TV/Anime")
+    TV_DOCUMENTARY = (5080, "TV/Documentary")
+    TV_X265 = (5090, "TV/x265")
 
-    TV = 5000
-    TV_WEBDL = 5010
-    TV_FOREIGN = 5020
-    TV_SD = 5030
-    TV_HD = 5040
-    TV_UHD = 5045
-    TV_OTHER = 5050
-    TV_SPORTS = 5060
-    TV_ANIME = 5070
-    TV_DOCUMENTARY = 5080
+    @classmethod
+    def decode(cls, value: int) -> Union[Self, int]:
+        try:
+            return cls(value)
+        except ValueError:
+            return value
 
-    # TODO: Make the enum also accept these values.
-    # TV_WEBDL = "TV/WEB-DL"
-    # TV_FOREIGN = "TV/Foreign"
-    # TV_SD = "TV/SD"
-    # TV_HD = "TV/HD"
-    # TV_UHD = "TV/UHD"
-    # TV_OTHER = "TV/Other"
-    # TV_SPORTS = "TV/Sports"
-    # TV_ANIME = "TV/Anime"
-    # TV_DOCUMENTARY = "TV/Documentary"
+    @classmethod
+    def encode(cls, value: Union[Self, int]) -> int:
+        return value if isinstance(value, int) else cast(int, value.value)
 
 
 class FilelistCategory(BaseEnum):
@@ -368,22 +379,28 @@ class NewznabIndexer(UsenetIndexer):
     API key for use with the Newznab API.
     """
 
-    categories: Set[NabCategory] = {NabCategory.TV_SD, NabCategory.TV_HD}
+    categories: Set[Union[NabCategory, int]] = {NabCategory.TV_SD, NabCategory.TV_HD}
     """
     Categories to monitor for standard/daily shows.
     Define as empty to disable.
 
     Values:
 
-    * `TV-WEBDL`
-    * `TV-Foreign`
-    * `TV-SD`
-    * `TV-HD`
-    * `TV-UHD`
-    * `TV-Other`
-    * `TV-Sports`
-    * `TV-Anime`
-    * `TV-Documentary`
+    * `TV`
+    * `TV/WEB-DL`
+    * `TV/Foreign`
+    * `TV/SD`
+    * `TV/HD`
+    * `TV/UHD`
+    * `TV/Other`
+    * `TV/Sports`
+    * `TV/Anime`
+    * `TV/Documentary`
+    * `TV/x265`
+
+    *Changed in version 0.6.1*: The Sonarr-native values for Newznab/Torznab categories
+    (e.g. `TV/WEB-DL`) can now be specified, instead of the Buildarr-native values
+    (e.g. `TV-WEBDL`). The old values can still be used.
     """
 
     anime_categories: Set[NabCategory] = set()
@@ -393,15 +410,21 @@ class NewznabIndexer(UsenetIndexer):
 
     Values:
 
-    * `TV-WEBDL`
-    * `TV-Foreign`
-    * `TV-SD`
-    * `TV-HD`
-    * `TV-UHD`
-    * `TV-Other`
-    * `TV-Sports`
-    * `TV-Anime`
-    * `TV-Documentary`
+    * `TV`
+    * `TV/WEB-DL`
+    * `TV/Foreign`
+    * `TV/SD`
+    * `TV/HD`
+    * `TV/UHD`
+    * `TV/Other`
+    * `TV/Sports`
+    * `TV/Anime`
+    * `TV/Documentary`
+    * `TV/x265`
+
+    *Changed in version 0.6.1*: The Sonarr-native values for Newznab/Torznab categories
+    (e.g. `TV/WEB-DL`) can now be specified, instead of the Buildarr-native values
+    (e.g. `TV-WEBDL`). The old values can still be used.
     """
 
     anime_standard_format_search: bool = False
@@ -424,12 +447,12 @@ class NewznabIndexer(UsenetIndexer):
         (
             "categories",
             "categories",
-            {"is_field": True, "encoder": lambda v: sorted(c.value for c in v)},
+            {"is_field": True, "encoder": lambda v: sorted(NabCategory.encode(c) for c in v)},
         ),
         (
             "anime_categories",
             "animeCategories",
-            {"is_field": True, "encoder": lambda v: sorted(c.value for c in v)},
+            {"is_field": True, "encoder": lambda v: sorted(NabCategory.encode(c) for c in v)},
         ),
         ("anime_standard_format_search", "animeStandardFormatSearch", {"is_field": True}),
         (
@@ -438,6 +461,16 @@ class NewznabIndexer(UsenetIndexer):
             {"is_field": True, "field_default": None, "decoder": lambda v: v or None},
         ),
     ]
+
+    @validator("categories", "anime_categories")
+    def validate_categories(
+        cls,
+        value: Iterable[Union[NabCategory, int]],
+    ) -> Set[Union[NabCategory, int]]:
+        return set(
+            NabCategory.decode(category) if isinstance(category, int) else category
+            for category in value
+        )
 
 
 class OmgwtfnzbsIndexer(UsenetIndexer):
@@ -860,15 +893,21 @@ class TorznabIndexer(TorrentIndexer):
 
     Values:
 
-    * `TV-WEBDL`
-    * `TV-Foreign`
-    * `TV-SD`
-    * `TV-HD`
-    * `TV-UHD`
-    * `TV-Other`
-    * `TV-Sports`
-    * `TV-Anime`
-    * `TV-Documentary`
+    * `TV`
+    * `TV/WEB-DL`
+    * `TV/Foreign`
+    * `TV/SD`
+    * `TV/HD`
+    * `TV/UHD`
+    * `TV/Other`
+    * `TV/Sports`
+    * `TV/Anime`
+    * `TV/Documentary`
+    * `TV/x265`
+
+    *Changed in version 0.6.1*: The Sonarr-native values for Newznab/Torznab categories
+    (e.g. `TV/WEB-DL`) can now be specified, instead of the Buildarr-native values
+    (e.g. `TV-WEBDL`). The old values can still be used.
     """
 
     anime_categories: Set[NabCategory] = set()
@@ -877,15 +916,21 @@ class TorznabIndexer(TorrentIndexer):
 
     Values:
 
-    * `TV-WEBDL`
-    * `TV-Foreign`
-    * `TV-SD`
-    * `TV-HD`
-    * `TV-UHD`
-    * `TV-Other`
-    * `TV-Sports`
-    * `TV-Anime`
-    * `TV-Documentary`
+    * `TV`
+    * `TV/WEB-DL`
+    * `TV/Foreign`
+    * `TV/SD`
+    * `TV/HD`
+    * `TV/UHD`
+    * `TV/Other`
+    * `TV/Sports`
+    * `TV/Anime`
+    * `TV/Documentary`
+    * `TV/x265`
+
+    *Changed in version 0.6.1*: The Sonarr-native values for Newznab/Torznab categories
+    (e.g. `TV/WEB-DL`) can now be specified, instead of the Buildarr-native values
+    (e.g. `TV-WEBDL`). The old values can still be used.
     """
 
     anime_standard_format_search: bool = False
@@ -908,12 +953,12 @@ class TorznabIndexer(TorrentIndexer):
         (
             "categories",
             "categories",
-            {"is_field": True, "encoder": lambda v: sorted(c.value for c in v)},
+            {"is_field": True, "encoder": lambda v: sorted(NabCategory.encode(c) for c in v)},
         ),
         (
             "anime_categories",
             "animeCategories",
-            {"is_field": True, "encoder": lambda v: sorted(c.value for c in v)},
+            {"is_field": True, "encoder": lambda v: sorted(NabCategory.encode(c) for c in v)},
         ),
         ("anime_standard_format_search", "animeStandardFormatSearch", {"is_field": True}),
         (
@@ -922,6 +967,16 @@ class TorznabIndexer(TorrentIndexer):
             {"is_field": True, "field_default": None, "decoder": lambda v: v or None},
         ),
     ]
+
+    @validator("categories", "anime_categories")
+    def validate_categories(
+        cls,
+        value: Iterable[Union[NabCategory, int]],
+    ) -> Set[Union[NabCategory, int]]:
+        return set(
+            NabCategory.decode(category) if isinstance(category, int) else category
+            for category in value
+        )
 
 
 INDEXER_TYPES: Tuple[Type[Indexer], ...] = (
