@@ -1,5 +1,16 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.6.2](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.2) - 2023-12-01
+
+This release fixes the following issues:
+
+* Fix an issue where default values for attributes in qBittorrent download clients were not used when the value is not provided by Sonarr API, resulting in qBittorrent download clients being unable to be managed.
+
+### Changed
+
+* Fix reading remote attributes for qBittorrent download clients ([#40](https://github.com/buildarr/buildarr-sonarr/pull/40))
+
+
 ## [v0.6.1](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.1) - 2023-11-13
 
 This release fixes the following issues:
