@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
-from pydantic import validator
+from pydantic import SecretStr, validator
 from typing_extensions import Self
 
 from ...api import api_delete, api_post, api_put
@@ -1241,14 +1241,14 @@ class QbittorrentDownloadClient(TorrentDownloadClient):
     Adds a prefix to the qBittorrent URL, e.g. `http://[host]:[port]/[url_base]/api`.
     """
 
-    username: NonEmptyStr
+    username: Optional[str] = None
     """
-    User name to use when authenticating with the download client.
+    User name to use when authenticating with the download client, if required.
     """
 
-    password: Password
+    password: Optional[SecretStr] = None
     """
-    Password to use to authenticate the download client user.
+    Password to use to authenticate the download client user, if required.
     """
 
     category: Optional[str] = "tv-sonarr"
@@ -1318,19 +1318,52 @@ class QbittorrentDownloadClient(TorrentDownloadClient):
         (
             "url_base",
             "urlBase",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {
+                "is_field": True,
+                "decoder": lambda v: v or None,
+                "encoder": lambda v: v or "",
+                "field_default": None,
+            },
         ),
-        ("username", "username", {"is_field": True}),
-        ("password", "password", {"is_field": True}),
+        (
+            "username",
+            "username",
+            {
+                "is_field": True,
+                "decoder": lambda v: v or None,
+                "encoder": lambda v: v or "",
+                "field_default": None,
+            },
+        ),
+        (
+            "password",
+            "password",
+            {
+                "is_field": True,
+                "decoder": lambda v: v or None,
+                "encoder": lambda v: v or "",
+                "field_default": None,
+            },
+        ),
         (
             "category",
             "tvCategory",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {
+                "is_field": True,
+                "decoder": lambda v: v or None,
+                "encoder": lambda v: v or "",
+                "field_default": None,
+            },
         ),
         (
             "postimport_category",
             "tvImportedCategory",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {
+                "is_field": True,
+                "decoder": lambda v: v or None,
+                "encoder": lambda v: v or "",
+                "field_default": None,
+            },
         ),
         ("recent_priority", "recentTvPriority", {"is_field": True}),
         ("older_priority", "olderTvPriority", {"is_field": True}),
