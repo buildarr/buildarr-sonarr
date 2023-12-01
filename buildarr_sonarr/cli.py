@@ -78,12 +78,14 @@ def dump_config(url: Url, api_key: str) -> int:
         if len(hostname_port) == HOSTNAME_PORT_TUPLE_LENGTH
         else (443 if protocol == "https" else 80)
     )
+    url_base = url.path
 
     instance_config = SonarrInstanceConfig(
         **{  # type: ignore[arg-type]
             "hostname": hostname,
             "port": port,
             "protocol": protocol,
+            "url_base": url_base,
         },
     )
 
@@ -95,6 +97,7 @@ def dump_config(url: Url, api_key: str) -> int:
                 hostname=hostname,
                 port=port,
                 protocol=protocol,
+                url_base=url_base,
                 api_key=api_key if api_key else None,
             ),
         )

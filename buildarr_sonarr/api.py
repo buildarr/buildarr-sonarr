@@ -75,7 +75,7 @@ def get_initialize_js(host_url: str, api_key: Optional[str] = None) -> Dict[str,
             status_code = res.status_code
             error_message = f"Unexpected response with error code {res.status_code}: {res.text}"
         raise SonarrAPIError(
-            f"Unable to retrieve 'initialize.js': {error_message}",
+            f"Unable to retrieve '{url}': {error_message}",
             status_code=status_code,
         )
 
@@ -92,16 +92,18 @@ def get_initialize_js(host_url: str, api_key: Optional[str] = None) -> Dict[str,
 def api_get(
     secrets: Union[SonarrSecrets, str],
     api_url: str,
-    session: Optional[requests.Session] = None,
+    *,
+    api_key: Optional[str] = None,
     use_api_key: bool = True,
     expected_status_code: HTTPStatus = HTTPStatus.OK,
+    session: Optional[requests.Session] = None,
 ) -> Any:
     """
-    Send a `GET` request to a Sonarr instance.
+    Send an API `GET` request.
 
     Args:
-        secrets (Union[SonarrSecrets, str]): Sonarr secrets metadata, or host URL.
-        api_url (str): Sonarr API command.
+        secrets (Union[SonarrSecrets, str]): Secrets metadata, or host URL.
+        api_url (str): API command.
         expected_status_code (HTTPStatus): Expected response status. Defaults to `200 OK`.
 
     Returns:
@@ -110,10 +112,14 @@ def api_get(
 
     if isinstance(secrets, str):
         host_url = secrets
-        api_key = None
+        host_api_key = api_key
     else:
         host_url = secrets.host_url
-        api_key = secrets.api_key.get_secret_value() if use_api_key else None
+        host_api_key = secrets.api_key.get_secret_value()
+
+    if not use_api_key:
+        host_api_key = None
+
     url = f"{host_url}/{api_url.lstrip('/')}"
 
     logger.debug("GET %s", url)
@@ -122,7 +128,7 @@ def api_get(
         session = requests.Session()
     res = session.get(
         url,
-        headers={"X-Api-Key": api_key} if api_key else None,
+        headers={"X-Api-Key": host_api_key} if host_api_key else None,
         timeout=state.request_timeout,
     )
     res_json = res.json()
