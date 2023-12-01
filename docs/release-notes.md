@@ -1,5 +1,16 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.6.3](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.3) - 2023-12-02
+
+This release adds support for defining a URL base for the Sonarr instance in the Buildarr configuration, using the `url_base` host configuration attribute.
+
+This allows Sonarr instances with APIs available under a custom path (e.g. `http://localhost:8989/sonarr`) to be managed by Buildarr.
+
+### Changed
+
+* Add Sonarr instance URL base support ([#44](https://github.com/buildarr/buildarr-sonarr/pull/44))
+
+
 ## [v0.6.2](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.2) - 2023-12-01
 
 This release fixes the following issues:
