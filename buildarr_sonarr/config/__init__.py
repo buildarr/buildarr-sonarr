@@ -23,9 +23,9 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from buildarr.config import ConfigPlugin
 from buildarr.types import NonEmptyStr, Port
+from pydantic import validator
 from typing_extensions import Self
 
-from ..api import api_get
 from ..types import SonarrApiKey, SonarrProtocol
 from .connect import SonarrConnectSettingsConfig
 from .download_clients import SonarrDownloadClientsSettingsConfig
@@ -253,6 +253,18 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     Communication protocol to use to connect to Sonarr.
     """
 
+    url_base: Optional[str] = None
+    """
+    The URL path the Sonarr instance API is available under, if behind a reverse proxy.
+
+    API URLs are rendered like this: `<protocol>://<hostname>:<port><url_base>/api/v3/...`
+
+    When unset, the URL root will be used as the API endpoint
+    (e.g. `<protocol>://<hostname>:<port>/api/v3/...`).
+
+    *Added in version 0.6.3.*
+    """
+
     api_key: Optional[SonarrApiKey] = None
     """
     API key to use to authenticate with the Sonarr instance.
@@ -280,6 +292,10 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     Sonarr settings.
     Configuration options for Sonarr itself are set within this structure.
     """
+
+    @validator("url_base")
+    def validate_url_base(cls, value: Optional[str]) -> Optional[str]:
+        return f"/{value.strip('/')}" if value and value.strip("/") else None
 
     def uses_trash_metadata(self) -> bool:
         if self.settings.quality.uses_trash_metadata():
@@ -318,8 +334,9 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
             hostname=secrets.hostname,
             port=secrets.port,
             protocol=secrets.protocol,
+            url_base=secrets.url_base,
             api_key=secrets.api_key,
-            version=api_get(secrets, "/api/v3/system/status")["version"],
+            version=secrets.version,
             settings=SonarrSettingsConfig.from_remote(secrets),
         )
 
