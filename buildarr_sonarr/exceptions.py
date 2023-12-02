@@ -50,7 +50,7 @@ class SonarrSecretsError(SonarrError):
 
 class SonarrSecretsUnauthorizedError(SonarrSecretsError):
     """
-    Error raised when the Sonarr API key wasn't able to be retrieved.
+    Error raised when Buildarr was unable to authenticate with Sonarr.
     """
 
     pass
