@@ -81,7 +81,10 @@ def get_initialize_js(host_url: str, api_key: Optional[str] = None) -> Dict[str,
 
     res_match = re.match(INITIALIZE_JS_RES_PATTERN, res.text)
     if not res_match:
-        raise RuntimeError(f"No matches for 'initialize.js' parsing: {res.text}")
+        raise SonarrAPIError(
+            f"No matches for 'initialize.js' parsing: {res.text}",
+            status_code=res.status_code,
+        )
     res_json = json5.loads(res_match.group(1))
 
     logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
@@ -131,7 +134,10 @@ def api_get(
         headers={"X-Api-Key": host_api_key} if host_api_key else None,
         timeout=state.request_timeout,
     )
-    res_json = res.json()
+    try:
+        res_json = res.json()
+    except requests.JSONDecodeError:
+        api_error(method="GET", url=url, response=res)
 
     logger.debug("GET %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
 
@@ -180,7 +186,10 @@ def api_post(
         timeout=state.request_timeout,
         **({"json": req} if req is not None else {}),
     )
-    res_json = res.json()
+    try:
+        res_json = res.json()
+    except requests.JSONDecodeError:
+        api_error(method="POST", url=url, response=res)
 
     logger.debug("POST %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
 
@@ -229,7 +238,10 @@ def api_put(
         json=req,
         timeout=state.request_timeout,
     )
-    res_json = res.json()
+    try:
+        res_json = res.json()
+    except requests.JSONDecodeError:
+        api_error(method="PUT", url=url, response=res)
 
     logger.debug("PUT %s -> status_code=%i res=%s", url, res.status_code, repr(res_json))
 
@@ -310,7 +322,7 @@ def api_error(
                 error_message += f"\n{_api_error(error)}"
         except KeyError:
             error_message += f" {res_json}"
-    raise SonarrAPIError(error_message, status_code=response.status_code)
+    raise SonarrAPIError(error_message, status_code=response.status_code) from None
 
 
 def _api_error(res_json: Any) -> str:
