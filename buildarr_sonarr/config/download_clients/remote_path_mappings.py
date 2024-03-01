@@ -48,6 +48,9 @@ class Ensure(BaseEnum):
     present = "present"
     absent = "absent"
 
+    def __repr__(self) -> str:
+        return repr(self.name)
+
 
 class RemotePathMapping(SonarrConfigBase):
     """
