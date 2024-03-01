@@ -21,7 +21,7 @@ from __future__ import annotations
 
 import re
 
-from pathlib import PureWindowsPath
+from pathlib import PurePosixPath, PureWindowsPath
 from typing import Any, Callable, Generator, Literal
 
 from pydantic import SecretStr
@@ -42,12 +42,18 @@ class OSAgnosticPath(str):
 
     def __eq__(self, other: Any) -> bool:
         try:
-            return PureWindowsPath(self) == PureWindowsPath(other)
+            if self.is_windows():
+                return PureWindowsPath(self) == PureWindowsPath(other)
+            else:
+                return PurePosixPath(self) == PurePosixPath(other)
         except TypeError:
             return False
 
     def __hash__(self) -> int:
-        return hash(PureWindowsPath(self))
+        if self.is_windows():
+            return hash(PureWindowsPath(self))
+        else:
+            return hash(PurePosixPath(self))
 
     @classmethod
     def __get_validators__(cls) -> Generator[Callable[[Any], Self], None, None]:

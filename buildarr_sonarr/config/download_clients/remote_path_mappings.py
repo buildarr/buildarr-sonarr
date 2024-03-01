@@ -67,16 +67,18 @@ class RemotePathMapping(SonarrConfigBase):
     """
     Root path to the directory that the download client accesses.
 
-    *Changed in version 0.6.4:* Path checking is now case-insensitive, and will match paths
-    whether or not a trailing `/` (`\\` for Windows paths) is defined in the configuration.
+    *Changed in version 0.6.4:* Path checking will now match paths
+    whether or not the defined path ends in a trailing slash.
+    Path checking on Windows paths is now case-insensitive.
     """
 
     local_path: OSAgnosticPath
     """
     The path that Sonarr should use to access the remote path locally.
 
-    *Changed in version 0.6.4:* Path checking is now case-insensitive, and will match paths
-    whether or not a trailing `/` (`\\` for Windows paths) is defined in the configuration.
+    *Changed in version 0.6.4:* Path checking will now match paths
+    whether or not the defined path ends in a trailing slash.
+    Path checking on Windows paths is now case-insensitive.
     """
 
     ensure: Ensure = Ensure.present
@@ -98,7 +100,9 @@ class RemotePathMapping(SonarrConfigBase):
 
     @validator("remote_path", "local_path")
     def add_trailing_slash(cls, value: OSAgnosticPath) -> OSAgnosticPath:
-        return value + ("\\" if value.is_windows() else "/")
+        if value.is_windows():
+            return (value + "\\") if not value.endswith("\\\\") else value
+        return (value + "/") if not value.endswith("/") else value
 
     @classmethod
     def _from_remote(cls, remote_attrs: Mapping[str, Any]) -> Self:
