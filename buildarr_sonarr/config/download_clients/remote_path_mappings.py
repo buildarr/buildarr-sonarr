@@ -70,7 +70,7 @@ class RemotePathMapping(SonarrConfigBase):
     """
     Root path to the directory that the download client accesses.
 
-    *Changed in version 0.6.4:* Path checking will now match paths
+    *Changed in version 0.6.4*: Path checking will now match paths
     whether or not the defined path ends in a trailing slash.
     Path checking on Windows paths is now case-insensitive.
     """
@@ -79,7 +79,7 @@ class RemotePathMapping(SonarrConfigBase):
     """
     The path that Sonarr should use to access the remote path locally.
 
-    *Changed in version 0.6.4:* Path checking will now match paths
+    *Changed in version 0.6.4*: Path checking will now match paths
     whether or not the defined path ends in a trailing slash.
     Path checking on Windows paths is now case-insensitive.
     """
