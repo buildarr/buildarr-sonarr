@@ -66,11 +66,17 @@ class RemotePathMapping(SonarrConfigBase):
     remote_path: OSAgnosticPath
     """
     Root path to the directory that the download client accesses.
+
+    *Changed in version 0.6.4:* Path checking is now case-insensitive, and will match paths
+    whether or not a trailing `/` (`\\` for Windows paths) is defined in the configuration.
     """
 
     local_path: OSAgnosticPath
     """
     The path that Sonarr should use to access the remote path locally.
+
+    *Changed in version 0.6.4:* Path checking is now case-insensitive, and will match paths
+    whether or not a trailing `/` (`\\` for Windows paths) is defined in the configuration.
     """
 
     ensure: Ensure = Ensure.present
@@ -86,8 +92,8 @@ class RemotePathMapping(SonarrConfigBase):
 
     _remote_map: List[RemoteMapEntry] = [
         ("host", "host", {}),
-        ("remote_path", "remotePath", {"encoder": lambda x: str(x)}),
-        ("local_path", "localPath", {"encoder": lambda x: str(x)}),
+        ("remote_path", "remotePath", {}),
+        ("local_path", "localPath", {}),
     ]
 
     @validator("remote_path", "local_path")

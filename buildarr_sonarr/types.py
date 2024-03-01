@@ -22,50 +22,31 @@ from __future__ import annotations
 import re
 
 from pathlib import PureWindowsPath
-from typing import Any, Callable, Generator, Literal
+from typing import Any, Literal
 
 from pydantic import SecretStr
-from typing_extensions import Self
 
 SonarrProtocol = Literal["http", "https"]
 
 
-class OSAgnosticPath:
-    def __init__(self, path: Any) -> None:
-        self.path = str(path)
-
+class OSAgnosticPath(str):
     def is_windows(self) -> bool:
-        return bool(re.match(r"^[A-Za-z]:\\", self.path) or self.path.startswith(r"\\"))
+        return bool(re.match(r"^[A-Za-z]:", self) or self.startswith(r"\\"))
 
     def is_posix(self) -> bool:
         return not self.is_windows()
 
+    def __add__(self, other: Any) -> OSAgnosticPath:
+        return OSAgnosticPath(super().__add__(other))
+
     def __eq__(self, other: Any) -> bool:
         try:
-            return PureWindowsPath(self.path) == PureWindowsPath(
-                other.path if isinstance(other, OSAgnosticPath) else other,
-            )
+            return PureWindowsPath(self) == PureWindowsPath(other)
         except TypeError:
             return False
 
-    def __add__(self, other: Any) -> OSAgnosticPath:
-        return OSAgnosticPath(
-            self.path + (other.path if isinstance(other, OSAgnosticPath) else other),
-        )
-
-    def __repr__(self) -> str:
-        return self.path
-
     def __hash__(self) -> int:
-        return hash(self.path)
-
-    @classmethod
-    def __get_validators__(cls) -> Generator[Callable[[Any], Self], None, None]:
-        yield cls.validate
-
-    @classmethod
-    def validate(cls, value: Any) -> Self:
-        return cls(value)
+        return hash(PureWindowsPath(self))
 
 
 class SonarrApiKey(SecretStr):
