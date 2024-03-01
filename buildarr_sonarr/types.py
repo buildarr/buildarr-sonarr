@@ -32,7 +32,7 @@ SonarrProtocol = Literal["http", "https"]
 
 class OSAgnosticPath(str):
     def is_windows(self) -> bool:
-        return bool(re.match(r"^[A-Za-z]:", self) or self.startswith(r"\\"))
+        return bool(re.match(r"^[A-Za-z]:", self) or self.startswith("\\\\"))
 
     def is_posix(self) -> bool:
         return not self.is_windows()
