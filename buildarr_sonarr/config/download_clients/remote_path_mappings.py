@@ -24,10 +24,12 @@ from typing import Any, Dict, List, Mapping, Tuple
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr
+from pydantic import validator
 from typing_extensions import Self
 
 from ...api import api_delete, api_get, api_post, api_put
 from ...secrets import SonarrSecrets
+from ...types import OSAgnosticPath
 from ..types import SonarrConfigBase
 
 logger = getLogger(__name__)
@@ -61,12 +63,12 @@ class RemotePathMapping(SonarrConfigBase):
     The name of the host, as specified for the remote download client.
     """
 
-    remote_path: NonEmptyStr
+    remote_path: OSAgnosticPath
     """
     Root path to the directory that the download client accesses.
     """
 
-    local_path: NonEmptyStr
+    local_path: OSAgnosticPath
     """
     The path that Sonarr should use to access the remote path locally.
     """
@@ -84,9 +86,13 @@ class RemotePathMapping(SonarrConfigBase):
 
     _remote_map: List[RemoteMapEntry] = [
         ("host", "host", {}),
-        ("remote_path", "remotePath", {}),
-        ("local_path", "localPath", {}),
+        ("remote_path", "remotePath", {"encoder": lambda x: x.path}),
+        ("local_path", "localPath", {"encoder": lambda x: x.path}),
     ]
+
+    @validator("remote_path", "local_path")
+    def add_trailing_slash(cls, value: OSAgnosticPath) -> OSAgnosticPath:
+        return value + ("\\" if value.is_windows() else "/")
 
     @classmethod
     def _from_remote(cls, remote_attrs: Mapping[str, Any]) -> Self:
@@ -195,11 +201,15 @@ class SonarrRemotePathMappingsSettingsConfig(SonarrConfigBase):
         changed = False
         # Get required resource IDs from the remote, and create
         # data structures.
-        remote_rpm_ids: Dict[Tuple[str, str, str], int] = {
-            (rpm["host"], rpm["remotePath"], rpm["localPath"]): rpm["id"]
+        remote_rpm_ids: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], int] = {
+            (
+                rpm["host"],
+                OSAgnosticPath(rpm["remotePath"]),
+                OSAgnosticPath(rpm["localPath"]),
+            ): rpm["id"]
             for rpm in api_get(secrets, "/api/v3/remotepathmapping")
         }
-        remote_rpms: Dict[Tuple[str, str, str], RemotePathMapping] = {
+        remote_rpms: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], RemotePathMapping] = {
             (rpm.host, rpm.remote_path, rpm.local_path): rpm for rpm in remote.definitions
         }
         logger.debug("remote_rpms = %s", remote_rpms)
@@ -232,11 +242,11 @@ class SonarrRemotePathMappingsSettingsConfig(SonarrConfigBase):
 
     def _delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
         changed = False
-        remote_rpm_ids: Dict[Tuple[str, str, str], int] = {
+        remote_rpm_ids: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], int] = {
             (rpm["host"], rpm["remotePath"], rpm["localPath"]): rpm["id"]
             for rpm in api_get(secrets, "/api/v3/remotepathmapping")
         }
-        local_rpms: Dict[Tuple[str, str, str], RemotePathMapping] = {
+        local_rpms: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], RemotePathMapping] = {
             (rpm.host, rpm.remote_path, rpm.local_path): rpm for rpm in self.definitions
         }
         i = -1
