@@ -86,8 +86,8 @@ class RemotePathMapping(SonarrConfigBase):
 
     _remote_map: List[RemoteMapEntry] = [
         ("host", "host", {}),
-        ("remote_path", "remotePath", {"encoder": lambda x: x.path}),
-        ("local_path", "localPath", {"encoder": lambda x: x.path}),
+        ("remote_path", "remotePath", {"encoder": lambda x: str(x)}),
+        ("local_path", "localPath", {"encoder": lambda x: str(x)}),
     ]
 
     @validator("remote_path", "local_path")

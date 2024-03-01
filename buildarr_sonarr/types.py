@@ -35,7 +35,7 @@ class OSAgnosticPath:
         self.path = str(path)
 
     def is_windows(self) -> bool:
-        return bool(re.match("[A-Za-z]:\\", self.path) or self.path.startswith("\\\\"))
+        return bool(re.match(r"^[A-Za-z]:\\", self.path) or self.path.startswith("\\\\"))
 
     def is_posix(self) -> bool:
         return not self.is_windows()
