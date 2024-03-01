@@ -22,9 +22,10 @@ from __future__ import annotations
 import re
 
 from pathlib import PureWindowsPath
-from typing import Any, Literal
+from typing import Any, Callable, Generator, Literal
 
 from pydantic import SecretStr
+from typing_extensions import Self
 
 SonarrProtocol = Literal["http", "https"]
 
@@ -47,6 +48,14 @@ class OSAgnosticPath(str):
 
     def __hash__(self) -> int:
         return hash(PureWindowsPath(self))
+
+    @classmethod
+    def __get_validators__(cls) -> Generator[Callable[[Any], Self], None, None]:
+        yield cls.validate
+
+    @classmethod
+    def validate(cls, value: Any) -> Self:
+        return cls(value)
 
 
 class SonarrApiKey(SecretStr):
