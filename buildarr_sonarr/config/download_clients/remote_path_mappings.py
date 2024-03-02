@@ -235,12 +235,10 @@ class SonarrRemotePathMappingsSettingsConfig(SonarrConfigBase):
         remote_rpms: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], RemotePathMapping] = {
             (rpm.host, rpm.remote_path, rpm.local_path): rpm for rpm in remote.definitions
         }
-        logger.debug("remote_rpms = %s", remote_rpms)
         # Handle managed remote path mappings.
         for i, rpm in enumerate(self.definitions):
             rpm_tree = f"{tree}.definitions[{i}]"
             rpm_tuple = (rpm.host, rpm.remote_path, rpm.local_path)
-            logger.debug("rpm_tuple = %s", rpm_tuple)
             # If the remote path mapping should exist, check that it does,
             # and if not, create it.
             if rpm.ensure == Ensure.present:
