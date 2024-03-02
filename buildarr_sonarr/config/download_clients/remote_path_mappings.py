@@ -267,7 +267,11 @@ class SonarrRemotePathMappingsSettingsConfig(SonarrConfigBase):
     def _delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
         changed = False
         remote_rpm_ids: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], int] = {
-            (rpm["host"], rpm["remotePath"], rpm["localPath"]): rpm["id"]
+            (
+                rpm["host"],
+                OSAgnosticPath(rpm["remotePath"]),
+                OSAgnosticPath(rpm["localPath"]),
+            ): rpm["id"]
             for rpm in api_get(secrets, "/api/v3/remotepathmapping")
         }
         local_rpms: Dict[Tuple[str, OSAgnosticPath, OSAgnosticPath], RemotePathMapping] = {
