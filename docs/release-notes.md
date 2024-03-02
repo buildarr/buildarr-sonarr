@@ -1,5 +1,20 @@
 # Release Notes (Buildarr Sonarr Plugin)
 
+## [v0.6.4](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.4) - 2024-03-02
+
+This release addresses an issue where Buildarr would try to always try to create new remote path mappings on a Sonarr instance in certain cases, even if they already existed, resulting in an API error.
+Path handling for remote path mappings within Buildarr has also been improved, making sure that Buildarr will handle them correctly for both POSIX paths and Windows paths (for Sonarr instances running on Windows).
+
+It also improves error handling for Sonarr API responses, making error messages output from the API easier to understand when output by Buildarr.
+
+### Changed
+
+* Functionise host URL generation in secrets ([#47](https://github.com/buildarr/buildarr-sonarr/pull/47))
+* Improve JSON API response error handling ([#48](https://github.com/buildarr/buildarr-sonarr/pull/48))
+* Update Poetry and lock file ([#54](https://github.com/buildarr/buildarr-sonarr/pull/54))
+* Fix remote path mapping checking edge cases ([#56](https://github.com/buildarr/buildarr-sonarr/pull/56))
+
+
 ## [v0.6.3](https://github.com/buildarr/buildarr-sonarr/releases/tag/v0.6.3) - 2023-12-02
 
 This release adds support for defining a URL base for the Sonarr instance in the Buildarr configuration, using the `url_base` host configuration attribute.
