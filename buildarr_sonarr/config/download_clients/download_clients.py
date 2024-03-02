@@ -781,7 +781,12 @@ class SabnzbdDownloadClient(UsenetDownloadClient):
         (
             "url_base",
             "urlBase",
-            {"is_field": True, "decoder": lambda v: v or None, "encoder": lambda v: v or ""},
+            {
+                "is_field": True,
+                "field_default": None,
+                "decoder": lambda v: v or None,
+                "encoder": lambda v: v or "",
+            },
         ),
         ("api_key", "apiKey", {"is_field": True}),
         (
