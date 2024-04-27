@@ -371,7 +371,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     ```
     """
 
-    recycling_bin: Optional[NonEmptyStr] = None
+    recycling_bin: Optional[str] = None
     """
     Episode files will go here when deleted instead of being permanently deleted.
     """

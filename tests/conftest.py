@@ -91,4 +91,5 @@ def sonarr_api(sonarr_api_factory) -> SonarrAPI:
     Returns:
         SonarrAPI: The Sonarr API object.
     """
+
     return sonarr_api_factory()
