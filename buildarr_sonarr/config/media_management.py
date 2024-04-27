@@ -16,7 +16,6 @@
 Sonarr plugin media management settings configuration.
 """
 
-
 from __future__ import annotations
 
 from logging import getLogger

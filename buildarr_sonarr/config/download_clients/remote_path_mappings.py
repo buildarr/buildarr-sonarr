@@ -16,7 +16,6 @@
 Sonarr plugin download client remote path mappings.
 """
 
-
 from __future__ import annotations
 
 from logging import getLogger

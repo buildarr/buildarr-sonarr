@@ -16,7 +16,6 @@
 Sonarr plugin type hints.
 """
 
-
 from __future__ import annotations
 
 import re

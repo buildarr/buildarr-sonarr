@@ -16,7 +16,6 @@
 Sonarr plugin configuration.
 """
 
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Dict, Optional
@@ -43,13 +42,11 @@ from .ui import SonarrUISettingsConfig
 if TYPE_CHECKING:
     from ..secrets import SonarrSecrets
 
-    class _SonarrInstanceConfig(ConfigPlugin[SonarrSecrets]):
-        ...
+    class _SonarrInstanceConfig(ConfigPlugin[SonarrSecrets]): ...
 
 else:
 
-    class _SonarrInstanceConfig(ConfigPlugin):
-        ...
+    class _SonarrInstanceConfig(ConfigPlugin): ...
 
 
 class SonarrSettingsConfig(SonarrConfigBase):

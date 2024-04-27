@@ -14,7 +14,6 @@ Checklist:
    ```bash
    $ git log --oneline --decorate v<old version>..HEAD
    ```
-1. [ ] Update the `tool.poetry.version` field in `pyproject.toml`
 1. [ ] Add release notes to `docs/release-notes.md`
 1. [ ] Create pull request: <paste pull request here>
 1. [ ] Merge pull request

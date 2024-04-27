@@ -16,7 +16,6 @@
 Sonarr plugin configuration utility classes and functions.
 """
 
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -27,13 +26,11 @@ from pydantic import ConstrainedStr
 if TYPE_CHECKING:
     from ..secrets import SonarrSecrets
 
-    class SonarrConfigBase(ConfigBase[SonarrSecrets]):
-        ...
+    class SonarrConfigBase(ConfigBase[SonarrSecrets]): ...
 
 else:
 
-    class SonarrConfigBase(ConfigBase):
-        ...
+    class SonarrConfigBase(ConfigBase): ...
 
 
 class TraktAuthUser(ConstrainedStr):
