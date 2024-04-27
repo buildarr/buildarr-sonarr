@@ -16,7 +16,6 @@
 Sonarr plugin UI settings configuration object.
 """
 
-
 from __future__ import annotations
 
 from typing import List

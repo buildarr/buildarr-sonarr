@@ -16,7 +16,6 @@
 Sonarr plugin secrets file model.
 """
 
-
 from __future__ import annotations
 
 from http import HTTPStatus
@@ -35,13 +34,11 @@ if TYPE_CHECKING:
 
     from .config import SonarrConfig
 
-    class _SonarrSecrets(SecretsPlugin[SonarrConfig]):
-        ...
+    class _SonarrSecrets(SecretsPlugin[SonarrConfig]): ...
 
 else:
 
-    class _SonarrSecrets(SecretsPlugin):
-        ...
+    class _SonarrSecrets(SecretsPlugin): ...
 
 
 class SonarrSecrets(_SonarrSecrets):

@@ -16,7 +16,6 @@
 Sonarr plugin quality settings configuration object.
 """
 
-
 from __future__ import annotations
 
 import json

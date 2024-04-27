@@ -16,7 +16,6 @@
 Sonarr plugin interface.
 """
 
-
 from __future__ import annotations
 
 from buildarr.plugins import Plugin

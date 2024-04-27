@@ -16,7 +16,6 @@
 Sonarr plugin delay profile configuration.
 """
 
-
 from __future__ import annotations
 
 from logging import getLogger

@@ -16,7 +16,6 @@
 Sonarr plugin release profile configuration.
 """
 
-
 from __future__ import annotations
 
 import json

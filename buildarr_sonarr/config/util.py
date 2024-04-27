@@ -16,7 +16,6 @@
 Sonarr plugin configuration utility classes and functions.
 """
 
-
 from __future__ import annotations
 
 from datetime import datetime, timezone
