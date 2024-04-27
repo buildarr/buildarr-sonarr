@@ -1,6 +1,6 @@
 # Buildarr Sonarr Plugin
 
-[![PyPI](https://img.shields.io/pypi/v/buildarr-sonarr)](https://pypi.org/project/buildarr-sonarr) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/buildarr-sonarr)  [![GitHub](https://img.shields.io/github/license/buildarr/buildarr-sonarr)](https://github.com/buildarr/buildarr-sonarr/blob/main/LICENSE) ![Pre-commit hooks](https://github.com/buildarr/buildarr-sonarr/actions/workflows/pre-commit.yml/badge.svg) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![PyPI](https://img.shields.io/pypi/v/buildarr-sonarr)](https://pypi.org/project/buildarr-sonarr) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/buildarr-sonarr)  [![GitHub](https://img.shields.io/github/license/buildarr/buildarr-sonarr)](https://github.com/buildarr/buildarr-sonarr/blob/main/LICENSE) ![Test Status](https://img.shields.io/github/actions/workflow/status/buildarr/buildarr-sonarr/test.yml?label=tests)
 
 The Buildarr Sonarr plugin (`buildarr-sonarr`) is a plugin for Buildarr that adds the capability to configure and manage [Sonarr](http://sonarr.tv) instances.
 
