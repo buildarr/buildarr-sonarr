@@ -13,7 +13,7 @@
 
 
 """
-Test the Media Mangement configuration model.
+Test the `from_remote` class method on the Media Management configuration model.
 """
 
 from __future__ import annotations
@@ -57,7 +57,8 @@ def test_defaults(sonarr_api) -> None:
     )
 
 
-def test_rename_episodes(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_rename_episodes(sonarr_api, attr_value) -> None:
     """
     Check that the `rename_episodes` attribute is being populated by its API value.
     """
@@ -65,7 +66,7 @@ def test_rename_episodes(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "renameEpisodes": True})
+    ).respond_with_json({**NAMING_DEFAULTS, "renameEpisodes": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
@@ -75,11 +76,13 @@ def test_rename_episodes(sonarr_api) -> None:
     )
 
     assert (
-        SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).rename_episodes is True
+        SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).rename_episodes
+        is attr_value
     )
 
 
-def test_replace_illegal_characters(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_replace_illegal_characters(sonarr_api, attr_value) -> None:
     """
     Check that the `replace_illegal_characters` attribute is being populated by its API value.
     """
@@ -87,7 +90,7 @@ def test_replace_illegal_characters(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "replaceIllegalCharacters": False})
+    ).respond_with_json({**NAMING_DEFAULTS, "replaceIllegalCharacters": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
@@ -100,7 +103,7 @@ def test_replace_illegal_characters(sonarr_api) -> None:
         SonarrMediaManagementSettingsConfig.from_remote(
             sonarr_api.secrets,
         ).replace_illegal_characters
-        is False
+        is attr_value
     )
 
 
@@ -279,7 +282,8 @@ def test_multiepisode_style(sonarr_api, attr_value) -> None:
     ).multiepisode_style == MultiEpisodeStyle(attr_value)
 
 
-def test_create_empty_series_folders(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_create_empty_series_folders(sonarr_api, attr_value) -> None:
     """
     Check that the `create_empty_series_folders` attribute is being populated by its API value.
     """
@@ -291,7 +295,7 @@ def test_create_empty_series_folders(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "createEmptySeriesFolders": True})
+    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "createEmptySeriesFolders": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -300,11 +304,12 @@ def test_create_empty_series_folders(sonarr_api) -> None:
         SonarrMediaManagementSettingsConfig.from_remote(
             sonarr_api.secrets,
         ).create_empty_series_folders
-        is True
+        is attr_value
     )
 
 
-def test_delete_empty_folders(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_delete_empty_folders(sonarr_api, attr_value) -> None:
     """
     Check that the `delete_empty_folders` attribute is being populated by its API value.
     """
@@ -316,14 +321,14 @@ def test_delete_empty_folders(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "deleteEmptyFolders": True})
+    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "deleteEmptyFolders": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
 
     assert (
         SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).delete_empty_folders
-        is True
+        is attr_value
     )
 
 
@@ -350,7 +355,8 @@ def test_episode_title_required(sonarr_api, attr_value) -> None:
     ).episode_title_required == EpisodeTitleRequired(attr_value)
 
 
-def test_skip_free_space_check(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_skip_free_space_check(sonarr_api, attr_value) -> None:
     """
     Check that the `skip_free_space_check` attribute is being populated by its API value.
     """
@@ -362,14 +368,16 @@ def test_skip_free_space_check(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "skipFreeSpaceCheckWhenImporting": True})
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_DEFAULTS, "skipFreeSpaceCheckWhenImporting": attr_value},
+    )
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
 
     assert (
         SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).skip_free_space_check
-        is True
+        is attr_value
     )
 
 
@@ -400,7 +408,8 @@ def test_minimum_free_space(sonarr_api) -> None:
     )
 
 
-def test_use_hardlinks(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_use_hardlinks(sonarr_api, attr_value) -> None:
     """
     Check that the `use_hardlinks` attribute is being populated by its API value.
     """
@@ -412,17 +421,19 @@ def test_use_hardlinks(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "copyUsingHardlinks": False})
+    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "copyUsingHardlinks": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
 
     assert (
-        SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).use_hardlinks is False
+        SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).use_hardlinks
+        is attr_value
     )
 
 
-def test_import_extra_files(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_import_extra_files(sonarr_api, attr_value) -> None:
     """
     Check that the `import_extra_files` attribute is being populated by its API value.
     """
@@ -434,18 +445,19 @@ def test_import_extra_files(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "importExtraFiles": True})
+    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "importExtraFiles": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
 
     assert (
         SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).import_extra_files
-        is True
+        is attr_value
     )
 
 
-def test_unmonitor_deleted_episodes(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_unmonitor_deleted_episodes(sonarr_api, attr_value) -> None:
     """
     Check that the `unmonitor_deleted_episodes` attribute is being populated by its API value.
     """
@@ -458,7 +470,7 @@ def test_unmonitor_deleted_episodes(sonarr_api) -> None:
         "/api/v3/config/mediamanagement",
         method="GET",
     ).respond_with_json(
-        {**MEDIAMANAGEMENT_DEFAULTS, "autoUnmonitorPreviouslyDownloadedEpisodes": True},
+        {**MEDIAMANAGEMENT_DEFAULTS, "autoUnmonitorPreviouslyDownloadedEpisodes": attr_value},
     )
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
@@ -468,7 +480,7 @@ def test_unmonitor_deleted_episodes(sonarr_api) -> None:
         SonarrMediaManagementSettingsConfig.from_remote(
             sonarr_api.secrets,
         ).unmonitor_deleted_episodes
-        is True
+        is attr_value
     )
 
 
@@ -495,7 +507,8 @@ def test_propers_and_repacks(sonarr_api, attr_value) -> None:
     ).propers_and_repacks == PropersAndRepacks(attr_value)
 
 
-def test_analyze_video_files(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_analyze_video_files(sonarr_api, attr_value) -> None:
     """
     Check that the `analyze_video_files` attribute is being populated by its API value.
     """
@@ -507,14 +520,14 @@ def test_analyze_video_files(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "enableMediaInfo": False})
+    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "enableMediaInfo": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
 
     assert (
         SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).analyze_video_files
-        is False
+        is attr_value
     )
 
 
@@ -613,7 +626,8 @@ def test_recycling_bin_cleanup(sonarr_api) -> None:
     )
 
 
-def test_set_permissions(sonarr_api) -> None:
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_set_permissions(sonarr_api, attr_value) -> None:
     """
     Check that the `set_permissions` attribute is being populated by its API value.
     """
@@ -625,13 +639,14 @@ def test_set_permissions(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "setPermissionsLinux": True})
+    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "setPermissionsLinux": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
 
     assert (
-        SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).set_permissions is True
+        SonarrMediaManagementSettingsConfig.from_remote(sonarr_api.secrets).set_permissions
+        is attr_value
     )
 
 
@@ -686,7 +701,7 @@ def test_chown_group(sonarr_api, attr_value) -> None:
     [
         [],
         [{"id": 0, "path": "/opt/media/downloads"}],
-        [{"id": 0, "path": "/opt/media/shows"}, {"id": 0, "path": "/opt/media/anime"}],
+        [{"id": 0, "path": "/opt/media/shows"}, {"id": 1, "path": "/opt/media/anime"}],
     ],
 )
 def test_root_folders(sonarr_api, api_root_folders) -> None:

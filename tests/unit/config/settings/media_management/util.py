@@ -13,7 +13,7 @@
 
 
 """
-Media Mangement unit test constants and utility functions.
+Media Management unit test constants and utility functions.
 """
 
 from __future__ import annotations
@@ -22,6 +22,7 @@ NAMING_DEFAULTS = {
     # Uses default values set in the model,
     # which may be different to the real defaults.
     # In this case, the model defaults are not used.
+    "id": 0,
     "renameEpisodes": False,
     "replaceIllegalCharacters": True,
     "standardEpisodeFormat": (
@@ -69,6 +70,7 @@ MEDIAMANAGEMENT_DEFAULTS = {
     # Uses default values set in the model,
     # which may be different to the real defaults.
     # In this case, the model defaults are not used.
+    "id": 0,
     # Folders
     "createEmptySeriesFolders": False,
     "deleteEmptyFolders": False,
