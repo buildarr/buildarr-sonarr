@@ -27,6 +27,8 @@ from buildarr_sonarr.config.general import (
     CertificateValidation,
     ProxyType,
     SonarrGeneralSettingsConfig,
+    SonarrLogLevel,
+    UpdateMechanism,
 )
 
 from .util import HOST_CONFIG_DEFAULTS
@@ -289,4 +291,150 @@ def test_proxy_bypass_proxy_for_local_addresses(sonarr_api, attr_value) -> None:
             sonarr_api.secrets,
         ).proxy.bypass_proxy_for_local_addresses
         is attr_value
+    )
+
+
+@pytest.mark.parametrize("attr_value", ["info", "debug", "trace"])
+def test_logging_log_level(sonarr_api, attr_value) -> None:
+    """
+    Check that the `logging.log_level` attribute is being populated by its API value.
+    """
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "logLevel": attr_value})
+
+    assert SonarrGeneralSettingsConfig.from_remote(
+        sonarr_api.secrets,
+    ).logging.log_level == SonarrLogLevel(attr_value)
+
+
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_analytics_send_anonymous_usage_data(sonarr_api, attr_value) -> None:
+    """
+    Check that the `analytics.send_anonymous_usage_data` attribute
+    is being populated by its API value.
+    """
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "analyticsEnabled": attr_value})
+
+    assert (
+        SonarrGeneralSettingsConfig.from_remote(
+            sonarr_api.secrets,
+        ).analytics.send_anonymous_usage_data
+        is attr_value
+    )
+
+
+def test_updates_branch(sonarr_api) -> None:
+    """
+    Check that the `updates.branch` attribute is being populated by its API value.
+    """
+
+    attr_value = "branch"
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "branch": attr_value})
+
+    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).updates.branch == attr_value
+
+
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_updates_automatic(sonarr_api, attr_value) -> None:
+    """
+    Check that the `updates.automatic` attribute is being populated by its API value.
+    """
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "updateAutomatically": attr_value})
+
+    assert (
+        SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).updates.automatic is attr_value
+    )
+
+
+@pytest.mark.parametrize("attr_value", ["builtIn", "script", "external", "apt", "docker"])
+def test_updates_mechanism(sonarr_api, attr_value) -> None:
+    """
+    Check that the `updates.mechanism` attribute is being populated by its API value.
+    """
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "updateMechanism": attr_value})
+
+    assert SonarrGeneralSettingsConfig.from_remote(
+        sonarr_api.secrets,
+    ).updates.mechanism == UpdateMechanism(attr_value)
+
+
+@pytest.mark.parametrize("attr_value", [None, "", "test"])
+def test_updates_script_path(sonarr_api, attr_value) -> None:
+    """
+    Check that the `updates.script_path` attribute is being populated by its API value.
+    """
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "updateScriptPath": attr_value})
+
+    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).updates.script_path == (
+        attr_value or None
+    )
+
+
+def test_backup_folder(sonarr_api) -> None:
+    """
+    Check that the `backup.folder` attribute is being populated by its API value.
+    """
+
+    attr_value = "backup-dir"
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "backupFolder": attr_value})
+
+    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).backup.folder == attr_value
+
+
+def test_backup_interval(sonarr_api) -> None:
+    """
+    Check that the `backup.interval` attribute is being populated by its API value.
+    """
+
+    attr_value = 1
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "backupInterval": attr_value})
+
+    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).backup.interval == attr_value
+
+
+def test_backup_retention(sonarr_api) -> None:
+    """
+    Check that the `backup.retention` attribute is being populated by its API value.
+    """
+
+    attr_value = 14
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "backupRetention": attr_value})
+
+    assert (
+        SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).backup.retention == attr_value
     )
