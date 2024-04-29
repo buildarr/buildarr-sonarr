@@ -18,7 +18,7 @@ Media Management unit test constants and utility functions.
 
 from __future__ import annotations
 
-NAMING_DEFAULTS = {
+NAMING_CONFIG_DEFAULTS = {
     # Uses default values set in the model,
     # which may be different to the real defaults.
     # In this case, the model defaults are not used.
@@ -66,7 +66,7 @@ NAMING_DEFAULTS = {
     "multiEpisodeStyle": 4,  # range
 }
 
-MEDIAMANAGEMENT_DEFAULTS = {
+MEDIAMANAGEMENT_CONFIG_DEFAULTS = {
     # Uses default values set in the model,
     # which may be different to the real defaults.
     # In this case, the model defaults are not used.

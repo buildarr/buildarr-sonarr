@@ -30,7 +30,7 @@ from buildarr_sonarr.config.media_management import (
     SonarrMediaManagementSettingsConfig,
 )
 
-from .util import MEDIAMANAGEMENT_DEFAULTS, NAMING_DEFAULTS
+from .util import MEDIAMANAGEMENT_CONFIG_DEFAULTS, NAMING_CONFIG_DEFAULTS
 
 
 def test_defaults(sonarr_api) -> None:
@@ -42,11 +42,11 @@ def test_defaults(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -66,11 +66,11 @@ def test_rename_episodes(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "renameEpisodes": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "renameEpisodes": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -90,11 +90,11 @@ def test_replace_illegal_characters(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "replaceIllegalCharacters": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "replaceIllegalCharacters": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -117,11 +117,11 @@ def test_standard_episode_format(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "standardEpisodeFormat": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "standardEpisodeFormat": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -142,11 +142,11 @@ def test_daily_episode_format(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "dailyEpisodeFormat": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "dailyEpisodeFormat": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -169,11 +169,11 @@ def test_anime_episode_format(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "animeEpisodeFormat": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "animeEpisodeFormat": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -194,11 +194,11 @@ def test_series_folder_format(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "seriesFolderFormat": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "seriesFolderFormat": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -219,11 +219,11 @@ def test_season_folder_format(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "seasonFolderFormat": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "seasonFolderFormat": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -244,11 +244,11 @@ def test_specials_folder_format(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "specialsFolderFormat": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "specialsFolderFormat": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -268,11 +268,11 @@ def test_multiepisode_style(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json({**NAMING_DEFAULTS, "multiEpisodeStyle": attr_value})
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "multiEpisodeStyle": attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -291,11 +291,11 @@ def test_create_empty_series_folders(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "createEmptySeriesFolders": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "createEmptySeriesFolders": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -317,11 +317,11 @@ def test_delete_empty_folders(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "deleteEmptyFolders": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "deleteEmptyFolders": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -341,11 +341,11 @@ def test_episode_title_required(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "episodeTitleRequired": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "episodeTitleRequired": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -364,12 +364,12 @@ def test_skip_free_space_check(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
     ).respond_with_json(
-        {**MEDIAMANAGEMENT_DEFAULTS, "skipFreeSpaceCheckWhenImporting": attr_value},
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "skipFreeSpaceCheckWhenImporting": attr_value},
     )
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
@@ -391,11 +391,13 @@ def test_minimum_free_space(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "minimumFreeSpaceWhenImporting": attr_value})
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "minimumFreeSpaceWhenImporting": attr_value},
+    )
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -417,11 +419,11 @@ def test_use_hardlinks(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "copyUsingHardlinks": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "copyUsingHardlinks": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -441,11 +443,11 @@ def test_import_extra_files(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "importExtraFiles": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "importExtraFiles": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -465,12 +467,15 @@ def test_unmonitor_deleted_episodes(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
     ).respond_with_json(
-        {**MEDIAMANAGEMENT_DEFAULTS, "autoUnmonitorPreviouslyDownloadedEpisodes": attr_value},
+        {
+            **MEDIAMANAGEMENT_CONFIG_DEFAULTS,
+            "autoUnmonitorPreviouslyDownloadedEpisodes": attr_value,
+        },
     )
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
@@ -493,11 +498,13 @@ def test_propers_and_repacks(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "downloadPropersAndRepacks": attr_value})
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "downloadPropersAndRepacks": attr_value},
+    )
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -516,11 +523,11 @@ def test_analyze_video_files(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "enableMediaInfo": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "enableMediaInfo": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -541,11 +548,11 @@ def test_rescan_series_folder_after_refresh(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "rescanAfterRefresh": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "rescanAfterRefresh": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -564,11 +571,11 @@ def test_change_file_date(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "fileDate": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "fileDate": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -587,11 +594,11 @@ def test_recycling_bin(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "recycleBin": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "recycleBin": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -611,11 +618,11 @@ def test_recycling_bin_cleanup(sonarr_api) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "recycleBinCleanupDays": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "recycleBinCleanupDays": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -635,11 +642,11 @@ def test_set_permissions(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "setPermissionsLinux": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "setPermissionsLinux": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -659,11 +666,11 @@ def test_chmod_folder(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "chmodFolder": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "chmodFolder": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -682,11 +689,11 @@ def test_chown_group(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json({**MEDIAMANAGEMENT_DEFAULTS, "chownGroup": attr_value})
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "chownGroup": attr_value})
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         [],
     )
@@ -712,11 +719,11 @@ def test_root_folders(sonarr_api, api_root_folders) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_DEFAULTS)
+    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_DEFAULTS)
+    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
     sonarr_api.server.expect_ordered_request("/api/v3/rootfolder", method="GET").respond_with_json(
         api_root_folders,
     )

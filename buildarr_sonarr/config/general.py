@@ -22,8 +22,8 @@ from ipaddress import IPv4Address
 from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Union
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
-from pydantic import Field, validator
+from buildarr.types import BaseEnum, NonEmptyStr, Port
+from pydantic import Field, SecretStr
 from typing_extensions import Self
 
 from ..api import api_get, api_put
@@ -209,7 +209,7 @@ class SecurityGeneralSettings(GeneralSettings):
     Requires a restart of Sonarr to take effect.
     """
 
-    password: Optional[Password] = None
+    password: Optional[SecretStr] = None
     """
     Password for the administrator user. Required if authentication is enabled.
 
@@ -259,38 +259,6 @@ class SecurityGeneralSettings(GeneralSettings):
         ("certificate_validation", "certificateValidation", {}),
     ]
 
-    @validator("username", "password")
-    def required_when_auth_enabled(
-        cls,
-        value: Optional[str],
-        values: Dict[str, Any],
-    ) -> Optional[str]:
-        """
-        Enforce the following constraints on the validated attributes:
-
-        * If `authentication` is `none`, set the attribute value to `None`.
-        * If `authentication` is a value other than `none` (i.e. require authentication),
-          ensure that the attribute set to a value other than `None`.
-
-        This will apply to both the local Buildarr configuration and
-        the remote Sonarr instance configuration.
-
-        Args:
-            value (Optional[str]): Value to validate
-            values (Dict[str, Any]): Configuration attributes
-
-        Raises:
-            ValueError: If the attribute is required but empty
-
-        Returns:
-            Validated attribute value
-        """
-        if values["authentication"] == AuthenticationMethod.none:
-            return None
-        elif not value:
-            raise ValueError("required when 'authentication' is not set to 'none'")
-        return value
-
 
 class ProxyGeneralSettings(GeneralSettings):
     """
@@ -332,7 +300,7 @@ class ProxyGeneralSettings(GeneralSettings):
     Only enter if authentication is required by the proxy.
     """
 
-    password: Optional[Password] = None
+    password: Optional[SecretStr] = None
     """
     Password for the proxy user.
     Only enter if authentication is required by the proxy.
