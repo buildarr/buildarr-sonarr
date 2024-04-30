@@ -68,7 +68,7 @@ def test_rename_episodes(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "renameEpisodes": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming/0",
         method="PUT",
@@ -99,7 +99,7 @@ def test_replace_illegal_characters(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming",
         method="GET",
-    ).respond_with_json(NAMING_CONFIG_DEFAULTS)
+    ).respond_with_json({**NAMING_CONFIG_DEFAULTS, "replaceIllegalCharacters": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/naming/0",
         method="PUT",
@@ -360,7 +360,9 @@ def test_create_empty_series_folders(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "createEmptySeriesFolders": not attr_value},
+    )
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -396,7 +398,9 @@ def test_delete_empty_folders(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "deleteEmptyFolders": not attr_value},
+    )
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -472,7 +476,9 @@ def test_skip_free_space_check(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "skipFreeSpaceCheckWhenImporting": not attr_value},
+    )
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -543,7 +549,7 @@ def test_use_hardlinks(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "copyUsingHardlinks": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -574,7 +580,7 @@ def test_import_extra_files(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "importExtraFiles": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -610,7 +616,12 @@ def test_unmonitor_deleted_episodes(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json(
+        {
+            **MEDIAMANAGEMENT_CONFIG_DEFAULTS,
+            "autoUnmonitorPreviouslyDownloadedEpisodes": not attr_value,
+        },
+    )
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -684,7 +695,7 @@ def test_analyze_video_files(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "enableMediaInfo": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -796,7 +807,12 @@ def test_recycling_bin(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json(
+        {
+            **MEDIAMANAGEMENT_CONFIG_DEFAULTS,
+            "recycleBin": "" if attr_value else "/opt/recycling-bin",
+        },
+    )
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -867,7 +883,7 @@ def test_set_permissions(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json({**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "setPermissionsLinux": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",
@@ -936,7 +952,9 @@ def test_chown_group(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement",
         method="GET",
-    ).respond_with_json(MEDIAMANAGEMENT_CONFIG_DEFAULTS)
+    ).respond_with_json(
+        {**MEDIAMANAGEMENT_CONFIG_DEFAULTS, "chownGroup": "" if attr_value else "sonarr"},
+    )
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/mediamanagement/0",
         method="PUT",

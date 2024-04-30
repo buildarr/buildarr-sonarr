@@ -174,7 +174,7 @@ class HostGeneralSettings(GeneralSettings):
     """
 
     _remote_map: List[RemoteMapEntry] = [
-        ("bind_address", "bindAddress", {}),
+        ("bind_address", "bindAddress", {"encoder": lambda v: str(v)}),
         ("port", "port", {}),
         ("ssl_port", "sslPort", {}),
         ("use_ssl", "enableSsl", {}),

@@ -26,7 +26,7 @@ from buildarr_sonarr.config.general import (
     AuthenticationMethod,
     CertificateValidation,
     ProxyType,
-    SonarrGeneralSettingsConfig,
+    SonarrGeneralSettingsConfig as GeneralSettings,
     SonarrLogLevel,
     UpdateMechanism,
 )
@@ -45,12 +45,7 @@ def test_defaults(sonarr_api) -> None:
         method="GET",
     ).respond_with_json(HOST_CONFIG_DEFAULTS)
 
-    assert (
-        SonarrGeneralSettingsConfig.from_remote(
-            sonarr_api.secrets,
-        )
-        == SonarrGeneralSettingsConfig()
-    )
+    assert GeneralSettings.from_remote(sonarr_api.secrets) == GeneralSettings()
 
 
 @pytest.mark.parametrize("attr_value", ["*", "127.0.0.1"])
@@ -64,7 +59,7 @@ def test_host_bind_address(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "bindAddress": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).host.bind_address == (
+    assert GeneralSettings.from_remote(sonarr_api.secrets).host.bind_address == (
         ip_address(attr_value) if attr_value != "*" else attr_value
     )
 
@@ -81,7 +76,7 @@ def test_host_port(sonarr_api) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "port": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).host.port == attr_value
+    assert GeneralSettings.from_remote(sonarr_api.secrets).host.port == attr_value
 
 
 def test_host_ssl_port(sonarr_api) -> None:
@@ -96,7 +91,21 @@ def test_host_ssl_port(sonarr_api) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "sslPort": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).host.ssl_port == attr_value
+    assert GeneralSettings.from_remote(sonarr_api.secrets).host.ssl_port == attr_value
+
+
+@pytest.mark.parametrize("attr_value", [False, True])
+def test_use_ssl(sonarr_api, attr_value) -> None:
+    """
+    Check that the `host.use_ssl` attribute is being populated by its API value.
+    """
+
+    sonarr_api.server.expect_ordered_request(
+        "/api/v3/config/host",
+        method="GET",
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "enableSsl": attr_value})
+
+    assert GeneralSettings.from_remote(sonarr_api.secrets).host.use_ssl is attr_value
 
 
 @pytest.mark.parametrize("attr_value", [None, "", "/sonarr"])
@@ -110,9 +119,7 @@ def test_host_url_base(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "urlBase": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).host.url_base == (
-        attr_value or None
-    )
+    assert GeneralSettings.from_remote(sonarr_api.secrets).host.url_base == (attr_value or None)
 
 
 def test_host_instance_name(sonarr_api) -> None:
@@ -127,12 +134,7 @@ def test_host_instance_name(sonarr_api) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "instanceName": attr_value})
 
-    assert (
-        SonarrGeneralSettingsConfig.from_remote(
-            sonarr_api.secrets,
-        ).host.instance_name
-        == attr_value
-    )
+    assert GeneralSettings.from_remote(sonarr_api.secrets).host.instance_name == attr_value
 
 
 def test_security_authentication_none(sonarr_api) -> None:
@@ -147,7 +149,7 @@ def test_security_authentication_none(sonarr_api) -> None:
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "authenticationMethod": "none"})
 
     assert (
-        SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).security.authentication
+        GeneralSettings.from_remote(sonarr_api.secrets).security.authentication
         == AuthenticationMethod.none
     )
 
@@ -171,7 +173,7 @@ def test_security_authentication_enabled(sonarr_api, attr_value) -> None:
         },
     )
 
-    assert SonarrGeneralSettingsConfig.from_remote(
+    assert GeneralSettings.from_remote(
         sonarr_api.secrets,
     ).security.authentication == AuthenticationMethod(attr_value)
 
@@ -187,9 +189,7 @@ def test_security_username(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "username": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).security.username == (
-        attr_value or None
-    )
+    assert GeneralSettings.from_remote(sonarr_api.secrets).security.username == (attr_value or None)
 
 
 @pytest.mark.parametrize("attr_value", [None, "", "test"])
@@ -203,7 +203,7 @@ def test_security_password(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "password": attr_value})
 
-    password = SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).security.password
+    password = GeneralSettings.from_remote(sonarr_api.secrets).security.password
 
     assert (
         (password.get_secret_value() == attr_value)  # type: ignore[union-attr]
@@ -223,7 +223,7 @@ def test_security_certificate_validation(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "certificateValidation": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(
+    assert GeneralSettings.from_remote(
         sonarr_api.secrets,
     ).security.certificate_validation == CertificateValidation(attr_value)
 
@@ -239,7 +239,7 @@ def test_proxy_enable(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "proxyEnabled": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).proxy.enable is attr_value
+    assert GeneralSettings.from_remote(sonarr_api.secrets).proxy.enable is attr_value
 
 
 @pytest.mark.parametrize("attr_value", ["http", "socks4", "socks5"])
@@ -253,7 +253,7 @@ def test_proxy_proxy_type(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "proxyType": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(
+    assert GeneralSettings.from_remote(
         sonarr_api.secrets,
     ).proxy.proxy_type == ProxyType(attr_value)
 
@@ -269,7 +269,7 @@ def test_proxy_ignored_addresses(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "proxyBypassFilter": ",".join(attr_value)})
 
-    assert SonarrGeneralSettingsConfig.from_remote(
+    assert GeneralSettings.from_remote(
         sonarr_api.secrets,
     ).proxy.ignored_addresses == set(attr_value)
 
@@ -287,7 +287,7 @@ def test_proxy_bypass_proxy_for_local_addresses(sonarr_api, attr_value) -> None:
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "proxyBypassLocalAddresses": attr_value})
 
     assert (
-        SonarrGeneralSettingsConfig.from_remote(
+        GeneralSettings.from_remote(
             sonarr_api.secrets,
         ).proxy.bypass_proxy_for_local_addresses
         is attr_value
@@ -305,7 +305,7 @@ def test_logging_log_level(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "logLevel": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(
+    assert GeneralSettings.from_remote(
         sonarr_api.secrets,
     ).logging.log_level == SonarrLogLevel(attr_value)
 
@@ -323,7 +323,7 @@ def test_analytics_send_anonymous_usage_data(sonarr_api, attr_value) -> None:
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "analyticsEnabled": attr_value})
 
     assert (
-        SonarrGeneralSettingsConfig.from_remote(
+        GeneralSettings.from_remote(
             sonarr_api.secrets,
         ).analytics.send_anonymous_usage_data
         is attr_value
@@ -335,14 +335,14 @@ def test_updates_branch(sonarr_api) -> None:
     Check that the `updates.branch` attribute is being populated by its API value.
     """
 
-    attr_value = "branch"
+    attr_value = "develop"
 
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/host",
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "branch": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).updates.branch == attr_value
+    assert GeneralSettings.from_remote(sonarr_api.secrets).updates.branch == attr_value
 
 
 @pytest.mark.parametrize("attr_value", [False, True])
@@ -356,9 +356,7 @@ def test_updates_automatic(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "updateAutomatically": attr_value})
 
-    assert (
-        SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).updates.automatic is attr_value
-    )
+    assert GeneralSettings.from_remote(sonarr_api.secrets).updates.automatic is attr_value
 
 
 @pytest.mark.parametrize("attr_value", ["builtIn", "script", "external", "apt", "docker"])
@@ -372,7 +370,7 @@ def test_updates_mechanism(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "updateMechanism": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(
+    assert GeneralSettings.from_remote(
         sonarr_api.secrets,
     ).updates.mechanism == UpdateMechanism(attr_value)
 
@@ -388,7 +386,7 @@ def test_updates_script_path(sonarr_api, attr_value) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "updateScriptPath": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).updates.script_path == (
+    assert GeneralSettings.from_remote(sonarr_api.secrets).updates.script_path == (
         attr_value or None
     )
 
@@ -405,7 +403,7 @@ def test_backup_folder(sonarr_api) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "backupFolder": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).backup.folder == attr_value
+    assert GeneralSettings.from_remote(sonarr_api.secrets).backup.folder == attr_value
 
 
 def test_backup_interval(sonarr_api) -> None:
@@ -420,7 +418,7 @@ def test_backup_interval(sonarr_api) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "backupInterval": attr_value})
 
-    assert SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).backup.interval == attr_value
+    assert GeneralSettings.from_remote(sonarr_api.secrets).backup.interval == attr_value
 
 
 def test_backup_retention(sonarr_api) -> None:
@@ -435,6 +433,4 @@ def test_backup_retention(sonarr_api) -> None:
         method="GET",
     ).respond_with_json({**HOST_CONFIG_DEFAULTS, "backupRetention": attr_value})
 
-    assert (
-        SonarrGeneralSettingsConfig.from_remote(sonarr_api.secrets).backup.retention == attr_value
-    )
+    assert GeneralSettings.from_remote(sonarr_api.secrets).backup.retention == attr_value
