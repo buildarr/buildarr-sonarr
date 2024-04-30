@@ -95,7 +95,7 @@ def test_host_ssl_port(sonarr_api) -> None:
 
 
 @pytest.mark.parametrize("attr_value", [False, True])
-def test_use_ssl(sonarr_api, attr_value) -> None:
+def test_host_use_ssl(sonarr_api, attr_value) -> None:
     """
     Check that the `host.use_ssl` attribute is being populated by its API value.
     """

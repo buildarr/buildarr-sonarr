@@ -141,7 +141,7 @@ def test_host_ssl_port(sonarr_api) -> None:
 
 
 @pytest.mark.parametrize("attr_value", [False, True])
-def test_use_ssl(sonarr_api, attr_value) -> None:
+def test_host_use_ssl(sonarr_api, attr_value) -> None:
     """
     Check that the `host.use_ssl` attribute is updated when the
     local configuration attribute is different to the remote instance.
@@ -426,7 +426,7 @@ def test_proxy_enable(sonarr_api, attr_value) -> None:
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/host",
         method="GET",
-    ).respond_with_json(HOST_CONFIG_DEFAULTS)
+    ).respond_with_json({**HOST_CONFIG_DEFAULTS, "proxyEnabled": not attr_value})
     sonarr_api.server.expect_ordered_request(
         "/api/v3/config/host/0",
         method="PUT",
