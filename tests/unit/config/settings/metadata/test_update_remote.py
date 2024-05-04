@@ -153,7 +153,7 @@ def test_series_metadata_url(sonarr_api, attr_value) -> None:
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
         remote=MetadataSettings(
-            kodi_emby=KodiEmbyMetadata(series_metadata_url=attr_value),
+            kodi_emby=KodiEmbyMetadata(series_metadata_url=not attr_value),
         ),
     )
 
