@@ -38,9 +38,7 @@ class Metadata(SonarrConfigBase):
     When set to `True`, enables creating metadata files in the given format.
     """
 
-    _implementation_name: str
     _implementation: str
-    _config_contract: str
     _base_remote_map: List[RemoteMapEntry] = [("enable", "enable", {})]
     _remote_map: List[RemoteMapEntry]
 
@@ -53,7 +51,7 @@ class Metadata(SonarrConfigBase):
         tree: str,
         secrets: SonarrSecrets,
         remote: Self,
-        metadata: Mapping[str, Any],
+        api_metadata: Mapping[str, Any],
         check_unmanaged: bool = False,
     ) -> bool:
         updated, remote_attrs = self.get_update_remote_attrs(
@@ -64,16 +62,22 @@ class Metadata(SonarrConfigBase):
             set_unchanged=True,
         )
         if updated:
+            updated_fields = {f["name"]: f["value"] for f in remote_attrs.pop("fields")}
+            fields = [
+                (
+                    {**field, "value": updated_fields[field["name"]]}
+                    if field["name"] in updated_fields
+                    else field
+                )
+                for field in api_metadata["fields"]
+            ]
             api_put(
                 secrets,
-                f"/api/v3/metadata/{metadata['id']}",
+                f"/api/v3/metadata/{api_metadata['id']}",
                 {
-                    "id": metadata["id"],
-                    "name": self._implementation_name,
-                    "implementationName": self._implementation_name,
-                    "implementation": self._implementation,
-                    "configContract": self._config_contract,
+                    **api_metadata,
                     **remote_attrs,
+                    "fields": fields,
                 },
             )
             return True
@@ -130,9 +134,7 @@ class KodiEmbyMetadata(Metadata):
     Save episode images to `<filename>-thumb.jpg`.
     """
 
-    _implementation_name: str = "Kodi (XBMC) / Emby"
     _implementation: str = "XbmcMetadata"
-    _config_contract: str = "XbmcMetadataSettings"
     _remote_map: List[RemoteMapEntry] = [
         ("series_metadata", "seriesMetadata", {"is_field": True}),
         ("series_metadata_url", "seriesMetadataUrl", {"is_field": True}),
@@ -180,9 +182,7 @@ class RoksboxMetadata(Metadata):
     Save episode images to `Season##/<filename>.jpg`.
     """
 
-    _implementation_name: str = "Roksbox"
     _implementation: str = "RoksboxMetadata"
-    _config_contract: str = "RoksboxMetadataSettings"
     _remote_map: List[RemoteMapEntry] = [
         ("episode_metadata", "episodeMetadata", {"is_field": True}),
         ("series_images", "seriesImages", {"is_field": True}),
@@ -229,9 +229,7 @@ class WdtvMetadata(Metadata):
     Save episode images to `<filename>-thumb.jpg`.
     """
 
-    _implementation_name: str = "WDTV"
     _implementation: str = "WdtvMetadata"
-    _config_contract: str = "WdtvMetadataSettings"
     _remote_map: List[RemoteMapEntry] = [
         ("episode_metadata", "episodeMetadata", {"is_field": True}),
         ("series_images", "seriesImages", {"is_field": True}),
@@ -321,21 +319,21 @@ class SonarrMetadataSettingsConfig(SonarrConfigBase):
                     tree=f"{tree}.kodi_emby",
                     secrets=secrets,
                     remote=remote.kodi_emby,
-                    metadata=kodi_emby_metadata,
+                    api_metadata=kodi_emby_metadata,
                     check_unmanaged=check_unmanaged,
                 ),
                 self.roksbox._update_remote(
                     tree=f"{tree}.roksbox",
                     secrets=secrets,
                     remote=remote.roksbox,
-                    metadata=roksbox_metadata,
+                    api_metadata=roksbox_metadata,
                     check_unmanaged=check_unmanaged,
                 ),
                 self.wdtv._update_remote(
                     tree=f"{tree}.wdtv",
                     secrets=secrets,
                     remote=remote.wdtv,
-                    metadata=wdtv_metadata,
+                    api_metadata=wdtv_metadata,
                     check_unmanaged=check_unmanaged,
                 ),
             ],

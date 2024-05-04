@@ -371,7 +371,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     ```
     """
 
-    recycling_bin: Optional[NonEmptyStr] = None
+    recycling_bin: Optional[str] = None
     """
     Episode files will go here when deleted instead of being permanently deleted.
     """
@@ -617,7 +617,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
         return changed
 
     def delete_remote(self, tree: str, secrets: SonarrSecrets, remote: Self) -> bool:
-        return self._update_remote_rootfolder(
+        return self._delete_remote_rootfolder(
             tree=f"{tree}.root_folders",
             secrets=secrets,
             remote=remote,

@@ -36,6 +36,7 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+log.txt
 
 # Unit test / coverage reports
 htmlcov/
@@ -47,9 +48,10 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
+cover/
 .hypothesis/
 .pytest_cache/
+rspec.xml
 
 # Translations
 *.mo

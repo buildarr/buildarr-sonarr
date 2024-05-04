@@ -19,7 +19,7 @@ Sonarr plugin tags settings configuration.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Dict, List
+from typing import Dict, Set
 
 from buildarr.types import NonEmptyStr
 from typing_extensions import Self
@@ -48,7 +48,7 @@ class SonarrTagsSettingsConfig(SonarrConfigBase):
     in this configuration section.
     """
 
-    definitions: List[NonEmptyStr] = []
+    definitions: Set[NonEmptyStr] = set()
     """
     Define tags that are used within Buildarr here.
 
@@ -59,7 +59,7 @@ class SonarrTagsSettingsConfig(SonarrConfigBase):
     @classmethod
     def from_remote(cls, secrets: SonarrSecrets) -> Self:
         return cls(
-            definitions=[tag["label"] for tag in api_get(secrets, "/api/v3/tag")],
+            definitions=set(tag["label"] for tag in api_get(secrets, "/api/v3/tag")),
         )
 
     def update_remote(
@@ -75,7 +75,7 @@ class SonarrTagsSettingsConfig(SonarrConfigBase):
             tag["label"]: tag["id"] for tag in api_get(secrets, "/api/v3/tag")
         }
         if self.definitions:
-            for i, tag in enumerate(self.definitions):
+            for i, tag in enumerate(sorted(self.definitions)):
                 if tag in current_tags:
                     logger.debug("%s.definitions[%i]: %s (exists)", tree, i, repr(tag))
                 else:
