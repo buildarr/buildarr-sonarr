@@ -48,7 +48,7 @@ def test_unchanged(sonarr_api) -> None:
     # register all of the values as "set", and therefore Buildarr
     # will consider them "managed" when looking for changes.
     assert not MediaManagementSettings(
-        **MediaManagementSettings().dict(),  # type: ignore[call-arg]
+        **MediaManagementSettings().model_dump(),  # type: ignore[call-arg]
     ).update_remote(
         tree="sonarr.settings.media_management",
         secrets=sonarr_api.secrets,
@@ -995,10 +995,10 @@ def test_root_folders(sonarr_api, api_root_folders) -> None:
         status=201,
     )
 
-    assert MediaManagementSettings(  # type: ignore[call-arg]
-        root_folders=root_folders | {"/opt/media/anime"},  # type: ignore[arg-type]
+    assert MediaManagementSettings(
+        root_folders=root_folders | {"/opt/media/anime"},
     ).update_remote(
         tree="sonarr.settings.media_management",
         secrets=sonarr_api.secrets,
-        remote=MediaManagementSettings(root_folders=root_folders),  # type: ignore[call-arg]
+        remote=MediaManagementSettings(root_folders=root_folders),
     )

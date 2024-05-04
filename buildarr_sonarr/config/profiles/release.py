@@ -26,7 +26,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Set, cast
 from buildarr.config import ConfigTrashIDNotFoundError, RemoteMapEntry
 from buildarr.state import state
 from buildarr.types import NonEmptyStr, TrashID
-from pydantic import validator
+from pydantic import field_validator
 from typing_extensions import Self
 
 from ...api import api_delete, api_get, api_post, api_put
@@ -194,9 +194,10 @@ class ReleaseProfile(SonarrConfigBase):
     and any existing tags (if present) are removed.
     """
 
-    @validator("preferred")
-    def sort_preferred(cls, preferred: Iterable[PreferredWord]) -> List[PreferredWord]:
-        return sorted(preferred, key=lambda p: (-p.score, p.term))
+    @field_validator("preferred")
+    @classmethod
+    def sort_preferred(cls, value: Iterable[PreferredWord]) -> List[PreferredWord]:
+        return sorted(value, key=lambda p: (-p.score, p.term))
 
     @classmethod
     def _get_remote_map(
@@ -313,8 +314,8 @@ class ReleaseProfile(SonarrConfigBase):
                                     PreferredWord(term=cast(NonEmptyStr, term), score=score),
                                 )
                     #
-                    self.must_contain = must_contain  # type: ignore[assignment]
-                    self.must_not_contain = must_not_contain  # type: ignore[assignment]
+                    self.must_contain = must_contain
+                    self.must_not_contain = must_not_contain
                     self.preferred = preferred
                     return
         raise ConfigTrashIDNotFoundError(

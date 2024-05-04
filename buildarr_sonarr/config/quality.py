@@ -20,13 +20,13 @@ from __future__ import annotations
 
 import json
 
-from typing import Any, Dict, Mapping, Optional, cast
+from typing import Dict, Optional, cast
 
 from buildarr.config import ConfigTrashIDNotFoundError
 from buildarr.state import state
 from buildarr.types import TrashID
-from pydantic import Field, validator
-from typing_extensions import Self
+from pydantic import Field, ValidationInfo, field_validator
+from typing_extensions import Annotated, Self
 
 from ..api import api_get, api_put
 from ..secrets import SonarrSecrets
@@ -52,7 +52,7 @@ class QualityDefinition(SonarrConfigBase):
     will also be `Bluray-480p`)
     """
 
-    min: float = Field(..., ge=0, le=QUALITYDEFINITION_MAX - 1)
+    min: Annotated[float, Field(ge=0, le=QUALITYDEFINITION_MAX - 1)]
     """
     The minimum Megabytes per Minute (MB/min) a quality can have.
     Must be set at least 1MB/min lower than `max`.
@@ -62,7 +62,7 @@ class QualityDefinition(SonarrConfigBase):
 
     # Note: No 'pref' field like in Radarr until V4
 
-    max: Optional[float] = Field(..., ge=1, le=QUALITYDEFINITION_MAX)
+    max: Optional[Annotated[float, Field(ge=1, le=QUALITYDEFINITION_MAX)]]
     """
     The maximum Megabytes per Minute (MB/min) a quality can have.
     Must be set at least 1MB/min higher than `min`.
@@ -72,32 +72,21 @@ class QualityDefinition(SonarrConfigBase):
     If not set to `None`, the minimum value is `1`, and the maximum value is `400`.
     """
 
-    @validator("max")
-    def validate_min_max(
-        cls,
-        value: Optional[float],
-        values: Mapping[str, Any],
-    ) -> Optional[float]:
-        quality_max = value
-        quality_max_val = (
-            min(quality_max, QUALITYDEFINITION_MAX)
-            if quality_max is not None
-            else QUALITYDEFINITION_MAX
-        )
-        try:
-            quality_min: float = values["min"]
-            if quality_max_val - quality_min < 1:
-                raise ValueError(
-                    f"'max' ({quality_max_val}) is not "
-                    f"at least 1 greater than 'min' ({quality_min})",
-                )
-        except KeyError:
-            # `min` only doesn't exist when it failed type validation.
-            # If it doesn't exist, skip validation that uses it.
-            pass
-        if quality_max_val >= QUALITYDEFINITION_MAX:
-            return None
-        return quality_max
+    @field_validator("max")
+    @classmethod
+    def validate_max(cls, value: Optional[float], info: ValidationInfo) -> Optional[float]:
+        quality_min: float = info.data["min"]
+        if value is not None:
+            quality_max = min(value, QUALITYDEFINITION_MAX)
+            if quality_max >= QUALITYDEFINITION_MAX:
+                value = None
+        else:
+            quality_max = QUALITYDEFINITION_MAX
+        if (quality_max - quality_min) < 1:
+            raise ValueError(
+                f"'max' ({quality_max}) not greater than 'min' ({quality_min}) by at least 1",
+            )
+        return value
 
 
 class SonarrQualitySettingsConfig(SonarrConfigBase):

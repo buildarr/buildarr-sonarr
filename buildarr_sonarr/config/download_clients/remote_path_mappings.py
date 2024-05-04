@@ -19,11 +19,11 @@ Sonarr plugin download client remote path mappings.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, List, Mapping, Tuple
+from typing import Any, ClassVar, Dict, List, Mapping, Tuple
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr
-from pydantic import validator
+from pydantic import field_validator
 from typing_extensions import Self
 
 from ...api import api_delete, api_get, api_post, api_put
@@ -94,13 +94,14 @@ class RemotePathMapping(SonarrConfigBase):
     for all remote path mappings.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {}),
         ("remote_path", "remotePath", {}),
         ("local_path", "localPath", {}),
     ]
 
-    @validator("remote_path", "local_path")
+    @field_validator("remote_path", "local_path")
+    @classmethod
     def add_trailing_slash(cls, value: OSAgnosticPath) -> OSAgnosticPath:
         if value.is_windows():
             return (value + "\\") if not value.endswith("\\\\") else value

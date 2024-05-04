@@ -19,12 +19,12 @@ Sonarr plugin media management settings configuration.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, List, Optional, Set, cast
+from typing import Any, ClassVar, Dict, List, Optional, Set, cast
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr
-from pydantic import Field
-from typing_extensions import Self
+from pydantic import Field, NonNegativeInt
+from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
 from ..secrets import SonarrSecrets
@@ -144,7 +144,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     """
 
     standard_episode_format: NonEmptyStr = (
-        "{Series TitleYear} - "  # type: ignore[assignment]
+        "{Series TitleYear} - "
         "S{season:00}E{episode:00} - "
         "{Episode CleanTitle} "
         "[{Preferred Words }{Quality Full}]"
@@ -163,7 +163,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     """
 
     daily_episode_format: NonEmptyStr = (
-        "{Series TitleYear} - "  # type: ignore[assignment]
+        "{Series TitleYear} - "
         "{Air-Date} - "
         "{Episode CleanTitle} "
         "[{Preferred Words }{Quality Full}]"
@@ -182,7 +182,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     """
 
     anime_episode_format: NonEmptyStr = (
-        "{Series TitleYear} - "  # type: ignore[assignment]
+        "{Series TitleYear} - "
         "S{season:00}E{episode:00} - "
         "{absolute:000} - "
         "{Episode CleanTitle} "
@@ -202,7 +202,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     defined in the configuration file.
     """
 
-    series_folder_format: NonEmptyStr = "{Series TitleYear}"  # type: ignore[assignment]
+    series_folder_format: NonEmptyStr = "{Series TitleYear}"
     """
     Renaming format for a series folder.
 
@@ -211,7 +211,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     defined in the configuration file.
     """
 
-    season_folder_format: NonEmptyStr = "Season {season:00}"  # type: ignore[assignment]
+    season_folder_format: NonEmptyStr = "Season {season:00}"
     """
     Renaming format for a season folder of a series.
 
@@ -220,7 +220,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     defined in the configuration file.
     """
 
-    specials_folder_format: NonEmptyStr = "Specials"  # type: ignore[assignment]
+    specials_folder_format: NonEmptyStr = "Specials"
     """
     Renaming format for a specials folder of a series.
 
@@ -273,7 +273,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     Only enable when Sonarr is unable to detect free space from your series root folder.
     """
 
-    minimum_free_space: int = Field(100, ge=100)  # MB
+    minimum_free_space: Annotated[int, Field(ge=100)] = 100  # MB
     """
     Prevent import if it would leave less than the specified
     amount of disk space (in megabytes) available.
@@ -376,7 +376,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     Episode files will go here when deleted instead of being permanently deleted.
     """
 
-    recycling_bin_cleanup: int = Field(7, ge=0)  # days
+    recycling_bin_cleanup: NonNegativeInt = 7  # days
     """
     Files in the recycle bin older than the selected number of days
     will be cleaned up automatically.
@@ -452,7 +452,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
     *New in version 0.1.2.*
     """
 
-    _naming_remote_map: List[RemoteMapEntry] = [
+    _naming_remote_map: ClassVar[List[RemoteMapEntry]] = [
         # Episode Naming
         ("rename_episodes", "renameEpisodes", {}),
         ("replace_illegal_characters", "replaceIllegalCharacters", {}),
@@ -464,7 +464,7 @@ class SonarrMediaManagementSettingsConfig(SonarrConfigBase):
         ("specials_folder_format", "specialsFolderFormat", {}),
         ("multiepisode_style", "multiEpisodeStyle", {}),
     ]
-    _mediamanagement_remote_map: List[RemoteMapEntry] = [
+    _mediamanagement_remote_map: ClassVar[List[RemoteMapEntry]] = [
         # Folders
         ("create_empty_series_folders", "createEmptySeriesFolders", {}),
         ("delete_empty_folders", "deleteEmptyFolders", {}),

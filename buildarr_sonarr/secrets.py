@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, cast
 
 from buildarr.secrets import SecretsPlugin
 from buildarr.types import NonEmptyStr, Port
-from pydantic import validator
+from pydantic import field_validator
 
 from .api import api_get, get_initialize_js
 from .exceptions import SonarrAPIError, SonarrSecretsUnauthorizedError
@@ -34,14 +34,8 @@ if TYPE_CHECKING:
 
     from .config import SonarrConfig
 
-    class _SonarrSecrets(SecretsPlugin[SonarrConfig]): ...
 
-else:
-
-    class _SonarrSecrets(SecretsPlugin): ...
-
-
-class SonarrSecrets(_SonarrSecrets):
+class SonarrSecrets(SecretsPlugin["SonarrConfig"]):
     """
     Sonarr API secrets.
     """
@@ -62,8 +56,13 @@ class SonarrSecrets(_SonarrSecrets):
             url_base=self.url_base,
         )
 
-    @validator("url_base")
+    @field_validator("url_base")
+    @classmethod
     def validate_url_base(cls, value: Optional[str]) -> Optional[str]:
+        return cls._validate_url_base(value)
+
+    @classmethod
+    def _validate_url_base(cls, value: Optional[str]) -> Optional[str]:
         return f"/{value.strip('/')}" if value and value.strip("/") else None
 
     @classmethod
@@ -95,7 +94,7 @@ class SonarrSecrets(_SonarrSecrets):
         url_base: Optional[str] = None,
         api_key: Optional[str] = None,
     ) -> Self:
-        url_base = cls.validate_url_base(url_base)
+        url_base = cls._validate_url_base(url_base)
         host_url = cls._get_host_url(
             protocol=protocol,
             hostname=hostname,
@@ -138,7 +137,7 @@ class SonarrSecrets(_SonarrSecrets):
             else:
                 raise
         try:
-            version = cast(NonEmptyStr, system_status["version"])
+            version = cast(str, system_status["version"])
         except KeyError:
             raise SonarrSecretsUnauthorizedError(
                 f"Unable to find Sonarr version in system status metadata: {system_status}",
@@ -151,11 +150,11 @@ class SonarrSecrets(_SonarrSecrets):
                 ),
             ) from None
         return cls(
-            hostname=cast(NonEmptyStr, hostname),
-            port=cast(Port, port),
-            protocol=cast(SonarrProtocol, protocol),
+            hostname=hostname,
+            port=port,
+            protocol=protocol,  # type: ignore[arg-type]
             url_base=url_base,
-            api_key=cast(SonarrApiKey, api_key),
+            api_key=api_key,  # type: ignore[arg-type]
             version=version,
         )
 

@@ -18,7 +18,7 @@ Sonarr plugin metadata settings configuration.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Mapping, Optional, Tuple, Type
+from typing import Any, ClassVar, Dict, List, Mapping, Optional, Tuple, Type
 
 from buildarr.config import RemoteMapEntry
 from typing_extensions import Self
@@ -38,9 +38,9 @@ class Metadata(SonarrConfigBase):
     When set to `True`, enables creating metadata files in the given format.
     """
 
-    _implementation: str
-    _base_remote_map: List[RemoteMapEntry] = [("enable", "enable", {})]
-    _remote_map: List[RemoteMapEntry]
+    _implementation: ClassVar[str]
+    _base_remote_map: ClassVar[List[RemoteMapEntry]] = [("enable", "enable", {})]
+    _remote_map: ClassVar[List[RemoteMapEntry]]
 
     @classmethod
     def _from_remote(cls, metadata: Dict[str, Any]) -> Self:
@@ -134,8 +134,8 @@ class KodiEmbyMetadata(Metadata):
     Save episode images to `<filename>-thumb.jpg`.
     """
 
-    _implementation: str = "XbmcMetadata"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "XbmcMetadata"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("series_metadata", "seriesMetadata", {"is_field": True}),
         ("series_metadata_url", "seriesMetadataUrl", {"is_field": True}),
         ("episode_metadata", "episodeMetadata", {"is_field": True}),
@@ -182,8 +182,8 @@ class RoksboxMetadata(Metadata):
     Save episode images to `Season##/<filename>.jpg`.
     """
 
-    _implementation: str = "RoksboxMetadata"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "RoksboxMetadata"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("episode_metadata", "episodeMetadata", {"is_field": True}),
         ("series_images", "seriesImages", {"is_field": True}),
         ("season_images", "seasonImages", {"is_field": True}),
@@ -229,8 +229,8 @@ class WdtvMetadata(Metadata):
     Save episode images to `<filename>-thumb.jpg`.
     """
 
-    _implementation: str = "WdtvMetadata"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "WdtvMetadata"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("episode_metadata", "episodeMetadata", {"is_field": True}),
         ("series_images", "seriesImages", {"is_field": True}),
         ("season_images", "seasonImages", {"is_field": True}),
@@ -250,9 +250,9 @@ class SonarrMetadataSettingsConfig(SonarrConfigBase):
     Implementation wise each metadata is a unique object, updated using separate requests.
     """
 
-    kodi_emby = KodiEmbyMetadata()
-    roksbox = RoksboxMetadata()
-    wdtv = WdtvMetadata()
+    kodi_emby: KodiEmbyMetadata = KodiEmbyMetadata()
+    roksbox: RoksboxMetadata = RoksboxMetadata()
+    wdtv: WdtvMetadata = WdtvMetadata()
 
     @classmethod
     def from_remote(cls, secrets: SonarrSecrets) -> Self:

@@ -19,7 +19,7 @@ Sonarr plugin download client settings.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Dict, List, Mapping, Union
+from typing import ClassVar, Dict, List, Mapping, Union
 
 from buildarr.config import RemoteMapEntry
 from pydantic import Field
@@ -126,7 +126,9 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
     Download client definitions, for connecting with external media downloaders.
     """
 
-    remote_path_mappings = SonarrRemotePathMappingsSettingsConfig()
+    remote_path_mappings: SonarrRemotePathMappingsSettingsConfig = (
+        SonarrRemotePathMappingsSettingsConfig()
+    )
     """
     Configuration for mapping paths on download client hosts to their counterparts
     on this Sonarr instance.
@@ -134,7 +136,7 @@ class SonarrDownloadClientsSettingsConfig(SonarrConfigBase):
     For more information, refer to "Configuring remote path mappings".
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("enable_completed_download_handling", "enableCompletedDownloadHandling", {}),
         ("redownload_failed", "autoRedownloadFailed", {}),
     ]

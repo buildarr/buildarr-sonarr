@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Mapping, Set
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr
-from pydantic import Field
+from pydantic import NonNegativeInt
 from typing_extensions import Self
 
 from ...api import api_delete, api_get, api_post, api_put
@@ -129,12 +129,12 @@ class DelayProfile(SonarrConfigBase):
     * `torrent-only` (Only Torrent)
     """
 
-    usenet_delay: int = Field(0, ge=0)  # minutes
+    usenet_delay: NonNegativeInt = 0  # minutes
     """
     Delay (in minutes) to wait before grabbing a release from Usenet.
     """
 
-    torrent_delay: int = Field(0, ge=0)  # minutes
+    torrent_delay: NonNegativeInt = 0  # minutes
     """
     Delay (in minutes) to wait before grabbing a torrent.
     """
@@ -272,7 +272,7 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
     Configuration parameters for controlling how Buildarr handles delay profiles.
     """
 
-    delete_unmanaged = False
+    delete_unmanaged: bool = False
     """
     Controls how Buildarr manages existing delay profiles in Sonarr when no delay profiles
     are defined in Buildarr.
@@ -323,7 +323,7 @@ class SonarrDelayProfilesSettingsConfig(SonarrConfigBase):
         remote: Self,
         check_unmanaged: bool = False,
     ) -> bool:
-        if not self.delete_unmanaged and "definitions" not in self.__fields_set__:
+        if not self.delete_unmanaged and "definitions" not in self.model_fields_set:
             # TODO: Print current delay profile structure.
             if remote.definitions:
                 logger.debug("%s.definitions: [...] (unmanaged)", tree)
