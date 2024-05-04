@@ -279,9 +279,9 @@ class SonarrMetadataSettingsConfig(SonarrConfigBase):
                 "Unable to find WDTV metadata on Sonarr, database might be corrupt",
             )
         return cls(
-            kodi_emby=KodiEmbyMetadata._from_remote(kodi_emby_metadata),  # type: ignore[call-arg]
-            roksbox=RoksboxMetadata._from_remote(roksbox_metadata),  # type: ignore[call-arg]
-            wdtv=WdtvMetadata._from_remote(wdtv_metadata),  # type: ignore[call-arg]
+            kodi_emby=KodiEmbyMetadata._from_remote(kodi_emby_metadata),
+            roksbox=RoksboxMetadata._from_remote(roksbox_metadata),
+            wdtv=WdtvMetadata._from_remote(wdtv_metadata),
         )
 
     def update_remote(

@@ -127,7 +127,7 @@ class LanguageProfile(SonarrConfigBase):
     If disabled, languages will not be upgraded.
     """
 
-    languages: Annotated[List[Language], Field(min_items=1)]
+    languages: Annotated[List[Language], Field(min_length=1)]
     """
     The languages episodes are allowed to be in.
     The order of the list determines priority (highest priority first, lowest priority last).

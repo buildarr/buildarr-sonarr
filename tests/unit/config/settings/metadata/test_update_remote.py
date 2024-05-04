@@ -53,9 +53,9 @@ def test_defaults(sonarr_api) -> None:
     # register all of the values as "set", and therefore Buildarr
     # will consider them "managed" when looking for changes.
     assert not MetadataSettings(
-        kodi_emby=KodiEmbyMetadata().model_dump(),  # type: ignore[arg-type]
-        roksbox=RoksboxMetadata().model_dump(),  # type: ignore[arg-type]
-        wdtv=WdtvMetadata().model_dump(),  # type: ignore[arg-type]
+        kodi_emby=KodiEmbyMetadata(**KodiEmbyMetadata().model_dump()),
+        roksbox=RoksboxMetadata(**RoksboxMetadata().model_dump()),
+        wdtv=WdtvMetadata(**WdtvMetadata().model_dump()),
     ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,

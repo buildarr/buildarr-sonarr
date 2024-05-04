@@ -96,7 +96,7 @@ class QualityProfile(SonarrConfigBase):
     If disabled, media files will not be upgraded after they have been downloaded.
     """
 
-    qualities: Annotated[List[Union[NonEmptyStr, QualityGroup]], Field(min_items=1)]
+    qualities: Annotated[List[Union[NonEmptyStr, QualityGroup]], Field(min_length=1)]
     """
     The qualities to enable downloading episodes for. The order determines the priority
     (highest priority first, lowest priority last).

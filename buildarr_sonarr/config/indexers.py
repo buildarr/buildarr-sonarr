@@ -1069,7 +1069,6 @@ class SonarrIndexersSettingsConfig(SonarrConfigBase):
     Set to `0` for unlimited retention.
     """
 
-    # Set to 0 for unlimited
     maximum_size: NonNegativeInt = 0  # MB
     """
     Maximum size for a release to be grabbed, in megabytes (MB).
