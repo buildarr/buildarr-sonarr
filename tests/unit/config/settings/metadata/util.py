@@ -41,6 +41,7 @@ XBMC_METADATA_DEFAULTS: Dict[str, Any] = {
         {"id": 4, "name": "seasonImages", "value": False},
         {"id": 5, "name": "episodeImages", "value": False},
     ],
+    "tags": [],
 }
 
 ROKSBOX_METADATA_DEFAULTS: Dict[str, Any] = {
@@ -59,6 +60,7 @@ ROKSBOX_METADATA_DEFAULTS: Dict[str, Any] = {
         {"id": 2, "name": "seasonImages", "value": False},
         {"id": 3, "name": "episodeImages", "value": False},
     ],
+    "tags": [],
 }
 
 WDTV_METADATA_DEFAULTS: Dict[str, Any] = {
@@ -77,6 +79,7 @@ WDTV_METADATA_DEFAULTS: Dict[str, Any] = {
         {"id": 2, "name": "seasonImages", "value": False},
         {"id": 3, "name": "episodeImages", "value": False},
     ],
+    "tags": [],
 }
 
 METADATA_DEFAULTS = {

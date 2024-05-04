@@ -48,7 +48,7 @@ def test_defaults(sonarr_api) -> None:
     # register all of the values as "set", and therefore Buildarr
     # will consider them "managed" when looking for changes.
     assert not UISettings(**UISettings().dict()).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(),
     )
@@ -79,7 +79,7 @@ def test_first_day_of_week(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(first_day_of_week=FirstDayOfWeek(attr_value)).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(
             first_day_of_week=FirstDayOfWeek.sunday if attr_value else FirstDayOfWeek.monday,
@@ -112,7 +112,7 @@ def test_week_column_header(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(week_column_header=WeekColumnHeader(attr_value)).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(
             week_column_header=(
@@ -152,7 +152,7 @@ def test_short_date_format(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(short_date_format=ShortDateFormat(attr_value)).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(
             short_date_format=(
@@ -191,7 +191,7 @@ def test_long_date_format(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(long_date_format=LongDateFormat(attr_value)).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(
             long_date_format=(
@@ -228,7 +228,7 @@ def test_time_format(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(time_format=TimeFormat(attr_value)).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(
             time_format=(
@@ -258,7 +258,7 @@ def test_show_relative_dates(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(show_relative_dates=attr_value).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(show_relative_dates=not attr_value),
     )
@@ -284,7 +284,7 @@ def test_enable_color_impaired_mode(sonarr_api, attr_value) -> None:
     ).respond_with_json(api_ui_config, status=202)
 
     assert UISettings(enable_color_impaired_mode=attr_value).update_remote(
-        tree="sonarr.settings.general",
+        tree="sonarr.settings.ui",
         secrets=sonarr_api.secrets,
         remote=UISettings(enable_color_impaired_mode=not attr_value),
     )
