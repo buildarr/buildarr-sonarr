@@ -18,12 +18,11 @@ Sonarr plugin import list settings configuration.
 
 from __future__ import annotations
 
-import re
-
 from datetime import datetime
 from logging import getLogger
 from typing import (
     Any,
+    ClassVar,
     Dict,
     Iterable,
     List,
@@ -39,27 +38,25 @@ from typing import (
 
 from buildarr.config import RemoteMapEntry
 from buildarr.state import state
-from buildarr.types import BaseEnum, InstanceName, NonEmptyStr, Password
-from pydantic import AnyHttpUrl, ConstrainedStr, Field, PositiveInt, validator
+from buildarr.types import BaseEnum, InstanceReference, NonEmptyStr, Password, SecretStr
+from pydantic import (
+    AnyHttpUrl,
+    Field,
+    NonNegativeInt,
+    PositiveInt,
+    StringConstraints,
+    ValidationInfo,
+    field_validator,
+)
 from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
 from ..secrets import SonarrSecrets
 from ..types import SonarrApiKey
-from .types import SonarrConfigBase, TraktAuthUser
+from .types import SonarrConfigBase
 from .util import trakt_expires_encoder
 
 logger = getLogger(__name__)
-
-
-class YearRange(ConstrainedStr):
-    """
-    Constrained string type for a singular year or range of years.
-    """
-
-    regex = re.compile(r"[0-9]+(?:-[0-9]+)?")
-
-    # TODO: validate that the end year is higher than the start year
 
 
 class Monitor(BaseEnum):
@@ -187,10 +184,10 @@ class ImportList(SonarrConfigBase):
     Tags to assign to items imported from this import list.
     """
 
-    _implementation_name: str
-    _implementation: str
-    _config_contract: str
-    _remote_map: List[RemoteMapEntry]
+    _implementation_name: ClassVar[str]
+    _implementation: ClassVar[str]
+    _config_contract: ClassVar[str]
+    _remote_map: ClassVar[List[RemoteMapEntry]]
 
     @classmethod
     def _get_base_remote_map(
@@ -487,14 +484,13 @@ class TraktImportList(ImportList):
     Example: `2023-05-10T15:34:08.117451Z`
     """
 
-    auth_user: TraktAuthUser
+    auth_user: NonEmptyStr
     """
     The username being authenticated in Trakt.
     """
 
-    # rating
     # TODO: constraints
-    rating: NonEmptyStr = "0-100"  # type: ignore[assignment]
+    rating: NonEmptyStr = "0-100"
     """
     Filter series by rating range, with a maximum range of 0-100.
     """
@@ -511,7 +507,7 @@ class TraktImportList(ImportList):
     Filter series by Trakt genre slug.
     """
 
-    years: Optional[YearRange] = None
+    years: Optional[Annotated[str, StringConstraints(pattern=r"[0-9]+(?:-[0-9]+)?")]] = None
     """
     Filter series by year or year range. (e.g. `2009` or `2009-2015`)
     """
@@ -645,7 +641,7 @@ class SonarrImportList(ProgramImportList):
     Type value associated with this kind of import list.
     """
 
-    instance_name: Optional[InstanceName] = Field(None, plugin="sonarr")
+    instance_name: Optional[Annotated[str, InstanceReference(plugin_name="sonarr")]] = None
     """
     The name of the Sonarr instance within Buildarr, if linking this Sonarr instance
     with another Buildarr-defined Sonarr instance.
@@ -666,10 +662,10 @@ class SonarrImportList(ProgramImportList):
     this attribute is required.
     """
 
-    source_quality_profiles: Set[Union[PositiveInt, NonEmptyStr]] = Field(
-        set(),
-        alias="source_quality_profile_ids",
-    )
+    source_quality_profiles: Annotated[
+        Set[Union[NonNegativeInt, NonEmptyStr]],
+        Field(alias="source_quality_profile_ids"),
+    ] = set()
     """
     List of IDs (or names) of the quality profiles on the source instance to import from.
 
@@ -681,10 +677,10 @@ class SonarrImportList(ProgramImportList):
     (which is still valid as an alias), and added support for quality profile names.
     """
 
-    source_language_profiles: Set[Union[PositiveInt, NonEmptyStr]] = Field(
-        set(),
-        alias="source_language_profile_ids",
-    )
+    source_language_profiles: Annotated[
+        Set[Union[NonNegativeInt, NonEmptyStr]],
+        Field(alias="source_language_profile_ids"),
+    ] = set()
     """
     List of IDs (or names) of the language profiles on the source instance to import from.
 
@@ -696,7 +692,10 @@ class SonarrImportList(ProgramImportList):
     (which is still valid as an alias), and added support for language profile names.
     """
 
-    source_tags: Set[Union[PositiveInt, NonEmptyStr]] = Field(set(), alias="source_tag_ids")
+    source_tags: Annotated[
+        Set[Union[NonNegativeInt, NonEmptyStr]],
+        Field(alias="source_tag_ids"),
+    ] = set()
     """
     List of IDs (or names) of the tags on the source instance to import from.
 
@@ -708,10 +707,10 @@ class SonarrImportList(ProgramImportList):
     (which is still valid as an alias), and added support for tag names.
     """
 
-    _implementation_name: str = "Sonarr"
-    _implementation: str = "SonarrImport"
-    _config_contract: str = "SonarrSettings"
-    _remote_map: List[RemoteMapEntry] = []
+    _implementation_name: ClassVar[str] = "Sonarr"
+    _implementation: ClassVar[str] = "SonarrImport"
+    _config_contract: ClassVar[str] = "SonarrSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = []
 
     @classmethod
     def _get_base_remote_map(
@@ -790,57 +789,30 @@ class SonarrImportList(ProgramImportList):
         """
         return api_get(cls._get_secrets(instance_name), f"/api/v3/{resource_type}")
 
-    @validator("api_key", always=True)
+    @field_validator("api_key")
+    @classmethod
     def validate_api_key(
         cls,
-        value: Optional[SonarrApiKey],
-        values: Mapping[str, Any],
-    ) -> Optional[SonarrApiKey]:
-        """
-        Validate the `api_key` attribute after parsing.
-
-        Args:
-            value (Optional[str]): `api_key` value.
-            values (Mapping[str, Any]): Currently parsed attributes. `instance_name` is checked.
-
-        Raises:
-            ValueError: If `api_key` is undefined when `instance_name` is also undefined.
-
-        Returns:
-            Validated `api_key` value
-        """
-        if not values.get("instance_name", None) and not value:
+        value: Optional[SecretStr],
+        info: ValidationInfo,
+    ) -> Optional[SecretStr]:
+        if not info.data.get("instance_name") and not value:
             raise ValueError("required if 'instance_name' is undefined")
         return value
 
-    @validator(
-        "source_quality_profiles",
-        "source_language_profiles",
-        "source_tags",
-        each_item=True,
-    )
-    def validate_source_resource_ids(
+    @field_validator("source_quality_profiles", "source_language_profiles", "source_tags")
+    @classmethod
+    def validate_source_resources(
         cls,
-        value: Union[int, str],
-        values: Dict[str, Any],
-    ) -> Union[int, str]:
-        """
-        Validate that all resource references are IDs (integers) if `instance_name` is undefined.
-
-        Args:
-            value (Union[int, str]): Resource reference (ID or name).
-            values (Mapping[str, Any]): Currently parsed attributes. `instance_name` is checked.
-
-        Raises:
-            ValueError: If the resource reference is a name and `instance_name` is undefined.
-
-        Returns:
-            Validated resource reference
-        """
-        if not values.get("instance_name", None) and not isinstance(value, int):
-            raise ValueError(
-                "values must be IDs (not names) if 'instance_name' is undefined",
-            )
+        value: Set[Union[str, int]],
+        info: ValidationInfo,
+    ) -> Set[Union[str, int]]:
+        if not info.data.get("instance_name"):
+            for v in value:
+                if not isinstance(v, int):
+                    raise ValueError(
+                        "values must be IDs (not names) if 'instance_name' is undefined",
+                    )
         return value
 
     @classmethod
@@ -932,7 +904,7 @@ class SonarrImportList(ProgramImportList):
             ignore_nonexistent_ids=ignore_nonexistent_ids,
             name_key="label",
         )
-        return self.copy(
+        return self.model_copy(
             update={
                 "instance_name": instance_name,
                 "api_key": api_key,
@@ -1042,10 +1014,12 @@ class PlexWatchlistImportList(PlexImportList):
     [PATH]: https://support.plex.tv/articles/204059436-finding-an-authentication-token-x-plex-token
     """
 
-    _implementation_name: str = "Plex Watchlist"
-    _implementation: str = "PlexImport"
-    _config_contract: str = "PlexListSettings"
-    _remote_map: List[RemoteMapEntry] = [("access_token", "accessToken", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Plex Watchlist"
+    _implementation: ClassVar[str] = "PlexImport"
+    _config_contract: ClassVar[str] = "PlexListSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
+        ("access_token", "accessToken", {"is_field": True}),
+    ]
 
 
 class TraktListImportList(TraktImportList):
@@ -1065,10 +1039,10 @@ class TraktListImportList(TraktImportList):
     The list must be public, or you must have access to the list.
     """
 
-    _implementation_name: str = "Trakt List"
-    _implementation: str = "TraktListImport"
-    _config_contract: str = "TraktListSettings"
-    _remote_map: List[RemoteMapEntry] = [("list_name", "listName", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Trakt List"
+    _implementation: ClassVar[str] = "TraktListImport"
+    _config_contract: ClassVar[str] = "TraktListSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [("list_name", "listName", {"is_field": True})]
 
 
 class TraktPopularlistImportList(TraktImportList):
@@ -1100,10 +1074,12 @@ class TraktPopularlistImportList(TraktImportList):
     * `recommended_by_alltime`
     """
 
-    _implementation_name: str = "Trakt Popular List"
-    _implementation: str = "TraktPopularImport"
-    _config_contract: str = "TraktPopularSettings"
-    _remote_map: List[RemoteMapEntry] = [("list_type", "traktListType", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Trakt Popular List"
+    _implementation: ClassVar[str] = "TraktPopularImport"
+    _config_contract: ClassVar[str] = "TraktPopularSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
+        ("list_type", "traktListType", {"is_field": True}),
+    ]
 
 
 class TraktUserImportList(TraktImportList):
@@ -1127,10 +1103,12 @@ class TraktUserImportList(TraktImportList):
     * `user_collection_list`
     """
 
-    _implementation_name: str = "Trakt User"
-    _implementation: str = "TraktUserImport"
-    _config_contract: str = "TraktUserSettings"
-    _remote_map: List[RemoteMapEntry] = [("list_type", "traktListType", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Trakt User"
+    _implementation: ClassVar[str] = "TraktUserImport"
+    _config_contract: ClassVar[str] = "TraktUserSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
+        ("list_type", "traktListType", {"is_field": True}),
+    ]
 
 
 IMPORTLIST_TYPES: Tuple[Type[ImportList], ...] = (

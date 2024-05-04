@@ -24,7 +24,7 @@ repos:
     hooks:
       - id: mypy
         additional_dependencies:
-          - buildarr==0.7.1
+          - buildarr==0.8.0b1
           - types-requests==2.31.0.20240406
   - repo: https://github.com/pdm-project/pdm
     rev: "2.15.1"

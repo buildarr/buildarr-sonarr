@@ -18,7 +18,7 @@ Sonarr plugin UI settings configuration object.
 
 from __future__ import annotations
 
-from typing import List
+from typing import ClassVar, List
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum
@@ -169,7 +169,7 @@ class SonarrUISettingsConfig(SonarrConfigBase):
     colour-coded information.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("first_day_of_week", "firstDayOfWeek", {}),
         ("week_column_header", "calendarWeekColumnHeader", {}),
         ("short_date_format", "shortDateFormat", {}),

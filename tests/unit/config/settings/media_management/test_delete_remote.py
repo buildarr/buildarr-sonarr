@@ -46,13 +46,11 @@ def test_delete_unmanaged_root_folders_false(sonarr_api, root_folders_managed) -
     if root_folders_managed:
         attrs["root_folders"] = set()
 
-    assert not MediaManagementSettings(  # type: ignore[call-arg]
-        **attrs,  # type: ignore[arg-type]
-    ).delete_remote(
+    assert not MediaManagementSettings(**attrs).delete_remote(
         tree="sonarr.settings.media_management",
         secrets=sonarr_api.secrets,
-        remote=MediaManagementSettings(  # type: ignore[call-arg]
-            root_folders={"/opt/media/shows"},  # type: ignore[arg-type]
+        remote=MediaManagementSettings(
+            root_folders={"/opt/media/shows"},
         ),
     )
 
@@ -71,13 +69,13 @@ def test_delete_unmanaged_root_folders_true_unchanged(sonarr_api, api_root_folde
         api_root_folders,
     )
 
-    assert not MediaManagementSettings(  # type: ignore[call-arg]
+    assert not MediaManagementSettings(
         delete_unmanaged_root_folders=True,
         root_folders=root_folders,
     ).delete_remote(
         tree="sonarr.settings.media_management",
         secrets=sonarr_api.secrets,
-        remote=MediaManagementSettings(  # type: ignore[call-arg]
+        remote=MediaManagementSettings(
             root_folders=root_folders,
         ),
     )

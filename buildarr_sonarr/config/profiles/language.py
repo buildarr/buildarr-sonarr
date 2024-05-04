@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Set
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum
-from pydantic import Field, validator
+from pydantic import Field, ValidationInfo, field_validator
 from typing_extensions import Annotated, Self
 
 from ...api import api_delete, api_get, api_post, api_put
@@ -152,7 +152,8 @@ class LanguageProfile(SonarrConfigBase):
     This attribute is required if `upgrades_allowed` is set to `True`.
     """
 
-    @validator("languages")
+    @field_validator("languages")
+    @classmethod
     def validate_languages(cls, value: List[Language]) -> List[Language]:
         language_set: Set[Language] = set()
         for language in value:
@@ -162,15 +163,16 @@ class LanguageProfile(SonarrConfigBase):
                 language_set.add(language)
         return value
 
-    @validator("upgrade_until")
+    @field_validator("upgrade_until")
+    @classmethod
     def validate_upgrade_until(
         cls,
         value: Optional[Language],
-        values: Dict[str, Any],
+        info: ValidationInfo,
     ) -> Optional[Language]:
         try:
-            upgrades_allowed: bool = values["upgrades_allowed"]
-            languages: Sequence[Language] = values["languages"]
+            upgrades_allowed: bool = info.data["upgrades_allowed"]
+            languages: Sequence[Language] = info.data["languages"]
         except KeyError:
             return value
         # If `upgrades_allowed` is `False`, set `upgrade_until` to `None`
@@ -312,7 +314,7 @@ class SonarrLanguageProfilesSettingsConfig(SonarrConfigBase):
     Configuration parameters for controlling how Buildarr handles language profiles.
     """
 
-    delete_unmanaged = False
+    delete_unmanaged: bool = False
     """
     Automatically delete language profiles not defined in Buildarr.
     """

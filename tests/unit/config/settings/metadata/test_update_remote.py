@@ -53,9 +53,9 @@ def test_defaults(sonarr_api) -> None:
     # register all of the values as "set", and therefore Buildarr
     # will consider them "managed" when looking for changes.
     assert not MetadataSettings(
-        kodi_emby=KodiEmbyMetadata().dict(),
-        roksbox=RoksboxMetadata().dict(),
-        wdtv=WdtvMetadata().dict(),
+        kodi_emby=KodiEmbyMetadata().model_dump(),  # type: ignore[arg-type]
+        roksbox=RoksboxMetadata().model_dump(),  # type: ignore[arg-type]
+        wdtv=WdtvMetadata().model_dump(),  # type: ignore[arg-type]
     ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
@@ -99,10 +99,14 @@ def test_series_metadata(sonarr_api, attr_value) -> None:
         method="PUT",
     ).respond_with_json(api_metadata, status=202)
 
-    assert MetadataSettings(kodi_emby={"series_metadata": attr_value}).update_remote(
+    assert MetadataSettings(
+        kodi_emby=KodiEmbyMetadata(series_metadata=attr_value),
+    ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
-        remote=MetadataSettings(kodi_emby={"series_metadata": not attr_value}),
+        remote=MetadataSettings(
+            kodi_emby=KodiEmbyMetadata(series_metadata=not attr_value),
+        ),
     )
 
 
@@ -143,10 +147,14 @@ def test_series_metadata_url(sonarr_api, attr_value) -> None:
         json=api_metadata,
     ).respond_with_json(api_metadata, status=202)
 
-    assert MetadataSettings(kodi_emby={"series_metadata_url": attr_value}).update_remote(
+    assert MetadataSettings(
+        kodi_emby=KodiEmbyMetadata(series_metadata_url=attr_value),
+    ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
-        remote=MetadataSettings(kodi_emby={"series_metadata_url": not attr_value}),
+        remote=MetadataSettings(
+            kodi_emby=KodiEmbyMetadata(series_metadata_url=attr_value),
+        ),
     )
 
 
@@ -193,10 +201,14 @@ def test_episode_metadata(sonarr_api, metadata_type, attr_value) -> None:
         json=api_metadata,
     ).respond_with_json(api_metadata, status=202)
 
-    assert MetadataSettings(**{metadata_type: {"episode_metadata": attr_value}}).update_remote(
+    assert MetadataSettings(
+        **{metadata_type: {"episode_metadata": attr_value}},  # type: ignore[arg-type]
+    ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
-        remote=MetadataSettings(**{metadata_type: {"episode_metadata": not attr_value}}),
+        remote=MetadataSettings(
+            **{metadata_type: {"episode_metadata": not attr_value}},  # type: ignore[arg-type]
+        ),
     )
 
 
@@ -243,10 +255,14 @@ def test_series_images(sonarr_api, metadata_type, attr_value) -> None:
         json=api_metadata,
     ).respond_with_json(api_metadata, status=202)
 
-    assert MetadataSettings(**{metadata_type: {"series_images": attr_value}}).update_remote(
+    assert MetadataSettings(
+        **{metadata_type: {"series_images": attr_value}},  # type: ignore[arg-type]
+    ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
-        remote=MetadataSettings(**{metadata_type: {"series_images": not attr_value}}),
+        remote=MetadataSettings(
+            **{metadata_type: {"series_images": not attr_value}},  # type: ignore[arg-type]
+        ),
     )
 
 
@@ -293,10 +309,14 @@ def test_season_images(sonarr_api, metadata_type, attr_value) -> None:
         json=api_metadata,
     ).respond_with_json(api_metadata, status=202)
 
-    assert MetadataSettings(**{metadata_type: {"season_images": attr_value}}).update_remote(
+    assert MetadataSettings(
+        **{metadata_type: {"season_images": attr_value}},  # type: ignore[arg-type]
+    ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
-        remote=MetadataSettings(**{metadata_type: {"season_images": not attr_value}}),
+        remote=MetadataSettings(
+            **{metadata_type: {"season_images": not attr_value}},  # type: ignore[arg-type]
+        ),
     )
 
 
@@ -343,8 +363,12 @@ def test_episode_images(sonarr_api, metadata_type, attr_value) -> None:
         json=api_metadata,
     ).respond_with_json(api_metadata, status=202)
 
-    assert MetadataSettings(**{metadata_type: {"episode_images": attr_value}}).update_remote(
+    assert MetadataSettings(
+        **{metadata_type: {"episode_images": attr_value}},  # type: ignore[arg-type]
+    ).update_remote(
         tree="sonarr.settings.metadata",
         secrets=sonarr_api.secrets,
-        remote=MetadataSettings(**{metadata_type: {"episode_images": not attr_value}}),
+        remote=MetadataSettings(
+            **{metadata_type: {"episode_images": not attr_value}},  # type: ignore[arg-type]
+        ),
     )

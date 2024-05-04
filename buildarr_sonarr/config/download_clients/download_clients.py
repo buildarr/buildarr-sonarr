@@ -19,11 +19,11 @@ Sonarr plugin download client definition.
 from __future__ import annotations
 
 from logging import getLogger
-from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type
+from typing import Any, ClassVar, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
-from pydantic import SecretStr, validator
+from buildarr.types import BaseEnum, NonEmptyStr, Password, Port, SecretStr
+from pydantic import ValidationInfo, field_validator
 from typing_extensions import Self
 
 from ...api import api_delete, api_post, api_put
@@ -292,10 +292,10 @@ class DownloadClient(SonarrConfigBase):
     If no tags are assigned, all media can use the client.
     """
 
-    _implementation_name: str
-    _implementation: str
-    _config_contract: str
-    _remote_map: List[RemoteMapEntry]
+    _implementation_name: ClassVar[str]
+    _implementation: ClassVar[str]
+    _config_contract: ClassVar[str]
+    _remote_map: ClassVar[List[RemoteMapEntry]]
 
     @classmethod
     def _get_base_remote_map(cls, tag_ids: Mapping[str, int]) -> List[RemoteMapEntry]:
@@ -414,7 +414,7 @@ class DownloadstationUsenetDownloadClient(UsenetDownloadClient):
     Download Station host name.
     """
 
-    port: Port = 5000  # type: ignore[assignment]
+    port: Port = 5000
     """
     Download client access port.
     """
@@ -450,10 +450,10 @@ class DownloadstationUsenetDownloadClient(UsenetDownloadClient):
     Leave blank, set to `null` or undefined to use the default download client location.
     """
 
-    _implementation_name: str = "Download Station"
-    _implementation: str = "UsenetDownloadStation"
-    _config_contract: str = "DownloadStationSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Download Station"
+    _implementation: ClassVar[str] = "UsenetDownloadStation"
+    _config_contract: ClassVar[str] = "DownloadStationSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -487,7 +487,7 @@ class NzbgetDownloadClient(UsenetDownloadClient):
     NZBGet host name.
     """
 
-    port: Port = 5000  # type: ignore[assignment]
+    port: Port = 5000
     """
     Download client access port.
     """
@@ -555,10 +555,10 @@ class NzbgetDownloadClient(UsenetDownloadClient):
     This option requires NZBGet version 16.0 or later.
     """
 
-    _implementation_name: str = "NZBGet"
-    _implementation: str = "Nzbget"
-    _config_contract: str = "NzbgetSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "NZBGet"
+    _implementation: ClassVar[str] = "Nzbget"
+    _config_contract: ClassVar[str] = "NzbgetSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -595,7 +595,7 @@ class NzbvortexDownloadClient(UsenetDownloadClient):
     NZBVortex host name.
     """
 
-    port: Port = 4321  # type: ignore[assignment]
+    port: Port = 4321
     """
     Download client access port.
     """
@@ -645,10 +645,10 @@ class NzbvortexDownloadClient(UsenetDownloadClient):
     * `high`
     """
 
-    _implementation_name: str = "NZBVortex"
-    _implementation: str = "NzbVortex"
-    _config_contract: str = "NzbVortexSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "NZBVortex"
+    _implementation: ClassVar[str] = "NzbVortex"
+    _config_contract: ClassVar[str] = "NzbVortexSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -690,10 +690,10 @@ class PneumaticDownloadClient(UsenetDownloadClient):
     Folder from which `.strm` files will be imported by Drone.
     """
 
-    _implementation_name: str = "Pneumatic"
-    _implementation: str = "Pneumatic"
-    _config_contract: str = "PneumaticSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Pneumatic"
+    _implementation: ClassVar[str] = "Pneumatic"
+    _config_contract: ClassVar[str] = "PneumaticSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("nzb_folder", "nzbFolder", {"is_field": True}),
         ("strm_folder", "strmFolder", {"is_field": True}),
     ]
@@ -714,7 +714,7 @@ class SabnzbdDownloadClient(UsenetDownloadClient):
     SABnzbd host name.
     """
 
-    port: Port = 4321  # type: ignore[assignment]
+    port: Port = 4321
     """
     Download client access port.
     """
@@ -770,10 +770,10 @@ class SabnzbdDownloadClient(UsenetDownloadClient):
     * `force`
     """
 
-    _implementation_name: str = "SABnzbd"
-    _implementation: str = "Sabnzbd"
-    _config_contract: str = "SabnzbdSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "SABnzbd"
+    _implementation: ClassVar[str] = "Sabnzbd"
+    _config_contract: ClassVar[str] = "SabnzbdSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -818,10 +818,10 @@ class UsenetBlackholeDownloadClient(UsenetDownloadClient):
     Folder from which Sonarr should import completed downloads.
     """
 
-    _implementation_name: str = "Usenet Blackhole"
-    _implementation: str = "UsenetBlackhole"
-    _config_contract: str = "UsenetBlackholeSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Usenet Blackhole"
+    _implementation: ClassVar[str] = "UsenetBlackhole"
+    _config_contract: ClassVar[str] = "UsenetBlackholeSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("nzb_folder", "nzbFolder", {"is_field": True}),
         ("watch_folder", "watchFolder", {"is_field": True}),
     ]
@@ -842,7 +842,7 @@ class Aria2DownloadClient(TorrentDownloadClient):
     Aria2 host name.
     """
 
-    port: Port = 6800  # type: ignore[assignment]
+    port: Port = 6800
     """
     Download client access port.
     """
@@ -852,7 +852,7 @@ class Aria2DownloadClient(TorrentDownloadClient):
     Use a secure connection when connecting to the download client.
     """
 
-    rpc_path: NonEmptyStr = "/rpc"  # type: ignore[assignment]
+    rpc_path: NonEmptyStr = "/rpc"
     """
     XML RPC path in the Aria2 client URL.
     """
@@ -862,10 +862,10 @@ class Aria2DownloadClient(TorrentDownloadClient):
     Secret token to use to authenticate with the download client.
     """
 
-    _implementation_name: str = "Aria2"
-    _implementation: str = "Aria2"
-    _config_contract: str = "Aria2Settings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Aria2"
+    _implementation: ClassVar[str] = "Aria2"
+    _config_contract: ClassVar[str] = "Aria2Settings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -889,7 +889,7 @@ class DelugeDownloadClient(TorrentDownloadClient):
     Deluge host name.
     """
 
-    port: Port = 8112  # type: ignore[assignment]
+    port: Port = 8112
     """
     Download client access port.
     """
@@ -945,10 +945,10 @@ class DelugeDownloadClient(TorrentDownloadClient):
     * `first`
     """
 
-    _implementation_name: str = "Deluge"
-    _implementation: str = "Deluge"
-    _config_contract: str = "DelugeSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Deluge"
+    _implementation: ClassVar[str] = "Deluge"
+    _config_contract: ClassVar[str] = "DelugeSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -988,7 +988,7 @@ class DownloadstationTorrentDownloadClient(TorrentDownloadClient):
     Download Station host name.
     """
 
-    port: Port = 5000  # type: ignore[assignment]
+    port: Port = 5000
     """
     Download client access port.
     """
@@ -1024,10 +1024,10 @@ class DownloadstationTorrentDownloadClient(TorrentDownloadClient):
     Leave blank, set to `null` or undefined to use the default download client location.
     """
 
-    _implementation_name: str = "Download Station"
-    _implementation: str = "TorrentDownloadStation"
-    _config_contract: str = "DownloadStationSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Download Station"
+    _implementation: ClassVar[str] = "TorrentDownloadStation"
+    _config_contract: ClassVar[str] = "DownloadStationSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1061,7 +1061,7 @@ class FloodDownloadClient(TorrentDownloadClient):
     Flood host name.
     """
 
-    port: Port = 3000  # type: ignore[assignment]
+    port: Port = 3000
     """
     Download client access port.
     """
@@ -1091,7 +1091,7 @@ class FloodDownloadClient(TorrentDownloadClient):
     Manually specified download destination.
     """
 
-    flood_tags: Set[NonEmptyStr] = {"sonarr"}  # type: ignore[arg-type]
+    flood_tags: Set[NonEmptyStr] = {"sonarr"}
     """
     Initial tags of a download within Flood.
 
@@ -1114,10 +1114,10 @@ class FloodDownloadClient(TorrentDownloadClient):
     Immediately start download once the media has been added to the client.
     """
 
-    _implementation_name: str = "Flood"
-    _implementation: str = "Flood"
-    _config_contract: str = "FloodSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Flood"
+    _implementation: ClassVar[str] = "Flood"
+    _config_contract: ClassVar[str] = "FloodSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1164,7 +1164,7 @@ class HadoukenDownloadClient(TorrentDownloadClient):
     Hadouken host name.
     """
 
-    port: Port = 7070  # type: ignore[assignment]
+    port: Port = 7070
     """
     Download client access port.
     """
@@ -1189,7 +1189,7 @@ class HadoukenDownloadClient(TorrentDownloadClient):
     Password to use to authenticate the download client user.
     """
 
-    category: NonEmptyStr = "sonarr-tv"  # type: ignore[assignment]
+    category: NonEmptyStr = "sonarr-tv"
     """
     Associate media from Sonarr with a category.
 
@@ -1197,10 +1197,10 @@ class HadoukenDownloadClient(TorrentDownloadClient):
     Using a category is optional, but strongly recommended.
     """
 
-    _implementation_name: str = "Hadouken"
-    _implementation: str = "Hadouken"
-    _config_contract: str = "HadoukenSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Hadouken"
+    _implementation: ClassVar[str] = "Hadouken"
+    _config_contract: ClassVar[str] = "HadoukenSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1230,7 +1230,7 @@ class QbittorrentDownloadClient(TorrentDownloadClient):
     qBittorrent host name.
     """
 
-    port: Port = 8080  # type: ignore[assignment]
+    port: Port = 8080
     """
     Download client access port.
     """
@@ -1312,10 +1312,10 @@ class QbittorrentDownloadClient(TorrentDownloadClient):
     This option requires qBittorrent version 4.1.0 or later.
     """
 
-    _implementation_name: str = "qBittorrent"
-    _implementation: str = "QBittorrent"
-    _config_contract: str = "QBittorrentSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "qBittorrent"
+    _implementation: ClassVar[str] = "QBittorrent"
+    _config_contract: ClassVar[str] = "QBittorrentSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1392,7 +1392,7 @@ class RtorrentDownloadClient(TorrentDownloadClient):
     RTorrent host name.
     """
 
-    port: Port = 8080  # type: ignore[assignment]
+    port: Port = 8080
     """
     Download client access port.
     """
@@ -1402,7 +1402,7 @@ class RtorrentDownloadClient(TorrentDownloadClient):
     Use a secure connection when connecting to the download client.
     """
 
-    url_base: NonEmptyStr = "RPC2"  # type: ignore[assignment]
+    url_base: NonEmptyStr = "RPC2"
     """
     Path to the XMLRPC endpoint, e.g. `http(s)://[host]:[port]/[url_base]`.
 
@@ -1473,10 +1473,10 @@ class RtorrentDownloadClient(TorrentDownloadClient):
     This may break magnet files.
     """
 
-    _implementation_name: str = "rTorrent"
-    _implementation: str = "RTorrent"
-    _config_contract: str = "RTorrentSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "rTorrent"
+    _implementation: ClassVar[str] = "RTorrent"
+    _config_contract: ClassVar[str] = "RTorrentSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1531,7 +1531,7 @@ class TorrentBlackholeDownloadClient(TorrentDownloadClient):
     Only useful if the download client supports magnets saved to a file.
     """
 
-    magnet_file_extension: NonEmptyStr = ".magnet"  # type: ignore[assignment]
+    magnet_file_extension: NonEmptyStr = ".magnet"
     """
     Extension to use for magnet links.
     """
@@ -1542,10 +1542,10 @@ class TorrentBlackholeDownloadClient(TorrentDownloadClient):
     (depending on settings/system configuration).
     """
 
-    _implementation_name: str = "Torrent Blackhole"
-    _implementation: str = "TorrentBlackhole"
-    _config_contract: str = "TorrentBlackholeSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Torrent Blackhole"
+    _implementation: ClassVar[str] = "TorrentBlackhole"
+    _config_contract: ClassVar[str] = "TorrentBlackholeSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1583,7 +1583,7 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
     Transmission/Vuze host name.
     """
 
-    port: Port = 9091  # type: ignore[assignment]
+    port: Port = 9091
     """
     Download client access port.
     """
@@ -1593,7 +1593,7 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
     Use a secure connection when connecting to the download client.
     """
 
-    url_base: NonEmptyStr = "/transmission/"  # type: ignore[assignment]
+    url_base: NonEmptyStr = "/transmission/"
     """
     Adds a prefix to the Transmission/Vuze RPC url, e.g.`http://[host]:[port][url_base]rpc`.
 
@@ -1655,8 +1655,8 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
     Add media to the download client in the Paused state.
     """
 
-    _config_contract: str = "TransmissionSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _config_contract: ClassVar[str] = "TransmissionSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1682,20 +1682,22 @@ class TransmissionDownloadClientBase(TorrentDownloadClient):
         ("add_paused", "addPaused", {"is_field": True}),
     ]
 
-    @validator("directory")
+    @field_validator("directory")
+    @classmethod
     def category_directory_mutual_exclusion(
         cls,
         value: Optional[str],
-        values: Mapping[str, Any],
+        info: ValidationInfo,
     ) -> Optional[str]:
-        directory = value
-        category: Optional[str] = values.get("category", None)
-        if directory and category:
+        category: Optional[str] = info.data.get("category", None)
+        if value and category:
             raise ValueError(
-                "'directory' and 'category' are mutually exclusive "
-                "on a Transmission download client",
+                (
+                    "'directory' and 'category' are mutually exclusive "
+                    "on a Transmission download client"
+                ),
             )
-        return directory
+        return value
 
 
 class TransmissionDownloadClient(TransmissionDownloadClientBase):
@@ -1708,8 +1710,8 @@ class TransmissionDownloadClient(TransmissionDownloadClientBase):
     Type value associated with this kind of download client.
     """
 
-    _implementation_name: str = "Transmission"
-    _implementation: str = "Transmission"
+    _implementation_name: ClassVar[str] = "Transmission"
+    _implementation: ClassVar[str] = "Transmission"
 
 
 class VuzeDownloadClient(TransmissionDownloadClientBase):
@@ -1722,8 +1724,8 @@ class VuzeDownloadClient(TransmissionDownloadClientBase):
     Type value associated with this kind of download client.
     """
 
-    _implementation_name: str = "Vuze"
-    _implementation: str = "Vuze"
+    _implementation_name: ClassVar[str] = "Vuze"
+    _implementation: ClassVar[str] = "Vuze"
 
 
 class UtorrentDownloadClient(TorrentDownloadClient):
@@ -1741,7 +1743,7 @@ class UtorrentDownloadClient(TorrentDownloadClient):
     uTorrent host name.
     """
 
-    port: Port = 8080  # type: ignore[assignment]
+    port: Port = 8080
     """
     Download client access port.
     """
@@ -1807,10 +1809,10 @@ class UtorrentDownloadClient(TorrentDownloadClient):
     Initial state for torrents added to uTorrent.
     """
 
-    _implementation_name: str = "uTorrent"
-    _implementation: str = "UTorrent"
-    _config_contract: str = "UTorrentSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "uTorrent"
+    _implementation: ClassVar[str] = "UTorrent"
+    _config_contract: ClassVar[str] = "UTorrentSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),

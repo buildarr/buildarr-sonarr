@@ -20,16 +20,16 @@ from __future__ import annotations
 
 from datetime import datetime
 from logging import getLogger
-from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type, Union
+from typing import Any, ClassVar, Dict, List, Literal, Mapping, Optional, Set, Tuple, Type, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password, Port
-from pydantic import AnyHttpUrl, ConstrainedInt, EmailStr, Field, SecretStr
+from pydantic import AnyHttpUrl, EmailStr, Field, NonNegativeInt
 from typing_extensions import Annotated, Self
 
 from ..api import api_delete, api_get, api_post, api_put
 from ..secrets import SonarrSecrets
-from .types import SonarrConfigBase, TraktAuthUser
+from .types import SonarrConfigBase
 from .util import trakt_expires_encoder
 
 logger = getLogger(__name__)
@@ -117,14 +117,6 @@ class PushoverPriority(BaseEnum):
     normal = 0
     high = 1
     emergency = 2
-
-
-class PushoverRetry(ConstrainedInt):
-    """
-    Constrained integer type to enforce Pushover retry field limits.
-    """
-
-    ge = 30
 
 
 class WebhookMethod(BaseEnum):
@@ -242,7 +234,7 @@ class NotificationTriggers(SonarrConfigBase):
     Be notified when Sonarr gets updated to a new version.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("on_grab", "onGrab", {}),
         ("on_import", "onDownload", {}),
         ("on_upgrade", "onUpgrade", {}),
@@ -271,10 +263,10 @@ class Connection(SonarrConfigBase):
     Sonarr tags to associate this connection with.
     """
 
-    _implementation_name: str
-    _implementation: str
-    _config_contract: str
-    _remote_map: List[RemoteMapEntry]
+    _implementation_name: ClassVar[str]
+    _implementation: ClassVar[str]
+    _config_contract: ClassVar[str]
+    _remote_map: ClassVar[List[RemoteMapEntry]]
 
     @classmethod
     def _get_base_remote_map(
@@ -412,10 +404,10 @@ class BoxcarConnection(Connection):
     Access token for authenticating with Boxcar.
     """
 
-    _implementation_name: str = "Boxcar"
-    _implementation: str = "Boxcar"
-    _config_contract: str = "BoxcarSettings"
-    _remote_map: List[RemoteMapEntry] = [("access_token", "token", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Boxcar"
+    _implementation: ClassVar[str] = "Boxcar"
+    _config_contract: ClassVar[str] = "BoxcarSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [("access_token", "token", {"is_field": True})]
 
 
 class CustomscriptConnection(Connection):
@@ -435,10 +427,10 @@ class CustomscriptConnection(Connection):
     Path of the script to execute.
     """
 
-    _implementation_name: str = "Custom Script"
-    _implementation: str = "CustomScript"
-    _config_contract: str = "CustomScriptSettings"
-    _remote_map: List[RemoteMapEntry] = [("path", "path", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Custom Script"
+    _implementation: ClassVar[str] = "CustomScript"
+    _config_contract: ClassVar[str] = "CustomScriptSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [("path", "path", {"is_field": True})]
 
 
 class DiscordConnection(Connection):
@@ -575,10 +567,10 @@ class DiscordConnection(Connection):
     ```
     """
 
-    _implementation_name: str = "Discord"
-    _implementation: str = "Discord"
-    _config_contract: str = "DiscordSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Discord"
+    _implementation: ClassVar[str] = "Discord"
+    _config_contract: ClassVar[str] = "DiscordSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("webhook_url", "webHookUrl", {"is_field": True}),
         (
             "username",
@@ -625,7 +617,7 @@ class EmailConnection(Connection):
     Hostname or IP address of the SMTP server to send outbound mail to.
     """
 
-    port: Port = 587  # type: ignore[assignment]
+    port: Port = 587
     """
     The port number on the SMTP server to use to submit mail.
 
@@ -661,7 +653,7 @@ class EmailConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    recipient_addresses: Annotated[List[EmailStr], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[Set[EmailStr], Field(min_length=1)]
     """
     List of email addresses to directly address the mail to.
 
@@ -672,7 +664,7 @@ class EmailConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    cc_addresses: Annotated[List[EmailStr], Field(unique_items=True)] = []
+    cc_addresses: Set[EmailStr] = set()
     """
     Optional list of email addresses to copy (CC) the mail to.
 
@@ -681,7 +673,7 @@ class EmailConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    bcc_addresses: Annotated[List[EmailStr], Field(unique_items=True)] = []
+    bcc_addresses: Set[EmailStr] = set()
     """
     Optional list of email addresses to blind copy (BCC) the mail to.
 
@@ -690,19 +682,19 @@ class EmailConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    _implementation_name: str = "Email"
-    _implementation: str = "Email"
-    _config_contract: str = "EmailSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Email"
+    _implementation: ClassVar[str] = "Email"
+    _config_contract: ClassVar[str] = "EmailSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("server", "server", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_encryption", "requireEncryption", {"is_field": True}),
         ("username", "username", {"is_field": True}),
         ("password", "password", {"is_field": True}),
         ("from_address", "from", {"is_field": True}),
-        ("recipient_addresses", "to", {"is_field": True}),
-        ("cc_addresses", "cc", {"is_field": True}),
-        ("bcc_addresses", "bcc", {"is_field": True}),
+        ("recipient_addresses", "to", {"is_field": True, "encoder": lambda v: sorted(v)}),
+        ("cc_addresses", "cc", {"is_field": True, "encoder": lambda v: sorted(v)}),
+        ("bcc_addresses", "bcc", {"is_field": True, "encoder": lambda v: sorted(v)}),
     ]
 
 
@@ -723,7 +715,7 @@ class EmbyConnection(Connection):
     Emby server hostname or IP address.
     """
 
-    port: Port = 8096  # type: ignore[assignment]
+    port: Port = 8096
     """
     Emby server port.
     """
@@ -748,10 +740,10 @@ class EmbyConnection(Connection):
     Update the Emby library on import, rename, or delete.
     """
 
-    _implementation_name: str = "Emby"
-    _implementation: str = "MediaBrowser"
-    _config_contract: str = "MediaBrowserSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Emby"
+    _implementation: ClassVar[str] = "MediaBrowser"
+    _config_contract: ClassVar[str] = "MediaBrowserSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -795,10 +787,10 @@ class GotifyConnection(Connection):
     * `high`
     """
 
-    _implementation: str = "Gotify"
-    _implementation_name: str = "Gotify"
-    _config_contract: str = "GotifySettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Gotify"
+    _implementation_name: ClassVar[str] = "Gotify"
+    _config_contract: ClassVar[str] = "GotifySettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("server", "server", {"is_field": True}),
         ("app_token", "appToken", {"is_field": True}),
         ("priority", "priority", {"is_field": True}),
@@ -845,10 +837,10 @@ class JoinConnection(Connection):
     * `emergency`
     """
 
-    _implementation: str = "Join"
-    _implementation_name: str = "Join"
-    _config_contract: str = "JoinSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Join"
+    _implementation_name: ClassVar[str] = "Join"
+    _config_contract: ClassVar[str] = "JoinSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("api_key", "apiKey", {"is_field": True}),
         # ("device_ids", "deviceIds", {"is_field": True}),
         (
@@ -883,7 +875,7 @@ class KodiConnection(Connection):
     Kodi hostname or IP address.
     """
 
-    port: Port = 8080  # type: ignore[assignment]
+    port: Port = 8080
     """
     Kodi API port.
     """
@@ -908,7 +900,7 @@ class KodiConnection(Connection):
     Enable showing notifications from Sonarr in the Kodi GUI.
     """
 
-    display_time: int = Field(5, ge=0)  # seconds
+    display_time: NonNegativeInt = 5  # seconds
     """
     How long the notification will be displayed for (in seconds).
     """
@@ -928,10 +920,10 @@ class KodiConnection(Connection):
     Update the Kodi library even when a video is playing.
     """
 
-    _implementation_name: str = "Kodi"
-    _implementation: str = "Xbmc"
-    _config_contract: str = "XbmcSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Kodi"
+    _implementation: ClassVar[str] = "Xbmc"
+    _config_contract: ClassVar[str] = "XbmcSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -981,7 +973,7 @@ class MailgunConnection(Connection):
     The domain from which the mail will be sent.
     """
 
-    recipient_addresses: Annotated[List[EmailStr], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[Set[EmailStr], Field(min_length=1)]
     """
     The recipient email addresses of the notification mail.
 
@@ -992,15 +984,15 @@ class MailgunConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    _implementation: str = "Mailgun"
-    _implementation_name: str = "MailGun"
-    _config_contract: str = "MailgunSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Mailgun"
+    _implementation_name: ClassVar[str] = "MailGun"
+    _config_contract: ClassVar[str] = "MailgunSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("api_key", "apiKey", {"is_field": True}),
         ("use_eu_endpoint", "useEuEndpoint", {"is_field": True}),
         ("from_address", "from", {"is_field": True}),
         ("sender_domain", "senderDomain", {"is_field": True}),
-        ("recipient_addresses", "recipients", {"is_field": True}),
+        ("recipient_addresses", "recipients", {"is_field": True, "encoder": lambda v: sorted(v)}),
     ]
 
 
@@ -1021,7 +1013,7 @@ class PlexHomeTheaterConnection(Connection):
     Plex Home Theater hostname or IP address.
     """
 
-    port: Port = 3005  # type: ignore[assignment]
+    port: Port = 3005
     """
     Plex Home Theater API port.
     """
@@ -1046,7 +1038,7 @@ class PlexHomeTheaterConnection(Connection):
     Enable showing notifications from Sonarr in the Plex Home Theater GUI.
     """
 
-    display_time: int = Field(5, ge=0)  # seconds
+    display_time: NonNegativeInt = 5  # seconds
     """
     How long the notification will be displayed for (in seconds).
     """
@@ -1066,10 +1058,10 @@ class PlexHomeTheaterConnection(Connection):
     Update the Plex Home THeater library even when a video is playing.
     """
 
-    _implementation_name: str = "Plex Home Theater"
-    _implementation: str = "PlexHomeTheater"
-    _config_contract: str = "PlexHomeTheaterSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Plex Home Theater"
+    _implementation: ClassVar[str] = "PlexHomeTheater"
+    _config_contract: ClassVar[str] = "PlexHomeTheaterSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1100,7 +1092,7 @@ class PlexMediaCenterConnection(Connection):
     Plex Media Center hostname or IP address.
     """
 
-    port: Port = 3000  # type: ignore[assignment]
+    port: Port = 3000
     """
     Plex Media Center API port.
     """
@@ -1115,10 +1107,10 @@ class PlexMediaCenterConnection(Connection):
     Password to use to login to Plex Media Center.
     """
 
-    _implementation_name: str = "Plex Media Center"
-    _implementation: str = "PlexClient"
-    _config_contract: str = "PlexClientSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Plex Media Center"
+    _implementation: ClassVar[str] = "PlexClient"
+    _config_contract: ClassVar[str] = "PlexClientSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("username", "username", {"is_field": True}),
@@ -1144,7 +1136,7 @@ class PlexMediaServerConnection(Connection):
     Plex Media Server hostname or IP address.
     """
 
-    port: Port = 32400  # type: ignore[assignment]
+    port: Port = 32400
     """
     Plex Media Server API port.
     """
@@ -1172,10 +1164,10 @@ class PlexMediaServerConnection(Connection):
     Update the Plex Media Server library on import, rename or delete.
     """
 
-    _implementation_name: str = "Plex Media Server"
-    _implementation: str = "PlexServer"
-    _config_contract: str = "PlexServerSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Plex Media Server"
+    _implementation: ClassVar[str] = "PlexServer"
+    _config_contract: ClassVar[str] = "PlexServerSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("host", "host", {"is_field": True}),
         ("port", "port", {"is_field": True}),
         ("use_ssl", "useSsl", {"is_field": True}),
@@ -1214,10 +1206,10 @@ class ProwlConnection(Connection):
     * `emergency`
     """
 
-    _implementation: str = "Prowl"
-    _implementation_name: str = "Prowl"
-    _config_contract: str = "ProwlSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Prowl"
+    _implementation_name: ClassVar[str] = "Prowl"
+    _config_contract: ClassVar[str] = "ProwlSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("api_key", "apiKey", {"is_field": True}),
         ("priority", "priority", {"is_field": True}),
     ]
@@ -1260,10 +1252,10 @@ class PushbulletConnection(Connection):
     Leave unset, blank or set to `None` to send from yourself.
     """
 
-    _implementation: str = "Pushbullet"
-    _implementation_name: str = "PushBullet"
-    _config_contract: str = "PushBulletSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Pushbullet"
+    _implementation_name: ClassVar[str] = "PushBullet"
+    _config_contract: ClassVar[str] = "PushBulletSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("api_key", "apiKey", {"is_field": True}),
         ("device_ids", "deviceIds", {"is_field": True}),
         ("channel_tags", "channelTags", {"is_field": True}),
@@ -1287,12 +1279,12 @@ class PushoverConnection(Connection):
     Type value associated with this kind of connection.
     """
 
-    user_key: Annotated[SecretStr, Field(min_length=30, max_length=30)]
+    user_key: Password
     """
     User key to use to authenticate with your Pushover account.
     """
 
-    api_key: Annotated[SecretStr, Field(min_length=30, max_length=30)]
+    api_key: Password
     """
     API key assigned to Sonarr in Pushover.
     """
@@ -1317,7 +1309,7 @@ class PushoverConnection(Connection):
     * `emergency`
     """
 
-    retry: Union[Literal[0], PushoverRetry] = 0
+    retry: Union[Literal[0], Annotated[int, Field(ge=30)]] = 0
     """
     Interval to retry emergency alerts, in seconds.
 
@@ -1325,7 +1317,7 @@ class PushoverConnection(Connection):
     """
 
     # TODO: Enforce "expire > retry if retry > 0" constraint
-    expire: int = Field(0, ge=0, le=86400)
+    expire: Annotated[int, Field(ge=0, le=86400)] = 0
     """
     Threshold for retrying emergency alerts, in seconds.
     If `retry` is set, this should be set to a higher value.
@@ -1340,10 +1332,10 @@ class PushoverConnection(Connection):
     Leave unset, blank or set to `None` to use the default.
     """
 
-    _implementation_name: str = "Pushover"
-    _implementation: str = "Pushover"
-    _config_contract: str = "PushoverSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Pushover"
+    _implementation: ClassVar[str] = "Pushover"
+    _config_contract: ClassVar[str] = "PushoverSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("user_key", "userKey", {"is_field": True}),
         ("api_key", "apiKey", {"is_field": True}),
         ("devices", "devices", {"is_field": True, "encoder": lambda v: sorted(v)}),
@@ -1384,7 +1376,7 @@ class SendgridConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    recipient_addresses: Annotated[List[EmailStr], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[Set[EmailStr], Field(min_length=1)]
     """
     The recipient email addresses of the notification mail.
 
@@ -1395,13 +1387,13 @@ class SendgridConnection(Connection):
     supported by Sonarr V3 (the currently supported version).
     """
 
-    _implementation: str = "SendGrid"
-    _implementation_name: str = "SendGrid"
-    _config_contract: str = "SendGridSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "SendGrid"
+    _implementation_name: ClassVar[str] = "SendGrid"
+    _config_contract: ClassVar[str] = "SendGridSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("api_key", "apiKey", {"is_field": True}),
         ("from_address", "from", {"is_field": True}),
-        ("recipient_addresses", "recipients", {"is_field": True}),
+        ("recipient_addresses", "recipients", {"is_field": True, "encoder": lambda v: sorted(v)}),
     ]
 
 
@@ -1439,10 +1431,10 @@ class SlackConnection(Connection):
     If set, overrides the default channel in the webhook.
     """
 
-    _implementation: str = "Slack"
-    _implementation_name: str = "Slack"
-    _config_contract: str = "SlackSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Slack"
+    _implementation_name: ClassVar[str] = "Slack"
+    _config_contract: ClassVar[str] = "SlackSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("webhook_url", "webHookUrl", {"is_field": True}),
         ("username", "username", {"is_field": True}),
         (
@@ -1476,10 +1468,12 @@ class SynologyIndexerConnection(Connection):
     Update the library on media import/rename/delete.
     """
 
-    _implementation_name: str = "Synology Indexer"
-    _implementation: str = "SynologyIndexer"
-    _config_contract: str = "SynologyIndexerSettings"
-    _remote_map: List[RemoteMapEntry] = [("update_library", "updateLibrary", {"is_field": True})]
+    _implementation_name: ClassVar[str] = "Synology Indexer"
+    _implementation: ClassVar[str] = "SynologyIndexer"
+    _config_contract: ClassVar[str] = "SynologyIndexerSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
+        ("update_library", "updateLibrary", {"is_field": True}),
+    ]
 
 
 class TelegramConnection(Connection):
@@ -1511,10 +1505,10 @@ class TelegramConnection(Connection):
     Sends the message silently. Users will receive a notification with no sound.
     """
 
-    _implementation: str = "Telegram"
-    _implementation_name: str = "Telegram"
-    _config_contract: str = "TelegramSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation: ClassVar[str] = "Telegram"
+    _implementation_name: ClassVar[str] = "Telegram"
+    _config_contract: ClassVar[str] = "TelegramSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("bot_token", "botToken", {"is_field": True}),
         ("chat_id", "chatId", {"is_field": True}),
         ("send_silently", "sendSilently", {"is_field": True}),
@@ -1564,15 +1558,15 @@ class TraktConnection(Connection):
     Example: `2023-05-10T15:34:08.117451Z`
     """
 
-    auth_user: TraktAuthUser
+    auth_user: NonEmptyStr
     """
     The username being authenticated in Trakt.
     """
 
-    _implementation_name: str = "Trakt"
-    _implementation: str = "Trakt"
-    _config_contract: str = "TraktSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Trakt"
+    _implementation: ClassVar[str] = "Trakt"
+    _config_contract: ClassVar[str] = "TraktSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("access_token", "accessToken", {"is_field": True}),
         ("refresh_token", "refreshToken", {"is_field": True}),
         ("expires", "expires", {"is_field": True, "encoder": trakt_expires_encoder}),
@@ -1631,10 +1625,10 @@ class TwitterConnection(Connection):
     Send a direct message instead of a public message.
     """
 
-    _implementation_name: str = "Twitter"
-    _implementation: str = "Twitter"
-    _config_contract: str = "TwitterSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Twitter"
+    _implementation: ClassVar[str] = "Twitter"
+    _config_contract: ClassVar[str] = "TwitterSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("consumer_key", "consumerKey", {"is_field": True}),
         ("consumer_secret", "consumerSecret", {"is_field": True}),
         ("access_token", "accessToken", {"is_field": True}),
@@ -1681,10 +1675,10 @@ class WebhookConnection(Connection):
     Webhook API password.
     """
 
-    _implementation_name: str = "Webhook"
-    _implementation: str = "Webhook"
-    _config_contract: str = "WebhookSettings"
-    _remote_map: List[RemoteMapEntry] = [
+    _implementation_name: ClassVar[str] = "Webhook"
+    _implementation: ClassVar[str] = "Webhook"
+    _config_contract: ClassVar[str] = "WebhookSettings"
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("url", "url", {"is_field": True}),
         ("method", "method", {"is_field": True}),
         ("username", "username", {"is_field": True}),

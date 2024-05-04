@@ -21,12 +21,15 @@ from __future__ import annotations
 import re
 
 from pathlib import PurePosixPath, PureWindowsPath
-from typing import Any, Callable, Generator, Literal
+from typing import Any, Literal, Type
 
-from pydantic import SecretStr
-from typing_extensions import Self
+from buildarr.types import SecretStr
+from pydantic import GetCoreSchemaHandler, StringConstraints
+from pydantic_core import core_schema
+from typing_extensions import Annotated, Self
 
 SonarrProtocol = Literal["http", "https"]
+SonarrApiKey = Annotated[SecretStr, StringConstraints(min_length=32, max_length=32)]
 
 
 class OSAgnosticPath(str):
@@ -55,18 +58,13 @@ class OSAgnosticPath(str):
             return hash(PurePosixPath(self))
 
     @classmethod
-    def __get_validators__(cls) -> Generator[Callable[[Any], Self], None, None]:
-        yield cls.validate
+    def __get_pydantic_core_schema__(
+        cls,
+        source: Type[Any],
+        handler: GetCoreSchemaHandler,
+    ) -> core_schema.CoreSchema:
+        return core_schema.no_info_plain_validator_function(cls.validate)
 
     @classmethod
     def validate(cls, value: Any) -> Self:
         return cls(value)
-
-
-class SonarrApiKey(SecretStr):
-    """
-    Constrained secret string type for a Sonarr API key.
-    """
-
-    min_length = 32
-    max_length = 32

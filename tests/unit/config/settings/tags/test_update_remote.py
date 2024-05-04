@@ -64,5 +64,5 @@ def test_create(sonarr_api, tags) -> None:
     assert TagsSettings(definitions=tags).update_remote(
         tree="sonarr.tags",
         secrets=sonarr_api.secrets,
-        remote=TagsSettings(definitions={"torrent"}),  # type: ignore[arg-type]
+        remote=TagsSettings(definitions={"torrent"}),
     )

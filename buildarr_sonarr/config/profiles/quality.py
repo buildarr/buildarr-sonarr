@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Set, Union, cas
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import Field, validator
+from pydantic import Field, ValidationInfo, field_validator
 from typing_extensions import Annotated, Self
 
 from ...api import api_delete, api_get, api_post, api_put
@@ -41,7 +41,7 @@ class QualityGroup(SonarrConfigBase):
     """
 
     name: NonEmptyStr
-    members: Set[NonEmptyStr] = Field(..., min_items=1)
+    members: Annotated[Set[NonEmptyStr], Field(min_length=1)]
 
     def encode(self, group_id: int, quality_definitions: Mapping[str, Any]) -> Dict[str, Any]:
         return {
@@ -130,7 +130,8 @@ class QualityProfile(SonarrConfigBase):
     This attribute is required if `upgrades_allowed` is set to `True`.
     """
 
-    @validator("qualities")
+    @field_validator("qualities")
+    @classmethod
     def validate_qualities(
         cls,
         value: List[Union[str, QualityGroup]],
@@ -159,15 +160,16 @@ class QualityProfile(SonarrConfigBase):
                 quality_name_map[name] = quality
         return value
 
-    @validator("upgrade_until")
+    @field_validator("upgrade_until")
+    @classmethod
     def validate_upgrade_until(
         cls,
         value: Optional[str],
-        values: Dict[str, Any],
+        info: ValidationInfo,
     ) -> Optional[str]:
         try:
-            upgrades_allowed: bool = values["upgrades_allowed"]
-            qualities: Sequence[Union[str, QualityGroup]] = values["qualities"]
+            upgrades_allowed: bool = info.data["upgrades_allowed"]
+            qualities: Sequence[Union[str, QualityGroup]] = info.data["qualities"]
         except KeyError:
             return value
         # If `upgrades_allowed` is `False`, set `upgrade_until` to `None`

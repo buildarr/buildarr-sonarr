@@ -22,7 +22,6 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from buildarr.config import ConfigPlugin
 from buildarr.types import NonEmptyStr, Port
-from pydantic import validator
 from typing_extensions import Self
 
 from ..types import SonarrApiKey, SonarrProtocol
@@ -42,29 +41,23 @@ from .ui import SonarrUISettingsConfig
 if TYPE_CHECKING:
     from ..secrets import SonarrSecrets
 
-    class _SonarrInstanceConfig(ConfigPlugin[SonarrSecrets]): ...
-
-else:
-
-    class _SonarrInstanceConfig(ConfigPlugin): ...
-
 
 class SonarrSettingsConfig(SonarrConfigBase):
     """
     Sonarr settings, used to configure a remote Sonarr instance.
     """
 
-    media_management = SonarrMediaManagementSettingsConfig()  # type: ignore[call-arg]
-    profiles = SonarrProfilesSettingsConfig()
-    quality = SonarrQualitySettingsConfig()
-    indexers = SonarrIndexersSettingsConfig()  # type: ignore[call-arg]
-    download_clients = SonarrDownloadClientsSettingsConfig()
-    import_lists = SonarrImportListsSettingsConfig()
-    connect = SonarrConnectSettingsConfig()
-    metadata = SonarrMetadataSettingsConfig()
-    tags = SonarrTagsSettingsConfig()
-    general = SonarrGeneralSettingsConfig()
-    ui = SonarrUISettingsConfig()
+    media_management: SonarrMediaManagementSettingsConfig = SonarrMediaManagementSettingsConfig()
+    profiles: SonarrProfilesSettingsConfig = SonarrProfilesSettingsConfig()
+    quality: SonarrQualitySettingsConfig = SonarrQualitySettingsConfig()
+    indexers: SonarrIndexersSettingsConfig = SonarrIndexersSettingsConfig()
+    download_clients: SonarrDownloadClientsSettingsConfig = SonarrDownloadClientsSettingsConfig()
+    import_lists: SonarrImportListsSettingsConfig = SonarrImportListsSettingsConfig()
+    connect: SonarrConnectSettingsConfig = SonarrConnectSettingsConfig()
+    metadata: SonarrMetadataSettingsConfig = SonarrMetadataSettingsConfig()
+    tags: SonarrTagsSettingsConfig = SonarrTagsSettingsConfig()
+    general: SonarrGeneralSettingsConfig = SonarrGeneralSettingsConfig()
+    ui: SonarrUISettingsConfig = SonarrUISettingsConfig()
 
     def update_remote(
         self,
@@ -182,7 +175,7 @@ class SonarrSettingsConfig(SonarrConfigBase):
         )
 
 
-class SonarrInstanceConfig(_SonarrInstanceConfig):
+class SonarrInstanceConfig(ConfigPlugin["SonarrSecrets"]):
     """
     By default, Buildarr will look for a single instance at `http://sonarr:8989`.
     Most configurations are different, and to accommodate those, you can configure
@@ -222,7 +215,7 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     ```
     """
 
-    hostname: NonEmptyStr = "sonarr"  # type: ignore[assignment]
+    hostname: NonEmptyStr = "sonarr"
     """
     Hostname of the Sonarr instance to connect to.
 
@@ -240,27 +233,17 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     ```
     """
 
-    port: Port = 8989  # type: ignore[assignment]
+    port: Port = 8989
     """
     Port number of the Sonarr instance to connect to.
     """
 
-    protocol: SonarrProtocol = "http"  # type: ignore[assignment]
+    protocol: SonarrProtocol = "http"
     """
     Communication protocol to use to connect to Sonarr.
     """
 
-    url_base: Optional[str] = None
-    """
-    The URL path the Sonarr instance API is available under, if behind a reverse proxy.
-
-    API URLs are rendered like this: `<protocol>://<hostname>:<port><url_base>/api/v3/...`
-
-    When unset, the URL root will be used as the API endpoint
-    (e.g. `<protocol>://<hostname>:<port>/api/v3/...`).
-
-    *Added in version 0.6.3.*
-    """
+    # url_base is defined in the configuration plugin base class.
 
     api_key: Optional[SonarrApiKey] = None
     """
@@ -270,7 +253,7 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     This can only be done on Sonarr instances with authentication disabled.
     """
 
-    image: NonEmptyStr = "lscr.io/linuxserver/sonarr"  # type: ignore[assignment]
+    image: NonEmptyStr = "lscr.io/linuxserver/sonarr"
     """
     The default Docker image URI when generating a Docker Compose file.
     """
@@ -290,10 +273,6 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     Configuration options for Sonarr itself are set within this structure.
     """
 
-    @validator("url_base")
-    def validate_url_base(cls, value: Optional[str]) -> Optional[str]:
-        return f"/{value.strip('/')}" if value and value.strip("/") else None
-
     def uses_trash_metadata(self) -> bool:
         if self.settings.quality.uses_trash_metadata():
             return True
@@ -305,7 +284,7 @@ class SonarrInstanceConfig(_SonarrInstanceConfig):
     def render(self) -> Self:
         if not self.uses_trash_metadata():
             return self
-        copy = self.copy(deep=True)
+        copy = self.model_copy(deep=True)
         copy._render()
         return copy
 

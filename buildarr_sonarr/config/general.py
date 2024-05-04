@@ -19,12 +19,12 @@ Sonarr plugin general settings configuration.
 from __future__ import annotations
 
 from ipaddress import IPv4Address
-from typing import Any, Dict, List, Literal, Mapping, Optional, Set, Tuple, Union
+from typing import Any, ClassVar, Dict, List, Literal, Mapping, Optional, Set, Tuple, Union
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, NonEmptyStr, Port
-from pydantic import Field, SecretStr
-from typing_extensions import Self
+from buildarr.types import BaseEnum, NonEmptyStr, Port, SecretStr
+from pydantic import Field
+from typing_extensions import Annotated, Self
 
 from ..api import api_get, api_put
 from ..secrets import SonarrSecrets
@@ -88,7 +88,7 @@ class GeneralSettings(SonarrConfigBase):
     Sonarr general settings base class.
     """
 
-    _remote_map: List[RemoteMapEntry]
+    _remote_map: ClassVar[List[RemoteMapEntry]]
 
     @classmethod
     def _from_remote(cls, remote_attrs: Mapping[str, Any]) -> Self:
@@ -132,7 +132,7 @@ class HostGeneralSettings(GeneralSettings):
     this generally should be left untouched.
     """
 
-    port: Port = 8989  # type: ignore[assignment]
+    port: Port = 8989
     """
     Unencrypted (HTTP) listening port for Sonarr.
 
@@ -142,7 +142,7 @@ class HostGeneralSettings(GeneralSettings):
     `--publish <port number>:8989`.
     """
 
-    ssl_port: Port = 9898  # type: ignore[assignment]
+    ssl_port: Port = 9898
     """
     Encrypted (HTTPS) listening port for Sonarr.
 
@@ -168,12 +168,12 @@ class HostGeneralSettings(GeneralSettings):
     is assigned to a subfolder, e.g. `https://example.com/sonarr`.
     """
 
-    instance_name: NonEmptyStr = "Sonarr"  # type: ignore[assignment]
+    instance_name: NonEmptyStr = "Sonarr"
     """
     Instance name in the browser tab and in syslog.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("bind_address", "bindAddress", {"encoder": lambda v: str(v)}),
         ("port", "port", {}),
         ("ssl_port", "sslPort", {}),
@@ -228,7 +228,7 @@ class SecurityGeneralSettings(GeneralSettings):
     * `disabled` - Disable HTTPS certificate validation completely
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("authentication", "authenticationMethod", {}),
         (
             "username",
@@ -289,7 +289,7 @@ class ProxyGeneralSettings(GeneralSettings):
     Required if using a proxy is enabled.
     """
 
-    port: Port = 8080  # type: ignore[assignment]
+    port: Port = 8080
     """
     Proxy server access port.
     """
@@ -316,7 +316,7 @@ class ProxyGeneralSettings(GeneralSettings):
     Do not use the proxy to access local network addresses.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("enable", "proxyEnabled", {}),
         ("proxy_type", "proxyType", {}),
         (
@@ -368,7 +368,7 @@ class LoggingGeneralSettings(GeneralSettings):
     * `TRACE` - Trace diagnostics log output
     """
 
-    _remote_map: List[RemoteMapEntry] = [("log_level", "logLevel", {})]
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [("log_level", "logLevel", {})]
 
 
 class AnalyticsGeneralSettings(GeneralSettings):
@@ -387,7 +387,9 @@ class AnalyticsGeneralSettings(GeneralSettings):
     Requires a restart of Sonarr to take effect.
     """
 
-    _remote_map: List[RemoteMapEntry] = [("send_anonymous_usage_data", "analyticsEnabled", {})]
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
+        ("send_anonymous_usage_data", "analyticsEnabled", {}),
+    ]
 
 
 class UpdatesGeneralSettings(GeneralSettings):
@@ -395,7 +397,7 @@ class UpdatesGeneralSettings(GeneralSettings):
     Settings for updating Sonarr.
     """
 
-    branch: NonEmptyStr = "main"  # type: ignore[assignment]
+    branch: NonEmptyStr = "main"
     """
     Branch used by the external update mechanism.
     Changing this value has no effect on Docker installations.
@@ -436,7 +438,7 @@ class UpdatesGeneralSettings(GeneralSettings):
     Required if `mechanism` is set to `script`.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("branch", "branch", {}),
         ("automatic", "updateAutomatically", {}),
         ("mechanism", "updateMechanism", {}),
@@ -453,21 +455,21 @@ class BackupGeneralSettings(GeneralSettings):
     Settings for Sonarr automatic backups.
     """
 
-    folder: NonEmptyStr = "Backups"  # type: ignore[assignment]
+    folder: NonEmptyStr = "Backups"
     """
     Folder to backup Sonarr data to.
 
     Relative paths will be under Sonarr's AppData directory.
     """
 
-    interval: int = Field(7, ge=1, le=7)  # days
+    interval: Annotated[int, Field(ge=1, le=7)] = 7  # days
     """
     Interval between automatic backups, in days.
 
     Must be set somewhere between 1 and 7 days.
     """
 
-    retention: int = Field(28, ge=1, le=90)  # days
+    retention: Annotated[int, Field(ge=1, le=90)] = 28  # days
     """
     Retention period for backups, in days.
     Backups older than the retention period will be cleaned up automatically.
@@ -475,7 +477,7 @@ class BackupGeneralSettings(GeneralSettings):
     Must be set somewhere between 1 and 90 days.
     """
 
-    _remote_map: List[RemoteMapEntry] = [
+    _remote_map: ClassVar[List[RemoteMapEntry]] = [
         ("folder", "backupFolder", {}),
         ("interval", "backupInterval", {}),
         ("retention", "backupRetention", {}),
@@ -493,7 +495,7 @@ class SonarrGeneralSettingsConfig(SonarrConfigBase):
     logging: LoggingGeneralSettings = LoggingGeneralSettings()
     analytics: AnalyticsGeneralSettings = AnalyticsGeneralSettings()
     updates: UpdatesGeneralSettings = UpdatesGeneralSettings()
-    backup: BackupGeneralSettings = BackupGeneralSettings()  # type: ignore[call-arg]
+    backup: BackupGeneralSettings = BackupGeneralSettings()
 
     @classmethod
     def from_remote(cls, secrets: SonarrSecrets) -> Self:

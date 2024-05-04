@@ -80,27 +80,28 @@ def dump_config(url: Url, api_key: str) -> int:
     url_base = url.path
 
     instance_config = SonarrInstanceConfig(
-        **{  # type: ignore[arg-type]
-            "hostname": hostname,
-            "port": port,
-            "protocol": protocol,
-            "url_base": url_base,
-        },
+        hostname=hostname,
+        port=port,
+        protocol=protocol,  # type: ignore[arg-type]
+        url_base=url_base,
     )
 
     click.echo(
-        SonarrManager()
-        .from_remote(
-            instance_config=instance_config,
-            secrets=SonarrSecrets.get_from_url(
-                hostname=hostname,
-                port=port,
-                protocol=protocol,
-                url_base=url_base,
-                api_key=api_key if api_key else None,
-            ),
-        )
-        .yaml(exclude_unset=True),
+        (
+            SonarrManager()
+            .from_remote(
+                instance_config=instance_config,
+                secrets=SonarrSecrets.get_from_url(
+                    hostname=hostname,
+                    port=port,
+                    protocol=protocol,
+                    url_base=url_base,
+                    api_key=api_key if api_key else None,
+                ),
+            )
+            .model_dump_yaml(exclude_unset=True)
+        ),
+        nl=False,
     )
 
     return 0
