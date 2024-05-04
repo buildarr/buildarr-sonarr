@@ -58,8 +58,7 @@ jobs:
             - "3.9"
             - "3.10"
             - "3.11"
-            # TODO: Re-enable when upgrading to Buildarr v0.8.
-            # - "3.12"
+            - "3.12"
     runs-on: ${{ matrix.operating_system }}
     steps:
       - name: Clone full tree, and checkout branch

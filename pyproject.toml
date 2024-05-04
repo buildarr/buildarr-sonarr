@@ -152,7 +152,6 @@ minversion = "6.0"
 addopts = "--color=yes --cov=buildarr_sonarr --cov-config=pyproject.toml --cov-report=html:cover --cov-report=term --cov-report=xml:coverage.xml --junit-xml=rspec.xml -r A --showlocals --verbosity=3"
 filterwarnings = [
     "error",
-    "ignore::DeprecationWarning",  # TODO: Remove this when upgrading to Buildarr v0.8.
 ]
 testpaths = [
     "tests",
